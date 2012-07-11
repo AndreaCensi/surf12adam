@@ -1,0 +1,5 @@
+<launch>
+	<node name="command_generator" pkg="logitech_cam" type="command_generator.py" args="-c [[250,0,0],[-250,0,0],[0,200,0],[0,-200,0],[0,0,10],[0,0,-10]] -t 5 -r f
+	" output="screen"/>
+	<node pkg="rosbag" name="record" type="record" output="screen" args="-O ~/outbagtest.bag --duration 5 /usb_cam/image_raw"/>
+</launch>
