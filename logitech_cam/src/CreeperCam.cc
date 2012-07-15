@@ -73,24 +73,26 @@ void CreeperCam::Reset(void) {
  * Pan the camera a relative amount
  * 7/1/12, Adam Nilsson
  */
-void CreeperCam::PanRelative(double amount) {
+bool CreeperCam::PanRelative(double amount) {
 	double current = this->current_pan;
 	if(current + amount <= this->max_pan && current + amount >= this->min_pan){
-	// Get the control ID for moving the camera
-	CControlId control_id;
-	const char *name = "Pan (relative)";
-	control_id = get_control_id(this->ptz_handle, name);
+		// Get the control ID for moving the camera
+		CControlId control_id;
+		const char *name = "Pan (relative)";
+		control_id = get_control_id(this->ptz_handle, name);
 
-	// Control Value for moving the camera
-	CControlValue pan_value;
-	pan_value.value = amount;
+		// Control Value for moving the camera
+		CControlValue pan_value;
+		pan_value.value = amount;
 
-	c_set_control(this->ptz_handle, control_id, &pan_value);
+		c_set_control(this->ptz_handle, control_id, &pan_value);
 
-	this->current_pan += amount;
+		this->current_pan += amount;
+		return true;
 	}
 	else {
 		warn("Pan limit reached");
+		return false;
 	}
 }
 /* Pan the device a certain amount */
@@ -117,25 +119,27 @@ void CreeperCam::Pan(double target) {
  * Tilt the camera a relative amount
  /* 7/1/12, Adam Nilsson/
  */
-void CreeperCam::TiltRelative(double amount) {
+bool CreeperCam::TiltRelative(double amount) {
 	double current = this->current_tilt;
 	if(current + amount <= this->max_tilt && current + amount >= this->min_tilt){
-	// Get the control ID for moving the camera
-	CControlId control_id;
-	const char *name = "Tilt (relative)";
-	control_id = get_control_id(this->ptz_handle, name);
+		// Get the control ID for moving the camera
+		CControlId control_id;
+		const char *name = "Tilt (relative)";
+		control_id = get_control_id(this->ptz_handle, name);
 
-	// Control Value
-	CControlValue tilt_value;
-	tilt_value.value = amount;
+		// Control Value
+		CControlValue tilt_value;
+		tilt_value.value = amount;
 
-	CResult res = c_set_control(this->ptz_handle, control_id, &tilt_value);
-	printf("result: %d\n", res);
+		CResult res = c_set_control(this->ptz_handle, control_id, &tilt_value);
+		printf("result: %d\n", res);
 
-	this->current_tilt += amount;
+		this->current_tilt += amount;
+		return true;
 	}
 	else{
 		warn("Tilt Limit Reached");
+		return false;
 	}
 }
 /* Tilt the device to a certain amount */ 
@@ -176,15 +180,15 @@ void CreeperCam::stall(double time) {
 
 }
 double CreeperCam::timediff(timeval start, timeval end) {
-    double difference = ((double) end.tv_usec - (double) start.tv_usec) /
-                        ((double)1000000) +
-                        ((double) end.tv_sec - (double) start.tv_sec);
+	double difference = ((double) end.tv_usec - (double) start.tv_usec) /
+			((double)1000000) +
+			((double) end.tv_sec - (double) start.tv_sec);
 
-    return difference;
+	return difference;
 }
 /**
  * Send a warning message
  */
-void CreeperCam::warn(char *msg){
-	printf("Warning: CreeperCam:  ", msg);
-}
+ void CreeperCam::warn(char *msg){
+	 printf("Warning: CreeperCam:  ", msg);
+ }

@@ -1,0 +1,96 @@
+import numpy as np
+from numpy import *
+from PIL import Image, ImageOps, ImageChops
+import boot_agents
+from boot_agents import *
+import time
+import pdb
+
+def diffeo_zoomin(shape,zoom_val):
+	def f(X):
+		x,y = X
+		Y = [x*zoom_val,y*zoom_val]
+		if abs(Y[0])>1:
+			Y[0] = Y[0]/abs(Y[0])
+		if abs(Y[1])>1:
+			Y[1] = Y[1]/abs(Y[1])
+		return Y
+	return diffeo_from_function(shape,f)
+
+def diffeo_pan(shape,pan_val):
+	def pan_f(X):
+		x,y = X
+		Y = [x,y-pan_val]
+		if abs(Y[0])>1:
+			Y[0] = Y[0]/abs(Y[0])
+		if abs(Y[1])>1:
+			Y[1] = Y[1]/abs(Y[1])
+		return Y
+	return diffeo_from_function(shape,pan_f)
+
+def diffeo_tilt(shape,tilt_val):
+	def tilt_f(X):
+		x,y = X
+		Y = [x-tilt_val,y]
+		if abs(Y[0])>1:
+			Y[0] = Y[0]/abs(Y[0])
+		if abs(Y[1])>1:
+			Y[1] = Y[1]/abs(Y[1])
+		return Y
+	return diffeo_from_function(shape,tilt_f)
+
+if __name__ == '__main__':
+	print 'starting main'
+
+	print 'Generating diffeomorphisms'
+#	diffeo_list = [diffeo_zoomin((240,240),0.9), diffeo_zoomin((240,240),1.1), diffeo_pan((240,240),0.1),diffeo_pan((240,240),-0.1),diffeo_tilt((240,240),0.1),diffeo_tilt((240,240),-0.1)]
+	print 'Done'
+
+	# Load a example image.
+	# (image size is 640x480 for lighttower640.jpg)
+	im = Image.open('ltsquare.jpg')
+	im = Image.open('lighttower640.jpg')
+
+	print im.size
+	# extract the byte data as a numpy array
+	raw_array = np.array(im.getdata(),np.uint8)
+	## When reshaping, use (height, width, channels)
+	im_array = np.array(im.getdata(),np.uint8).reshape((480,640,3))
+	im_array_new = im_array
+
+
+	# convert back to pil image from array
+	pilimage = Image.fromarray(im_array)
+	pdb.set_trace()
+	pilimage.show()
+
+	# command_list, sequence with indexes for for the diffeomorphisms to be applied
+#	command_list = [0,2,4,2,5,0,2]
+#	command_list = [2,4,4,2,5,3,3,5]
+#	command_list = [0,2,2,2,4,4,3,3,3,5,5,1]
+	command_list = []
+	print 'Applying diffeomorphisms: ',command_list,', and images with prefix output_image_'
+	for i in range(len(command_list)):
+		command = command_list[i]
+		im_array_new = diffeo_apply(diffeo_list[command],im_array_new)
+		Image.fromarray(im_array_new).save('output_image_'+str(i)+'.png')
+
+	# Analysing the final difference
+	im_new = Image.fromarray(im_array_new)
+	im_tumb = im.resize((96,96))
+	im_new_tumb = im_new.resize((96,96))
+
+	diff_tumb = ImageChops.difference(im_new_tumb,im_tumb)
+	diff_tumb_scaled = diff_tumb.resize((240,240))
+	ImageOps.invert(diff_tumb_scaled).save('diff_image_tumb.png')
+
+	d_array = abs(im_array_new-im_array)
+	ImageOps.invert(Image.fromarray(d_array)).save('diff_image.png')
+	
+	# How different can can two pixels be to be assumed to be the same = tresh
+	tresh = 50
+	# index 0 gives the sumof each collons, 1 rows
+	ns = np.sum((np.sum(d_array,2)<tresh).astype(int)) 
+	print ns
+	print d_array.size
+	print ns/float(d_array.size)*3.0*100,'% of images is matching'

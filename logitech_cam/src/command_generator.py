@@ -63,6 +63,7 @@ def main(args):
 	random.seed()
 	
 	# Set the frequence for sending commands
+	### make rate as parameter
 	r = rospy.Rate(1)
 	
 	while rospy.get_time()-time0 < duration:

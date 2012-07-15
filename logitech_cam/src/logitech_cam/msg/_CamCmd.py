@@ -6,15 +6,16 @@ import struct
 
 
 class CamCmd(genpy.Message):
-  _md5sum = "0e96b6354f60d169afb632b43e3621cc"
+  _md5sum = "46895988c20b47142a93febd21dd1e8a"
   _type = "logitech_cam/CamCmd"
   _has_header = False #flag to mark the presence of a Header object
   _full_text = """int64 Pvalue
 int64 Tvalue
+int64 Zvalue
 
 """
-  __slots__ = ['Pvalue','Tvalue']
-  _slot_types = ['int64','int64']
+  __slots__ = ['Pvalue','Tvalue','Zvalue']
+  _slot_types = ['int64','int64','int64']
 
   def __init__(self, *args, **kwds):
     """
@@ -24,7 +25,7 @@ int64 Tvalue
     changes.  You cannot mix in-order arguments and keyword arguments.
 
     The available fields are:
-       Pvalue,Tvalue
+       Pvalue,Tvalue,Zvalue
 
     :param args: complete set of field values, in .msg order
     :param kwds: use keyword arguments corresponding to message field names
@@ -37,9 +38,12 @@ int64 Tvalue
         self.Pvalue = 0
       if self.Tvalue is None:
         self.Tvalue = 0
+      if self.Zvalue is None:
+        self.Zvalue = 0
     else:
       self.Pvalue = 0
       self.Tvalue = 0
+      self.Zvalue = 0
 
   def _get_types(self):
     """
@@ -54,7 +58,7 @@ int64 Tvalue
     """
     try:
       _x = self
-      buff.write(_struct_2q.pack(_x.Pvalue, _x.Tvalue))
+      buff.write(_struct_3q.pack(_x.Pvalue, _x.Tvalue, _x.Zvalue))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -67,8 +71,8 @@ int64 Tvalue
       end = 0
       _x = self
       start = end
-      end += 16
-      (_x.Pvalue, _x.Tvalue,) = _struct_2q.unpack(str[start:end])
+      end += 24
+      (_x.Pvalue, _x.Tvalue, _x.Zvalue,) = _struct_3q.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
@@ -82,7 +86,7 @@ int64 Tvalue
     """
     try:
       _x = self
-      buff.write(_struct_2q.pack(_x.Pvalue, _x.Tvalue))
+      buff.write(_struct_3q.pack(_x.Pvalue, _x.Tvalue, _x.Zvalue))
     except struct.error as se: self._check_types(se)
     except TypeError as te: self._check_types(te)
 
@@ -96,11 +100,11 @@ int64 Tvalue
       end = 0
       _x = self
       start = end
-      end += 16
-      (_x.Pvalue, _x.Tvalue,) = _struct_2q.unpack(str[start:end])
+      end += 24
+      (_x.Pvalue, _x.Tvalue, _x.Zvalue,) = _struct_3q.unpack(str[start:end])
       return self
     except struct.error as e:
       raise genpy.DeserializationError(e) #most likely buffer underfill
 
 _struct_I = genpy.struct_I
-_struct_2q = struct.Struct("<2q")
+_struct_3q = struct.Struct("<3q")

@@ -34,3 +34,9 @@ rosbuild_add_executable(ctrl_prompt_node src/ctrl_prompt_node.cc src/CreeperCam.
 target_link_libraries(ctrl_prompt_node /usr/lib/libwebcam.so)
 target_link_libraries(ctrl_prompt_node /usr/lib/libwebcam.so.0)
 target_link_libraries(ctrl_prompt_node /usr/lib/libwebcam.so.0.2.1)
+
+rosbuild_add_executable(ImageTunnel src/ImageTunnel.cc)
+rosbuild_add_executable(cam_trigger_console src/cam_trigger_console.cc)
+rosbuild_add_executable(cmd_action_logger_node src/cmd_action_logger_node.cc)
+rosbuild_add_executable(logger_data_player src/logger_data_player.cc)
+rosbuild_add_executable(command_generator src/command_generator.cc)

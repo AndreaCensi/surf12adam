@@ -9,8 +9,8 @@ class CreeperCam {
 		CreeperCam(void);
 		void Pan(double target_pan);
 		void Tilt(double target_tilt);
-		void PanRelative(double amount);
-		void TiltRelative(double amount);
+		bool PanRelative(double amount);
+		bool TiltRelative(double amount);
 		void Reset(void);
 		void close(void);
 		void stall(double time);

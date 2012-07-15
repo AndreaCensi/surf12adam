@@ -1,6 +1,6 @@
 <launch>
-	<node name="cam_actuator_node" pkg="logitech_cam" type="cam_actuator_node" />
-	<node name="ctrl_prompt_node" pkg="logitech_cam" type="ctrl_prompt_node" />
+	<node name="cam_actuator_node" pkg="logitech_cam" type="cam_actuator_node"  output="screen"/>
+	<node name="command_generator" pkg="logitech_cam" type="command_generator.py" output="screen" args="-t 10"/>
 	<!-- node name="usb_cam_node" pkg="usb_cam" type="usb_cam_node" /-->
 	<!-- node name="image_view" pkg="image_view" type="image_view">
 	<param name="image" value="/usb_cam/image_raw" />
