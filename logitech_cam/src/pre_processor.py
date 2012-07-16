@@ -134,13 +134,15 @@ for topic, msg, t in imglist:
 diff_treshold = diffsum/numframes*2
 print 'diff_treshold = ', diff_treshold
 
-list = bag.read_messages(topics=['/usb_cam/image_raw','/logitech_cam/camera_instr'])
+list = bag.read_messages(topics=['/usb_cam/image_raw','/logitech_cam/camera_executed'])
+i = 0
 for topic, msg, t in list:
-	if topic == '/logitech_cam/camera_instr':
+	if topic == '/logitech_cam/camera_executed':
 		if Y_last != 0:
 			print 'Camera Instruction Read: (',msg.data,')' 
-			out_bag.write('Y0',zoom_image(Y_last,zoom_last))
-			out_bag.write('U0',msg)
+			out_bag.write('Y0',zoom_image(Y_last,zoom_last), t)
+			out_bag.write('U0',msg,t)
+			t0 = t
 			if zoom_last + msg.data[2] >= 100:
 				if zoom_last +msg.data[2] <= 500:
 					zoom = zoom_last + msg.data[2]
@@ -169,7 +171,8 @@ for topic, msg, t in list:
 				
 		if state_capture == state_takeY1:
 			print 'Writing Y1'
-			out_bag.write('Y1',zoom_image(msg,zoom))
+			out_bag.write('Y1',zoom_image(msg,zoom),t0)
+			i+=1
 			
 			next_state = state_takeY0
 			

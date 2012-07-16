@@ -1,9 +1,7 @@
 <launch>
 	<arg name="command_gennerator_args" default="-c [[150,0,0],[-150,0,0],[0,100,0],[0,-100,0],[0,0,10],[0,0,-10]] -t 10 -f 1"/>
+	<arg name="outfile" default="~/outbag.raw.bag"/>
 	<node name="cam_actuator_node" pkg="logitech_cam" type="cam_actuator_node"  output="screen"/>
 	<node name="command_generator" pkg="logitech_cam" type="command_generator.py" output="screen" args="$(arg command_generator_args)"/>
-	<!-- node name="usb_cam_node" pkg="usb_cam" type="usb_cam_node" /-->
-	<!-- node name="image_view" pkg="image_view" type="image_view">
-		<param name="image" value="/usb_cam/image_raw" />
-	</node --> 
+	<node name="rosbag" type="record" pkg="rosbag" args="-O $(arg outfile) /usb_cam/image_raw /logitech_cam/camera_executed" output="screen"/>
 </launch>
