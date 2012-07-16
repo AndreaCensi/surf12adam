@@ -39,6 +39,9 @@ void receive_callback(const logitech_cam::IntArray msg)
 		ROS_INFO("Published command");
 		pub.publish(msg);
 	}
+	else{
+		ROS_INFO("Ignoring command");
+	}
 }
 int main(int argc, char **argv)
 {

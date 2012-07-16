@@ -32,7 +32,12 @@ def get_msg(intarray):
 
 def main(args):
 	rospy.init_node('command_generator', anonymous=True)
+	#print args
 	# Test string for commands
+#	if rospy.has_param('/command_generator/logitech_cam/command_list'):
+#		cmd_str = rospy.get_param('/command_generator/command_list')
+#	else:
+	# Check for arguments
 	try:
 		cmd_str = args[args.index('-c')+1]
 	except ValueError:
@@ -45,6 +50,14 @@ def main(args):
 	except ValueError:
 		print 'No duration found, running for 60s.'
 		duration = 60
+	
+	# Generation frequency
+	try:
+		freq = float(args[args.index('-f')+1])
+	except ValueError:
+		freq = 1.0
+	print freq
+	
 	
 	# Start at random position ?
 	try:
@@ -64,7 +77,7 @@ def main(args):
 	
 	# Set the frequence for sending commands
 	### make rate as parameter
-	r = rospy.Rate(1)
+	r = rospy.Rate(freq)
 	
 	while rospy.get_time()-time0 < duration:
 		ri = random.randint(0,num_cmd-1)
