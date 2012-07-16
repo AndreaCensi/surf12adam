@@ -48,22 +48,33 @@ class camera_reader:
 
         
     def callback(self, msg):
-        #self.publisher.publish(msg)
-        print 'Encoding before: ',msg.encoding
-        im,data,dimsizes = ParseMessages.imgmsg_to_pil(msg)
-
-        rosimg2 = ParseMessages.pil_to_imgmsg(im)
-        #rosimg2 = ParseMessages.numpy_to_imgmsg(numpy.array(data))
-        self.publisher.publish(rosimg2)
+        self.publisher.publish(msg)
+#        # For manipulating the images in array format
+#        im,data,dimsizes = ParseMessages.imgmsg_to_pil(msg)
+#        pix = numpy.asarray(im)
+#        #pix = cmy_to_rgb(pix)
+#        rosimg2 = ParseMessages.numpy_to_imgmsg(pix)
+#        self.publisher.publish(rosimg2)
         
 def cmy_to_rgb(data):
     #print dir(data)
     print data.shape
-    data_out = numpy.zeros(data.shape)
-    print data_out.shape
-    data_out[:,:,0] = 256 - data[:,:,0]
-    data_out[:,:,1] = 256 - data[:,:,1]
-    data_out[:,:,2] = 256 - data[:,:,2]
+    data_out = numpy.zeros(data.shape,dtype=numpy.uint8)
+    #print data_out.shape
+#    Yp = 0.299 * data[:,:,0] + 0.114 * data[:,:,1] + 0.587 * data[:,:,2]
+#    U = 0.492*(data[:,:,2] - Yp)
+#    V = 0.877*(data[:,:,0] - Yp)
+#    R = Yp + 1.13983*V
+#    G = Yp + 
+#    data_out[:,:,0] = (data[:,:,0] + 1.13983*data[:,:,2])
+#    data_out[:,:,1] = (data[:,:,0] - 0.39465*data[:,:,1] - 0.58060 * data[:,:,2])
+#    data_out[:,:,2] = (data[:,:,0] + 2.03211*data[:,:,1])
+    data_out[:,:,0] = (1.0000*data[:,:,0] + 0.0000*data[:,:,1] + 0.0000*data[:,:,2])
+    data_out[:,:,1] = (0.0000*data[:,:,0] + 1.0000*data[:,:,1] + 0.0000*data[:,:,2])
+    data_out[:,:,2] = (0.0000*data[:,:,0] + 0.0000*data[:,:,1] + 1.0000*data[:,:,2])
+#    data_out[:,:,0] = (data[:,:,1] + data[:,:,2])/2
+#    data_out[:,:,1] = (data[:,:,0] + data[:,:,2])/2
+#    data_out[:,:,2] = (data[:,:,0] + data[:,:,1])/2
     return data_out
         
 
