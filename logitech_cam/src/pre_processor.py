@@ -14,6 +14,16 @@ from cv_bridge import CvBridge, CvBridgeError
 # Initiate CV Britge for image manipulation in opencv
 bridge = CvBridge()
 
+def resize_image(image,size):
+	# Convert image to cv image to zoom
+	try:
+		cv_image = bridge.imgmsg_to_cv(image, "bgr8")
+	except CvBridgeError, e:
+		print e
+	cvi2 = cv.CreateImage(size,cv.IPL_DEPTH_8U,3)
+	cv.Resize(cv_image,cvi2,interpolation=cv.CV_INTER_LINEAR)
+	return bridge.cv_to_imgmsg(cvi2, "bgr8")
+
 # Zoom an image with zoom center
 def zoom_image(image,zoom):
 	# Convert image to cv image to zoom
@@ -96,6 +106,14 @@ try:
 except ValueError:
 	print 'No output file specified'
 	outfile = 'outbag.bag'
+	
+try:
+	width = sys.argv[sys.argv.index('-w')+1]
+	height = sys.argv[sys.argv.index('-h')+1]
+	output_size = [int(width), int(height)]
+except ValueError:
+	print 'No output file specified'
+	output_size = (64,48)
 
 # Save the last read image for use as Y0 when command is read
 Y_last = 0
@@ -171,7 +189,10 @@ for topic, msg, t in list:
 				
 		if state_capture == state_takeY1:
 			print 'Writing Y1'
-			out_bag.write('Y1',zoom_image(msg,zoom),t0)
+			print output_size
+			print output_size.__class__
+			write_img = resize_image(zoom_image(msg,zoom),output_size)
+			out_bag.write('Y1',write_img,t0)
 			i+=1
 			
 			next_state = state_takeY0
@@ -179,6 +200,5 @@ for topic, msg, t in list:
 		Y_last = msg	# update last read image
 		zoom_last = zoom
 	state_capture = next_state
-
 bag.close()
 out_bag.close()
