@@ -40,9 +40,15 @@ def generate_from_croped_image():
 	print 'n: ', n
 
 	# Load and resize image to crop subimages from
-	im = Image.open('balboa.png')
-	im = im.resize((2048/8,1536/8))
+	#im = Image.open('balboa.png')
+	#im = im.resize((2048/8,1536/8))
 	
+	# Generate random image to use
+	M = np.random.randint(0,255,(748,1024,3))
+	im = Image.fromarray(M.astype(np.uint8))
+#	im.show()
+
+
 #	pdb.set_trace()
 	Y0,Y1 = get_Y_pair((5,20),delta,im)
 #	Y0.show()
@@ -65,8 +71,8 @@ def generate_from_croped_image():
 #	Image.fromarray(diffeo_to_rgb_inc(D.d)).show()
 	Image.fromarray(diffeo_to_rgb_norm(D.d)).save('diffeoimages/diffeo_to_rgb_norm_delta_'+str(delta)+'_n_'+str(n)+'.png')
 	Image.fromarray(diffeo_to_rgb_angle(D.d)).save('diffeoimages/diffeo_to_rgb_angle_delta_'+str(delta)+'_n_'+str(n)+'.png')
-	Image.fromarray(D.variance*255).show()#.save('diffeoimages/variance_delta_'+str(delta)+'_n_'+str(n)+'.png')
-	pdb.set_trace()
+#	Image.fromarray(D.variance*255).show()#.save('diffeoimages/variance_delta_'+str(delta)+'_n_'+str(n)+'.png')
+#	pdb.set_trace()
 	print 'diffeo_estimator_demo done'
 
 #
@@ -89,9 +95,9 @@ def ideal_diffeo_show():
 	print 'Done'
 
 	d_index = 2
-	Image.fromarray(diffeomorphism_to_rgb(diffeo_list[d_index])).show()
-	Image.fromarray(diffeomorphism_to_rgb_cont(diffeo_list[d_index])).show()
-	Image.fromarray(diffeo_to_rgb_norm(diffeo_list[d_index])).show()
+#	Image.fromarray(diffeomorphism_to_rgb(diffeo_list[d_index])).show()
+#	Image.fromarray(diffeomorphism_to_rgb_cont(diffeo_list[d_index])).show()
+#	Image.fromarray(diffeo_to_rgb_norm(diffeo_list[d_index])).show()
 	Image.fromarray(diffeo_to_rgb_angle(diffeo_list[d_index])).show()
 
 	pdb.set_trace()

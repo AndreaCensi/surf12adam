@@ -43,8 +43,12 @@ if __name__ == '__main__':
 	print 'starting main'
 
 	print 'Generating diffeomorphisms'
-#	diffeo_list = [diffeo_zoomin((240,240),0.9), diffeo_zoomin((240,240),1.1), diffeo_pan((240,240),0.1),diffeo_pan((240,240),-0.1),diffeo_tilt((240,240),0.1),diffeo_tilt((240,240),-0.1)]
+	diffeo_list = [diffeo_zoomin((240,240),0.9), diffeo_zoomin((240,240),1.1), diffeo_pan((240,240),0.1),diffeo_pan((240,240),-0.1),diffeo_tilt((240,240),0.1),diffeo_tilt((240,240),-0.1)]
 	print 'Done'
+
+	# Illustrate the diffeomporhisms
+	Image.fromarray(diffeo_to_rgb_inc(diffeo_list[2])).show()
+	pdb.set_trace()
 
 	# Load a example image.
 	# (image size is 640x480 for lighttower640.jpg)
