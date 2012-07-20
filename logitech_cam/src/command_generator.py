@@ -78,14 +78,14 @@ def main(args):
 	# Set the frequence for sending commands
 	### make rate as parameter
 	r = rospy.Rate(freq)
-	
-	while rospy.get_time()-time0 < duration:
-		ri = random.randint(0,num_cmd-1)
-		print rospy.get_time()-time0
-		this_cmd = cmd_list[ri]
-		print 'Sending command: 	',this_cmd
-		cmd_publisher.publish(get_msg(this_cmd))
-		r.sleep()
+	while not rospy.is_shutdown():
+		while rospy.get_time()-time0 < duration:
+			ri = random.randint(0,num_cmd-1)
+			print rospy.get_time()-time0
+			this_cmd = cmd_list[ri]
+			print 'Sending command: 	',this_cmd
+			cmd_publisher.publish(get_msg(this_cmd))
+			r.sleep()
 		
 	print 'Shutting down'
 

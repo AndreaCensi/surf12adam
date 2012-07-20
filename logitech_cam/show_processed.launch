@@ -1,0 +1,10 @@
+<launch>
+	<arg name="bagfile" default="~/outbag.processed.bag"/>
+	<node pkg="image_view" type="image_view" name="Y0view">
+		<remap from="image" to="Y0" />
+	</node>
+	<node pkg="image_view" type="image_view" name="Y1view">
+		<remap from="image" to="Y1" />
+	</node>
+	<node pkg="rosbag" type="play" name="rosbag" args="$(arg bagfile)"/>
+</launch>

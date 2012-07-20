@@ -135,20 +135,24 @@ state_capture = 0
 diff_treshold = 0.001
 
 move_waits = 0
-move_timeout = 10
+move_timeout = 9
 
 #bag = rosbag.Bag('/home/adam/2012-07-06-17-50-39.bag')
 bag = rosbag.Bag(infile)
 imglist = bag.read_messages('/usb_cam/image_raw')
 diffsum = 0
 numframes = 0
+ic = 0
 for topic, msg, t in imglist:
+	if ic > 200:
+		break
 	if Y_last != 0:
 		diff = compare_images(Y_last, msg)
 		print diff
 		diffsum += diff
 		numframes += 1
 	Y_last = msg
+	ic += 1 
 diff_treshold = diffsum/numframes*2
 print 'diff_treshold = ', diff_treshold
 
@@ -158,7 +162,9 @@ for topic, msg, t in list:
 	if topic == '/logitech_cam/camera_executed':
 		if Y_last != 0:
 			print 'Camera Instruction Read: (',msg.data,')' 
-			out_bag.write('Y0',zoom_image(Y_last,zoom_last), t)
+			print 'Writing Y0 and U0'
+			write_img = resize_image(zoom_image(Y_last,zoom_last),output_size)
+			out_bag.write('Y0',write_img, t)
 			out_bag.write('U0',msg,t)
 			t0 = t
 			if zoom_last + msg.data[2] >= 100:
@@ -168,29 +174,33 @@ for topic, msg, t in list:
 			move_waits = 0
 		
 	if topic == '/usb_cam/image_raw':
-		print 'cam image read'
+		#print 'cam image read'
 		if state_capture == state_wait_for_move:
 			diff = compare_images(Y_last, msg)
-			print 'Waiting for move state, diff = ',diff
+			#print 'Waiting for move state, diff = ',diff
 			if diff > diff_treshold:
 				print 'Camera detectet to be moving'
 				next_state = state_cam_moving
 			move_waits +=1
 			if move_waits > move_timeout:
-				print 'Proceding to state_take_Y1'
+				print 'Proceding to state_take_Y1, timeout in state_wait_for_move'
 				next_state = state_takeY1
 				
 		if state_capture == state_cam_moving:
 			diff = compare_images(Y_last, msg)
-			print 'Camera Moving State, diff = ', diff
+			#print 'Camera Moving State, diff = ', diff
 			if diff < diff_treshold:
 				print 'camera has stoped'
+				next_state = state_takeY1
+			move_waits +=1
+			if move_waits > move_timeout:
+				print 'Proceding to state_take_Y1, timeout in state_cam_moving'
 				next_state = state_takeY1
 				
 		if state_capture == state_takeY1:
 			print 'Writing Y1'
-			print output_size
-			print output_size.__class__
+			#print output_size
+			#print output_size.__class__
 			write_img = resize_image(zoom_image(msg,zoom),output_size)
 			out_bag.write('Y1',write_img,t0)
 			i+=1
