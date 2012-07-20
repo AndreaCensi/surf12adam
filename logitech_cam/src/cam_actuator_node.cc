@@ -32,6 +32,7 @@ void receive_callback(const logitech_cam::CamCmd msg)
 void receive_callback(const logitech_cam::IntArray msg)
 {
 	ROS_INFO("Recieved something");
+	#camera->stall(0.3);
 	bool cmd1 = camera->TiltRelative(msg.data[1]);
 	camera->stall(abs(msg.data[1])*.2/100);
 	bool cmd2 = camera->PanRelative(msg.data[0]);

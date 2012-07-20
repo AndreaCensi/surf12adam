@@ -153,7 +153,7 @@ def main(args):
 #    except ValueError:
 #        print 'No input height specified'
             
-    learn = learner([160,120],[8,8])
+    learn = learner([320,240],[15,15])
     learn.learn_bag(bagfile)
     print 'Commands: ',learn.command_list
     learn.show_diffeomorphisms()

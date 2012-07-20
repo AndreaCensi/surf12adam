@@ -9,7 +9,7 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import Header
 import cv
 from cv_bridge import CvBridge, CvBridgeError
-
+import pdb
 
 # Initiate CV Britge for image manipulation in opencv
 bridge = CvBridge()
@@ -88,6 +88,15 @@ def get_area_average(image,x,y,w,h):
 	sum = sum/w/h
 	return sum
 	
+nc = 10
+last_container = [0]*nc
+def add_container(Y_new):
+	#pdb.set_trace()
+	for i in range(nc-2):
+		last_container[nc-i-1]=last_container[nc-i-2]
+	last_container[0] = Y_new
+	
+	
 # Script Start
 
 # Initiate
@@ -136,6 +145,8 @@ diff_treshold = 0.001
 
 move_waits = 0
 move_timeout = 9
+move_time_timeout = 0.5
+#time0 = rospy.get_time()
 
 #bag = rosbag.Bag('/home/adam/2012-07-06-17-50-39.bag')
 bag = rosbag.Bag(infile)
@@ -144,26 +155,34 @@ diffsum = 0
 numframes = 0
 ic = 0
 for topic, msg, t in imglist:
-	if ic > 200:
+	if ic > 300:
 		break
-	if Y_last != 0:
-		diff = compare_images(Y_last, msg)
-		print diff
-		diffsum += diff
-		numframes += 1
+	if ic < 100:
+		diffsum = 0
+	else:
+		if Y_last != 0:
+			diff = compare_images(Y_last, msg)
+			print diff
+			diffsum += diff
+			numframes += 1
 	Y_last = msg
 	ic += 1 
 diff_treshold = diffsum/numframes*2
 print 'diff_treshold = ', diff_treshold
-
+Y_last2 = 0
+Y_last3 = 0
 list = bag.read_messages(topics=['/usb_cam/image_raw','/logitech_cam/camera_executed'])
 i = 0
 for topic, msg, t in list:
+	#pdb.set_trace()
 	if topic == '/logitech_cam/camera_executed':
-		if Y_last != 0:
+		#if Y_last != 0:
+		if last_container[nc-1] != 0:
 			print 'Camera Instruction Read: (',msg.data,')' 
 			print 'Writing Y0 and U0'
-			write_img = resize_image(zoom_image(Y_last,zoom_last),output_size)
+			print 'Time = ',t.to_time()
+			#write_img = resize_image(zoom_image(Y_last,zoom_last),output_size)
+			write_img = resize_image(zoom_image(last_container[5],zoom_last),output_size)
 			out_bag.write('Y0',write_img, t)
 			out_bag.write('U0',msg,t)
 			t0 = t
@@ -182,7 +201,9 @@ for topic, msg, t in list:
 				print 'Camera detectet to be moving'
 				next_state = state_cam_moving
 			move_waits +=1
-			if move_waits > move_timeout:
+			#if move_waits > move_timeout:
+			#pdb.set_trace()
+			if t.to_time() - t0.to_time() > move_time_timeout:
 				print 'Proceding to state_take_Y1, timeout in state_wait_for_move'
 				next_state = state_takeY1
 				
@@ -191,9 +212,11 @@ for topic, msg, t in list:
 			#print 'Camera Moving State, diff = ', diff
 			if diff < diff_treshold:
 				print 'camera has stoped'
+				print 'Motion took :',t.to_time()-t0.to_time(),' s'
 				next_state = state_takeY1
 			move_waits +=1
-			if move_waits > move_timeout:
+			#if move_waits > move_timeout:
+			if t.to_time() - t0.to_time() > move_time_timeout:
 				print 'Proceding to state_take_Y1, timeout in state_cam_moving'
 				next_state = state_takeY1
 				
@@ -207,6 +230,16 @@ for topic, msg, t in list:
 			
 			next_state = state_takeY0
 			
+		# Store the last nc images.
+		# To enable use of a image in the past when writing 
+		# Y0 since some motions may be to fast for capturing 
+		# the image after the command is executed. 
+		for i in range(nc-1):
+			last_container[nc-i-1]=last_container[nc-i-2]
+		last_container[0] = msg
+		
+		
+		#pdb.set_trace()
 		Y_last = msg	# update last read image
 		zoom_last = zoom
 	state_capture = next_state
