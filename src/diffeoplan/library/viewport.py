@@ -45,6 +45,7 @@ def diffeo_from_function_viewport(diffeo, manifold, viewport, shape):
             # we put the identity as a dummy value
             D[coords[0], coords[1], 0] = coords[0]
             D[coords[0], coords[1], 1] = coords[1]
-    D2 = np.transpose(D, (1, 0, 2))
-    info2 = np.transpose(info, (1, 0))
-    return D2, info2
+#    D2 = np.transpose(D, (1, 0, 2))
+#    info2 = np.transpose(info, (1, 0))
+#    return D2, info2
+    return D, info

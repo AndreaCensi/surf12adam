@@ -74,16 +74,16 @@ def symdiffeo_display(report, template_rgb, diffeo, resolution): #@UnusedVariabl
                         ' plots above.')
     
     report.data_rgb('norm_D', diffeo_to_rgb_norm(D),
-                    caption="white=0, blue=maximum. Note: wrong in case of wraparound").add_to(fig)
+                    caption="Norm(D). white=0, blue=maximum. Note: wrong in case of wraparound").add_to(fig)
     report.data_rgb('phase_D', diffeo_to_rgb_angle(D),
-                    caption="note: wrong in case of wraparound").add_to(fig)
+                    caption="Phase(D). Note: wrong in case of wraparound").add_to(fig)
 
     def info2rgb(x):
         return scale(x, max_value=1, min_value=0,
                     min_color=[1, 0, 0], max_color=[0, 1, 0])
     
     report.data_rgb('D_info', info2rgb(Dinfo),
-                     caption='Information (green=sure, red=unknown)').add_to(fig)
+                     caption='Uncertainty (green=sure, red=unknown)').add_to(fig)
 
     report.data_rgb('curvD', diffeo_to_rgb_curv(D)).add_to(fig)
 
