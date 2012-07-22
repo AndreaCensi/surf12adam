@@ -9,6 +9,14 @@ def check_valid_image(x):
     pass # TODO
 
 
+def check_valid_symdiffeo_config(spec):
+    check_generic_code_desc(spec, 'symdiffeo')
+
+
+def check_valid_symdiffeo(x):
+    pass # TODO
+
+
 def check_valid_diffeo_config(spec):
     check_generic_code_desc(spec, 'diffeo')
 

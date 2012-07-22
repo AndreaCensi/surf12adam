@@ -1,0 +1,73 @@
+- id: dpx1
+  desc: Simple horizontal translation back and forth
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: 64
+    actions: [px1, Ipx1]
+    topology: plane
+
+- id: dpx2
+  desc: |
+    Simple horizontal translation back and forth,
+    but the second motion is double the inverse.
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: 64
+    actions: [px1, R2Ipx1]
+    topology: plane
+
+- id: dtx1
+  desc: |
+    Left and right translation (toroidal case).
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: 64
+    actions: [tx1, Itx1]
+    topology: torus
+
+- id: dtx2
+  desc: |
+    Only left translation (toroidal case).
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: 64
+    actions: [tx1]
+    topology: torus
+
+- id: dpr1
+  desc: |
+    Only rotation
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: 64
+    actions: [pr1]
+    topology: plane
+
+
+- id: dcam1
+  desc: |
+    Camera (pan/tilt)
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: 64
+    actions: [px1, Ipx1, py1, Ipy1]
+    topology: plane
+
+- id: dcamz1
+  desc: |
+    Camera with zoom
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: 64
+    actions: [px1, Ipx1, py1, Ipy1, pz1, Ipz1]
+    topology: plane
+
+- id: drob1
+  desc: |
+    Robot with differenital drive
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: 64
+    actions: [px1, Ipx1, pr1, Ipr1]
+    topology: plane
+

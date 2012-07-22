@@ -34,9 +34,8 @@ setup(name='surf12adam',
 
        entry_points={
          'console_scripts': [
-           # 'boot_agents_diff_actions = '
-           #      'boot_agents.diffeo.analysis.main:main',
-            ]
+           'dp = diffeoplan.programs:dpmain',
+        ]
     }
 )
 
