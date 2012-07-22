@@ -35,6 +35,7 @@ def dp(arguments):
     (options, args) = parser.parse_args(arguments)
 
     if not options.contracts:
+        logger.warning('PyContracts disabled for speed. Use --contracts to activate.')
         contracts.disable_all()
 
     if not args:

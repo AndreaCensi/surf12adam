@@ -1,15 +1,18 @@
 from contracts import contract
 from abc import ABCMeta, abstractmethod
-from geometry import R2, Torus01
-
+from geometry import R2, TorusW
+import numpy as np
 
 class Topology:
     PLANE = 'plane'
     TORUS = 'torus'
     KNOWN = {}
     KNOWN[PLANE] = R2 
-    KNOWN[TORUS] = Torus01(2)
+    KNOWN[TORUS] = TorusW([2, 2], [-1, -1])
 
+
+class NoInverseAvailable(Exception):
+    pass
 
 class SymbolicDiffeo:
     """ This class is the interface for a symbolic diffeomorphism. """
@@ -34,9 +37,23 @@ class SymbolicDiffeo:
         """
          
     @abstractmethod
-    @contract(point='array[2]')
+    @contract(point='array[2]', returns='array[2]')
     def apply(self, point):
         """ 
             Computes the diffeomorphism applied to a point. 
         """
 
+    @contract(point='seq[2](number)')
+    def __call__(self, point):
+        return self.apply(np.array(point))
+    
+    def conjugate(self, g):
+        """ 
+            f.conjugate(g) =  f(g(f^-1))
+        """
+        from . import SymDiffeoComposition
+        chain = [self.get_inverse(), g, self]
+        return SymDiffeoComposition(chain)
+
+        
+    

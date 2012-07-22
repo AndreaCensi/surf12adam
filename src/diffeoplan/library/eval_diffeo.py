@@ -53,7 +53,7 @@ class SymDiffeoComposition(SymbolicDiffeo):
         
     def apply(self, point):
         for d in self.chain:
-            point = d.apply(self.chain)
+            point = d.apply(point)
         return point
         
     def __repr__(self):

@@ -4,6 +4,23 @@
 # rotdeg(p, deg)
 # dot(a,b)
 
+
+- id: pid
+  desc: "Identity (on plane)"
+  code: 
+  - diffeoplan.library.EvalDiffeo
+  - function: '[x, y]' 
+    inverse:  '[x, y]'
+    topology: plane
+
+- id: tid
+  desc: "Identity (on torus)"
+  code: 
+  - diffeoplan.library.EvalDiffeo
+  - function: '[x, y]' 
+    inverse:  '[x, y]'
+    topology: torus
+
 - id: px1
   desc: "Horizontal translation (left), plane topology"
   code: 
@@ -29,22 +46,21 @@
     topology: torus
 
 - id: pr1
-  desc: Rotation around the center
+  desc: Rotation of 15 degrees around the center (plane topology)
   code: 
   - diffeoplan.library.EvalDiffeo
-  - function: 'rotdeg(p,+25)' 
-    inverse:  'rotdeg(p,-25)' 
+  - function: 'rotdeg(p,+15)' 
+    inverse:  'rotdeg(p,-15)' 
     topology: plane
-
-- id: pr2
-  desc: Rotation around the corner
+ 
+- id: tr1
+  desc: Rotation of 15 degrees around the center (torus topology)
   code: 
   - diffeoplan.library.EvalDiffeo
-  - function: 'rotdeg(p,+25)' 
-    inverse:  'rotdeg(p,-25)' 
-    topology: plane
-
-
+  - function: 'rotdeg(p,+15)' 
+    inverse:  'rotdeg(p,-15)' 
+    topology: torus
+ 
 - id: pz1
   desc: Zoom in the middle of the image
   code: 
@@ -52,24 +68,18 @@
   - function: 'p * 1.1' 
     inverse:  'p / 1.1' 
     topology: plane
- 
 
-- id: "I${id_diffeo}"
-  desc: "Inverse of ${id_diffeo}"
-  code:
-  - diffeoplan.library.make_inverse
-  - id_diffeo: "${id_diffeo}"
+- id: twirl1
+  desc: One small twirl
+  code: 
+  - diffeoplan.library.Twirl
+  - {}
 
-- id: "R2${id_diffeo}"
-  desc: "Double application of ${id_diffeo}"
-  code:
+
+- id: twirl
+  desc: A big twirl
+  code: 
   - diffeoplan.library.repeat
-  - id_diffeo: "${id_diffeo}"
-    times: 2
+  - id_diffeo: "twirl1"
+    times: 20
 
-- id: "R3${id_diffeo}"
-  desc: "Triple application of ${id_diffeo}"
-  code:
-  - diffeoplan.library.repeat
-  - id_diffeo: "${id_diffeo}"
-    times: 3

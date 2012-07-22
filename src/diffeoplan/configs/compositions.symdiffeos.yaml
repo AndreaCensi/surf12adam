@@ -1,0 +1,40 @@
+
+
+- id: "I${diffeo}"
+  desc: "Inverse of ${diffeo}"
+  code:
+  - diffeoplan.library.make_inverse
+  - id_diffeo: "${diffeo}"
+
+- id: "Itx1"
+
+- id: "R2${diffeo}"
+  desc: "Double application of ${diffeo}"
+  code:
+  - diffeoplan.library.repeat
+  - id_diffeo: "${diffeo}"
+    times: 2
+
+- id: "R3${diffeo}"
+  desc: "Triple application of ${diffeo}"
+  code:
+  - diffeoplan.library.repeat
+  - id_diffeo: "${diffeo}"
+    times: 3
+
+- id: "R4${diffeo}"
+  desc: "Triple application of ${diffeo}"
+  code:
+  - diffeoplan.library.repeat
+  - id_diffeo: "${diffeo}"
+    times: 4
+
+
+- id: "R5${diffeo}"
+  desc: "Triple application of ${diffeo}"
+  code:
+  - diffeoplan.library.repeat
+  - id_diffeo: "${diffeo}"
+    times: 5
+
+- id: "R3tx1"
