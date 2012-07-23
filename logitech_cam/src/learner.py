@@ -157,6 +157,7 @@ def main(args):
     learn.learn_bag(bagfile)
     print 'Commands: ',learn.command_list
     learn.show_diffeomorphisms()
+    
 #    print learn.command_index([0,0,0])
 #    print learn.command_index([1,0,0])
 #    print learn.command_index([1,0,0])
