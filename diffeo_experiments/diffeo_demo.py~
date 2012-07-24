@@ -43,8 +43,12 @@ if __name__ == '__main__':
 	print 'starting main'
 
 	print 'Generating diffeomorphisms'
-#	diffeo_list = [diffeo_zoomin((240,240),0.9), diffeo_zoomin((240,240),1.1), diffeo_pan((240,240),0.1),diffeo_pan((240,240),-0.1),diffeo_tilt((240,240),0.1),diffeo_tilt((240,240),-0.1)]
+	diffeo_list = [diffeo_zoomin((240,240),0.9), diffeo_zoomin((240,240),1.1), diffeo_pan((240,240),0.1),diffeo_pan((240,240),-0.1),diffeo_tilt((240,240),0.1),diffeo_tilt((240,240),-0.1)]
 	print 'Done'
+
+	# Illustrate the diffeomporhisms
+	diff_img = diffeomorphism_to_rgb(diffeo_list[0])
+	pdb.set_trace()
 
 	# Load a example image.
 	# (image size is 640x480 for lighttower640.jpg)
@@ -54,6 +58,7 @@ if __name__ == '__main__':
 	print im.size
 	# extract the byte data as a numpy array
 	raw_array = np.array(im.getdata(),np.uint8)
+	## When reshaping, use (height, width, channels)
 	im_array = np.array(im.getdata(),np.uint8).reshape((480,640,3))
 	im_array_new = im_array
 
