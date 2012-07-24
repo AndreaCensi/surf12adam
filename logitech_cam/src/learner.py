@@ -164,7 +164,7 @@ def test_diffeo(argv):
         outpath = '/media/data/tempimages/'
     print 'Saving images to path:            ',outpath
     
-    # Find diffeomorphisms file
+    # Find output prefix file
     try:
         prefix = argv[argv.index('-p')+1]
     except ValueError:
