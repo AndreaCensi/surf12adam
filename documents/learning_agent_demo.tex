@@ -1,0 +1,70 @@
+\documentclass[10pt]{report}
+\usepackage{graphicx}
+\usepackage{array}
+\title{Learning Agent Demo}
+
+\begin{document}
+%\section{Introduction}
+To test the diffeomorphism learning agent I generated pair of images by cropping pair small images from a larger image. I used two different  images to crop sub-images from, one photograph Figure~\ref{balboa} and one randomly generated image where all pixels in the image most likely has different values Figure~\ref{random}.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{../diffeo_experiments/balboa.png} 
+\caption{Photograph to crop sub-images from.}
+\label{balboa}
+\end{figure}
+\begin{figure}
+\centering
+\includegraphics[width=0.9\textwidth]{../diffeo_experiments/randomimg.png} 
+\caption{Random image to crop sub-images from.}
+\label{random}
+\end{figure}
+
+\section{Result}
+\begin{table}[H]
+\begin{tabular}{ccccc}
+Direction & Rand, n=10 & Picture, n=10 & n=25 & n=100 \\
+ 4,0 & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir4,0_n10_image_random_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir4,0_n10_image_balboa_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir4,0_n25_image_balboa_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir4,0_n100_image_balboa_phase.png} \\
+ 3,3 & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir3,3_n10_image_random_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir3,3_n10_image_balboa_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir3,3_n25_image_balboa_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir3,3_n100_image_balboa_phase.png} \\
+ 0,4 & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir0,4_n10_image_random_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir0,4_n10_image_balboa_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir0,4_n25_image_balboa_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir0,4_n100_image_balboa_phase.png} \\
+ -3,3 & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir-3,3_n10_image_random_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir-3,3_n10_image_balboa_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir-3,3_n25_image_balboa_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir-3,3_n100_image_balboa_phase.png} \\
+ -4,0 & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir-4,0_n10_image_random_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir-4,0_n10_image_balboa_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir-4,0_n25_image_balboa_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir-4,0_n100_image_balboa_phase.png} \\
+ -3,-3 & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir-3,-3_n10_image_random_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir-3,-3_n10_image_balboa_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir-3,-3_n25_image_balboa_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir-3,-3_n100_image_balboa_phase.png} \\
+ 0,-4 & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir0,-4_n10_image_random_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir0,-4_n10_image_balboa_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir0,-4_n25_image_balboa_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir0,-4_n100_image_balboa_phase.png} \\
+ -3,3 & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir-3,3_n10_image_random_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir-3,3_n10_image_balboa_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir-3,3_n25_image_balboa_phase.png} & 
+ \includegraphics[width=0.15\textwidth]{../diffeo_experiments/diffeoimages/dir-3,3_n100_image_balboa_phase.png} \\
+ 
+ \end{tabular}
+\end{table}
+\end{document}
