@@ -149,9 +149,16 @@ class learner:
         self.size = size
         self.search_area = search_area
         
-
-
-
+def test_diffeo():
+    im = np.array(Image.open('/home/adam/git/surf12adam/diffeo_experiments/lighttower640.jpg').resize((160,120)).getdata(),np.uint8).reshape((120,160,3))
+    #Y0,Y1 = get_Y_pair((30,30),(0,0),(160,120),im)
+    
+    diffeo_list = pickle.load(open('/media/data/learned_diffeo/camera_ptz.dynamics.pickle','rb'))
+    for D in diffeo_list:
+        Y = im
+        for i in range(5):
+            Y, var = D.apply(Y)
+            Image.fromarray(Y).save('/media/data/tempimages/diffeoapply'+str(D.command)+str(i)+'.png')
 
 def main(args):
     print args
@@ -187,4 +194,17 @@ def main(args):
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    try:
+        if sys.argv.index('test'):
+            test = True
+            learn = False
+        else:
+            test = False
+            learn = True
+    except ValueError:
+        test = False
+        learn = True
+    if learn:
+        main(sys.argv)
+    if test:
+        test_diffeo()
