@@ -149,16 +149,52 @@ class learner:
         self.size = size
         self.search_area = search_area
         
-def test_diffeo():
-    im = np.array(Image.open('/home/adam/git/surf12adam/diffeo_experiments/lighttower640.jpg').resize((160,120)).getdata(),np.uint8).reshape((120,160,3))
+def test_diffeo(argv):
+    # Find diffeomorphisms file
+    try:
+        dfile = argv[argv.index('-dl')+1]
+    except ValueError:
+        dfile = '/media/data/learned_diffeo/camera_ptz.dynamics.pickle'
+    print 'Using diffeomorphism from file:    ',dfile
+    
+    # Find diffeomorphisms file
+    try:
+        outpath = argv[argv.index('-o')+1]
+    except ValueError:
+        outpath = '/media/data/tempimages/'
+    print 'Saving images to path:            ',outpath
+    
+    # Find diffeomorphisms file
+    try:
+        prefix = argv[argv.index('-p')+1]
+    except ValueError:
+        prefix = 'logitech_cam_ptz'
+    print 'Using prefix for output files:    ',prefix
+    
+    # Find Input image
+    try:
+        infile = argv[argv.index('-im')+1]
+    except ValueError:
+        infile = '/home/adam/git/surf12adam/diffeo_experiments/lighttower640.jpg'
+    print 'Using image file:                ',infile
+    
+    # Number of levels to apply
+    try:
+        levels = int(argv[argv.index('-l')+1])
+    except ValueError:
+        levels = 5
+    print 'Applying diffeomorphism ',levels,' times'
+    
+    im = np.array(Image.open(infile).resize((160,120)).getdata(),np.uint8).reshape((120,160,3))
     #Y0,Y1 = get_Y_pair((30,30),(0,0),(160,120),im)
     
-    diffeo_list = pickle.load(open('/media/data/learned_diffeo/camera_ptz.dynamics.pickle','rb'))
+    diffeo_list = pickle.load(open(dfile,'rb'))
     for D in diffeo_list:
         Y = im
-        for i in range(5):
+        Image.fromarray(Y).save(outpath+prefix+str(D.command)+str(0)+'.png')
+        for i in range(levels):
             Y, var = D.apply(Y)
-            Image.fromarray(Y).save('/media/data/tempimages/diffeoapply'+str(D.command)+str(i)+'.png')
+            Image.fromarray(Y).save(outpath+prefix+str(D.command)+str(i+1)+'.png')
 
 def main(args):
     print args
@@ -207,4 +243,4 @@ if __name__ == '__main__':
     if learn:
         main(sys.argv)
     if test:
-        test_diffeo()
+        test_diffeo(sys.argv)
