@@ -1,0 +1,5 @@
+- id: lena
+  desc: Simple test image
+  code: 
+    - procgraph_pil.imread.imread
+    - filename: images/lena.jpg

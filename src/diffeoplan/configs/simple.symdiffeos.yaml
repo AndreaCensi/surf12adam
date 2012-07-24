@@ -1,0 +1,85 @@
+# You can use the following symbols
+# p = np.array([x,y])
+# a := numpy.array
+# rotdeg(p, deg)
+# dot(a,b)
+
+
+- id: pid
+  desc: "Identity (on plane)"
+  code: 
+  - diffeoplan.library.EvalDiffeo
+  - function: '[x, y]' 
+    inverse:  '[x, y]'
+    topology: plane
+
+- id: tid
+  desc: "Identity (on torus)"
+  code: 
+  - diffeoplan.library.EvalDiffeo
+  - function: '[x, y]' 
+    inverse:  '[x, y]'
+    topology: torus
+
+- id: px1
+  desc: "Horizontal translation (left), plane topology"
+  code: 
+  - diffeoplan.library.EvalDiffeo
+  - function: '[x+0.05, y]' 
+    inverse:  '[x-0.05, y]'
+    topology: plane
+
+- id: tx1
+  desc: "Horizontal translation (left), toroidal topology"
+  code: 
+  - diffeoplan.library.EvalDiffeo
+  - function: '[x+0.05, y]' 
+    inverse:  '[x-0.05, y]'
+    topology: torus
+
+- id: py1
+  desc: Vertical translation  (up)
+  code: 
+  - diffeoplan.library.EvalDiffeo
+  - function: '[x, y+0.05]' 
+    inverse:  '[x, y-0.05]'
+    topology: torus
+
+- id: pr1
+  desc: Rotation of 15 degrees around the center (plane topology)
+  code: 
+  - diffeoplan.library.EvalDiffeo
+  - function: 'rotdeg(p,+15)' 
+    inverse:  'rotdeg(p,-15)' 
+    topology: plane
+ 
+- id: tr1
+  desc: Rotation of 15 degrees around the center (torus topology)
+  code: 
+  - diffeoplan.library.EvalDiffeo
+  - function: 'rotdeg(p,+15)' 
+    inverse:  'rotdeg(p,-15)' 
+    topology: torus
+ 
+- id: pz1
+  desc: Zoom in the middle of the image
+  code: 
+  - diffeoplan.library.EvalDiffeo
+  - function: 'p * 1.1' 
+    inverse:  'p / 1.1' 
+    topology: plane
+
+- id: twirl1
+  desc: One small twirl
+  code: 
+  - diffeoplan.library.Twirl
+  - {}
+
+
+- id: twirl
+  desc: A big twirl
+  code: 
+  - diffeoplan.library.repeat
+  - id_diffeo: "twirl1"
+    times: 20
+
