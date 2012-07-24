@@ -123,7 +123,7 @@ class learner:
                 
     def diffeo_dump(self,file):
         ''' Save all summarized diffeomorphisms to a pickle file '''
-        pickle.dump(diffeo_list,file)
+        pickle.dump(self.diffeo_list,file)
             
     def show_diffeomorphisms(self):
         for i in range(len(self.estimators)): #estr in self.estimators:
