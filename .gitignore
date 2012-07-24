@@ -1,15 +1,5 @@
-/diffeo_experiments/output_image_0.png
-/diffeo_experiments/output_image_1.png
-/diffeo_experiments/output_image_10.png
-/diffeo_experiments/output_image_11.png
-/diffeo_experiments/output_image_2.png
-/diffeo_experiments/output_image_3.png
-/diffeo_experiments/output_image_4.png
-/diffeo_experiments/output_image_5.png
-/diffeo_experiments/output_image_6.png
-/diffeo_experiments/output_image_7.png
-/diffeo_experiments/output_image_8.png
-/diffeo_experiments/output_image_9.png
+/diffeo_experiments/diffeoimages/
+*.*~
 /diffeo_experiments/test.py~
 /documents/#surfupdate.lyx#
 /documents/planning.lyx
