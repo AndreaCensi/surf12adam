@@ -14,6 +14,7 @@ import ImageChops, ImageOps
 import boot_agents
 from boot_agents import *
 import pdb
+import pickle
 
 def get_image_array(image):
     im,data,dimsizes = ParseMessages.imgmsg_to_pil(image)
@@ -38,7 +39,7 @@ def get_angle(D):
     return (np.mean(at), np.std(at))
 
 class learner:
-
+    ''' Organizes a list of diffeomorphism estimators to learn the diffeomorphisms '''
     def new_estimator(self):
         width = self.size[0]
         height = self.size[1]
@@ -108,8 +109,22 @@ class learner:
                 i += 1
                 self.update_ros(Y0_ros, U0_ros, Y1_ros)
                 r = 0
-                                
-        
+                            
+    def summarize(self):
+        """
+            Summarizes all estimators
+            Output:
+                All summarized diffeomorphisms stored in self.diffeo_list
+        """
+        n = len(self.estimators)
+        self.diffeo_list = [[]]*n
+        for i in range(n):
+            self.diffeo_list[i] = self.estimators[i].summarize()
+                
+    def diffeo_dump(self,file):
+        ''' Save all summarized diffeomorphisms to a pickle file '''
+        pickle.dump(diffeo_list,file)
+            
     def show_diffeomorphisms(self):
         for i in range(len(self.estimators)): #estr in self.estimators:
             D = self.estimators[i].summarize()
@@ -156,8 +171,10 @@ def main(args):
     learn = learner([320,240],[15,15])
     learn.learn_bag(bagfile)
     print 'Commands: ',learn.command_list
+    pdb.set_trace()
+    learn.summarize()
+    learn.diffeo_dump('Testfileforlearn.txt')
     learn.show_diffeomorphisms()
-    
 #    print learn.command_index([0,0,0])
 #    print learn.command_index([1,0,0])
 #    print learn.command_index([1,0,0])
