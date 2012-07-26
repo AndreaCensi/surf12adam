@@ -123,6 +123,8 @@ class learner:
                 
     def diffeo_dump(self,file):
         ''' Save all summarized diffeomorphisms to a pickle file '''
+        for i in range(len(self.diffeo_list)):
+            self.diffeo_list[i].command = self.command_list[i]
         pickle.dump(self.diffeo_list,file)
             
     def show_diffeomorphisms(self):
@@ -135,7 +137,7 @@ class learner:
             Image.fromarray(diffeo_to_rgb_norm(D.d)).save(save_path+'cmd'+str(cmd).replace(' ','')+'nomr.png')
             Image.fromarray((D.variance*255).astype(np.uint8)).save(save_path+'cmd'+str(cmd).replace(' ','')+'variance.png')
             #Image.fromarray(diffeo_to_rgb_angle(D.d)).save('diffeoimages/dir'+str(delta[0])+','+str(delta[1])+'_n'+str(n)+'_image_'+image_str+'_phase.png')
-        pdb.set_trace()
+        #pdb.set_trace()
         
         
         
@@ -184,10 +186,17 @@ def test_diffeo(argv):
     except ValueError:
         levels = 5
     print 'Applying diffeomorphism ',levels,' times'
+
+    # Image size
+    try:
+        size = eval(argv[argv.index('-size')+1])
+    except ValueError:
+        size = [160,120]
+    print 'Image size:    ',size
     
-    im = np.array(Image.open(infile).resize((160,120)).getdata(),np.uint8).reshape((120,160,3))
+    im = np.array(Image.open(infile).resize(size).getdata(),np.uint8).reshape((size[1],size[0],3))
     #Y0,Y1 = get_Y_pair((30,30),(0,0),(160,120),im)
-    
+    pdb.set_trace()
     diffeo_list = pickle.load(open(dfile,'rb'))
     for D in diffeo_list:
         Y = im
@@ -202,6 +211,18 @@ def main(args):
         bagfile = args[args.index('-i')+1]
     except ValueError:
         print 'No input bag specified'
+    try:
+        dfile = args[args.index('-o')+1]
+    except ValueError:
+        print 'No input bag specified'
+    try:
+        size = eval(args[args.index('-size')+1])
+    except ValueError:
+        size = [160,120]
+    try:
+        area = eval(args[args.index('-area')+1])
+    except ValueError:
+        area = [8,8]
 #    try:
 #        w = args[args.index['-w']+1]
 #    except ValueError:
@@ -210,13 +231,13 @@ def main(args):
 #        h = args[args.index['-h']+1]
 #    except ValueError:
 #        print 'No input height specified'
-            
-    learn = learner([320,240],[15,15])
+    pdb.set_trace()
+    learn = learner(size,area)
     learn.learn_bag(bagfile)
     print 'Commands: ',learn.command_list
-    pdb.set_trace()
     learn.summarize()
-    learn.diffeo_dump('Testfileforlearn.txt')
+    #pdb.set_trace()
+    learn.diffeo_dump(open(dfile,'wb'))
     learn.show_diffeomorphisms()
 #    print learn.command_index([0,0,0])
 #    print learn.command_index([1,0,0])
