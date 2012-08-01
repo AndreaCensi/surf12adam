@@ -7,7 +7,6 @@ from procgraph_pil import resize
 @declare_command('symdiffeo-display',
                  'symdiffeo-display  [-i <image>] [-r <resolution>] [<diffeo1> <diffeo2> ...]')
 def symdiffeo_display_main(global_config, parser): #@UnusedVariable
-    """ Shows all objects described in the configuration files. """
     parser.add_option("-i", "--id_image", help="ID image.", default='lena')
     parser.add_option("-d", "--id_diffeo", help="ID diffeo.")
     parser.add_option("-r", "--resolution", default=64,

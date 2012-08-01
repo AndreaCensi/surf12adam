@@ -15,7 +15,7 @@ class NoInverseAvailable(Exception):
     pass
 
 class SymbolicDiffeo:
-    """ This class is the interface for a symbolic diffeomorphism. """
+    """ Interface for a symbolic diffeomorphism. """
     
     __metaclass__ = ABCMeta
     

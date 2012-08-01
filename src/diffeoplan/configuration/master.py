@@ -1,14 +1,13 @@
 from . import (check_valid_image_config, check_valid_image,
-    check_valid_diffeo_config, check_valid_diffeo, check_valid_dds_config,
-    check_valid_dds)
+    check_valid_diffeo_config, check_valid_diffeo, check_valid_dds)
 from conf_tools import ConfigMaster, GenericCall
-from diffeoplan.configuration.checks import check_valid_symdiffeo_config, \
-    check_valid_symdiffeo
+from diffeoplan.configuration.checks import (check_valid_symdiffeo_config,
+    check_valid_symdiffeo, check_valid_symdds_config, check_valid_discdds_config)
 
 
 class DiffeoplanConfigMaster(ConfigMaster):
     def __init__(self):
-        ConfigMaster.__init__(self, 'BootOlympics')
+        ConfigMaster.__init__(self, 'Diffeoplan')
 
         self.images = self.add_class('images', '*.images.yaml',
                                      check_valid_image_config,
@@ -22,8 +21,12 @@ class DiffeoplanConfigMaster(ConfigMaster):
                                      check_valid_diffeo_config,
                                      GenericCall(check_valid_diffeo))
  
-        self.dds = self.add_class('dds', '*.dds.yaml',
-                                     check_valid_dds_config,
+        self.symdds = self.add_class('symdds', '*.symdds.yaml',
+                                     check_valid_symdds_config,
+                                     GenericCall(check_valid_dds))
+
+        self.discdds = self.add_class('discdds', '*.discdds.yaml',
+                                     check_valid_discdds_config,
                                      GenericCall(check_valid_dds))
  
     def get_default_dir(self):

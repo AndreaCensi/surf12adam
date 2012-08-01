@@ -1,13 +1,15 @@
 from . import Storage, logger
-from ..utils import MyOptionParser, UserError, wrap_script_entry_point
+from ..utils import (CmdOptionParser, MyOptionParser, UserError,
+    wrap_script_entry_point)
 from bootstrapping_olympics.utils import substitute
 from conf_tools import ConfToolsException
 import contracts
-from diffeoplan.utils.lenient_option_parser import CmdOptionParser
+from diffeoplan.configuration.master import DiffeoplanConfig
 
 MAIN_CMD_NAME = 'dp'
-commands_list = "\n".join(['  %-25s  %s' % 
-                           (f.short_usage, f.__doc__)
+commands_list = "\n".join(['%25s   %s' % 
+                           #(f.short_usage, f.__doc__)
+                           (cmd, str(f.__doc__).strip())
                            for cmd, f in Storage.commands.items()])
 
 usage_pattern = """
@@ -15,7 +17,6 @@ usage_pattern = """
     ${cmd} [global options]  <command>  [command options]
     
 Available commands:
-
 ${commands_list}
 
 Use: `${cmd}  <command> -h' to get more information about that command.  
@@ -39,7 +40,7 @@ def dp(arguments):
         contracts.disable_all()
 
     if not args:
-        msg = ('Please supply a command. Available:\n %s' % commands_list)
+        msg = ('Please supply a command.\nAvailable commands:\n%s' % commands_list)
         raise UserError(msg)
 
     cmd = args[0]
@@ -49,6 +50,10 @@ def dp(arguments):
         msg = ('Unknown command %r. Available: %s.' % 
                (cmd, ", ".join(Storage.commands.keys())))
         raise UserError(msg)
+
+    confdir = '.'
+    DiffeoplanConfig.load(confdir)
+
     
     function = Storage.commands[cmd]
     usage = function.short_usage 

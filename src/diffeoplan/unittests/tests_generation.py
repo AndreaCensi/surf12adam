@@ -1,6 +1,5 @@
 from .. import DiffeoplanConfig
-from bootstrapping_olympics.unittests.utils.generation import fancy_test_decorator
-from nose.tools import nottest
+from bootstrapping_olympics.unittests.utils import fancy_test_decorator
 
 config = DiffeoplanConfig
 

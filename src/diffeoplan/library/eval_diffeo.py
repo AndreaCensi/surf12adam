@@ -49,8 +49,9 @@ class SymDiffeoComposition(SymbolicDiffeo):
         SymbolicDiffeo.__init__(self, chain[0].topology_s)
 
     def get_inverse(self):
-        return [x.get_inverse() for x in self.chain[::-1]]
-        
+        chain = [x.get_inverse() for x in self.chain[::-1]]
+        return SymDiffeoComposition(chain)
+    
     def apply(self, point):
         for d in self.chain:
             point = d.apply(point)
