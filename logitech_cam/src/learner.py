@@ -194,16 +194,63 @@ def test_diffeo(argv):
         size = [160,120]
     print 'Image size:    ',size
     
+    logfile = open(outpath+prefix+'log.html','w')
+    logfile.write('<html><body><h1>Diffeomorphism test log: '+dfile+'</h1>')
+    logfile.write('Diffeomorphism file: '+dfile+'<br/>')
+    logfile.write('Test image: <br/><img src="'+infile+'.png"/><br/><br/>')
+    logfile.write('<table>\n')
+    logfile.write('<tr align="center">\n <td>Command</td>\n')
+    logfile.write('<td>Diffeomorphism<br/>Angle</td>')
+    logfile.write('<td>Diffeomorphism<br/>Norm</td>')
+    logfile.write('<td>Diffeomorphism<br/>Variance</td>')
+    for i in range(levels+1):
+        logfile.write('<td>'+str(i)+'</td>')
+    logfile.write('</tr>')
+    
     im = np.array(Image.open(infile).resize(size).getdata(),np.uint8).reshape((size[1],size[0],3))
     #Y0,Y1 = get_Y_pair((30,30),(0,0),(160,120),im)
-    pdb.set_trace()
+#    pdb.set_trace()
     diffeo_list = pickle.load(open(dfile,'rb'))
+    
     for D in diffeo_list:
+        logfile.write('<tr>')
+        
+        cmdstr = str(D.command).replace(' ','')
+        
+#        outpath+prefix+'diffeo'+cmdstr+'angle'+'.png'
+        
+        logfile.write('<td>')
+        logfile.write(str(D.command))
+        logfile.write('</td>')
+        Image.fromarray(diffeo_to_rgb_angle(D.d)).save(outpath+prefix+'diffeo'+cmdstr+'angle'+'.png')
+        logfile.write('<td>')
+        logfile.write('<img src="'+outpath+prefix+'diffeo'+cmdstr+'angle'+'.png'+'"/>')
+        logfile.write('</td>')
+        Image.fromarray(diffeo_to_rgb_norm(D.d)).save(outpath+prefix+'diffeo'+cmdstr+'norm'+'.png')
+        logfile.write('<td>')
+        logfile.write('<img src="'+outpath+prefix+'diffeo'+cmdstr+'norm'+'.png'+'"/>')
+        logfile.write('</td>')
+        Image.fromarray((D.variance*255).astype(np.uint8)).save(outpath+prefix+'diffeo'+cmdstr+'variance'+'.png')
+        logfile.write('<td>')
+        logfile.write('<img src="'+outpath+prefix+'diffeo'+cmdstr+'variance'+'.png'+'"/>')
+        logfile.write('</td>')
+        
+        
         Y = im
-        Image.fromarray(Y).save(outpath+prefix+str(D.command)+str(0)+'.png')
+        Image.fromarray(Y).save(outpath+prefix+cmdstr+str(0)+'.png')
+        logfile.write('<td>')
+        logfile.write('<img src="'+outpath+prefix+cmdstr+str(0)+'.png'+'"/>')
+        logfile.write('</td>')
         for i in range(levels):
             Y, var = D.apply(Y)
-            Image.fromarray(Y).save(outpath+prefix+str(D.command)+str(i+1)+'.png')
+            Image.fromarray(Y).save(outpath+prefix+cmdstr+str(i+1)+'.png')
+            logfile.write('<td>')
+            logfile.write('<img src="'+outpath+prefix+cmdstr+str(i+1)+'.png'+'"/>')
+            logfile.write('</td>')
+        logfile.write('</tr>')
+    logfile.write('</table></body></html>')
+    logfile.flush()
+    logfile.close()
 
 def main(args):
     print args
@@ -231,7 +278,7 @@ def main(args):
 #        h = args[args.index['-h']+1]
 #    except ValueError:
 #        print 'No input height specified'
-    pdb.set_trace()
+#    pdb.set_trace()
     learn = learner(size,area)
     learn.learn_bag(bagfile)
     print 'Commands: ',learn.command_list
