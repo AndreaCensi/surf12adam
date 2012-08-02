@@ -2,7 +2,6 @@ from contracts import contract
 from . import SymbolicDiffeo
 import numpy as np
 import geometry
-from diffeoplan.configuration.master import DiffeoplanConfig
 
 
 def rotdeg(p, deg):
@@ -62,12 +61,14 @@ class SymDiffeoComposition(SymbolicDiffeo):
 
     
 def make_inverse(id_diffeo):
+    from . import DiffeoplanConfig
     symdiffeos = DiffeoplanConfig.symdiffeos 
     return symdiffeos.instance(id_diffeo).get_inverse()     
 
 
 @contract(times='>=1')
 def repeat(id_diffeo, times):
+    from . import DiffeoplanConfig
     symdiffeos = DiffeoplanConfig.symdiffeos 
     diffeo = symdiffeos.instance(id_diffeo)
     chain = [diffeo] * times

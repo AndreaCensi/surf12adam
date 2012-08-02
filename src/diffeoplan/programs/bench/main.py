@@ -1,10 +1,10 @@
+from . import (report_for_algo, write_report,
+    run_planning_stats, run_planning)
 from .. import declare_command, logger
-from . import compute_stats, run_planning
 from bootstrapping_olympics.utils import UserError, expand_string
-from compmake import batch_command, compmake_console, comp
+from compmake import batch_command, compmake_console, comp, use_filesystem
 from diffeoplan import DiffeoplanConfig
 import os
-from compmake.storage import use_filesystem
 
 @declare_command('bench',
                  'bench -a <algorithms> -t <testcases>')
@@ -39,20 +39,26 @@ def bench_main(global_config, parser): #@UnusedVariable
     logger.info('Using %d algorithms: %s' % (len(algos), algos))
     logger.info('Using %d testcases.' % (len(testcases)))
     
+    outdir = options.output
     
-    storage = os.path.join(options.output, 'compmake')
+    # Compmake storage for results
+    storage = os.path.join(outdir, 'compmake')
     use_filesystem(storage)
+    
     
     for id_algo in algos:
         algo_results = []
         for id_tc in testcases:
             job_id = 'plan-%s-%s' % (id_algo, id_tc)
-            result = comp(run_planning, id_algo, id_tc, job_id=job_id) 
-            algo_results.append(result)
+            result = comp(run_planning, id_algo, id_tc, job_id=job_id)
+            result_stats = comp(run_planning_stats, result,
+                                job_id=job_id + '-stats') 
+            algo_results.append(result_stats)
         job_id = 'stats-%s' % id_algo
-        stats = comp(compute_stats, id_algo, algo_results, job_id=job_id)
+        report = comp(report_for_algo, id_algo, algo_results, job_id=job_id)
+        report_basename = os.path.join(outdir, 'reports/algo-%s' % id_algo)
+        comp(write_report, report, report_basename, job_id=job_id + '-write')
         #comp(create_report, id_algo, stats, out)
-            
     if options.command:
         return batch_command(options.command)
     else:

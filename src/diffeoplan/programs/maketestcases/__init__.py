@@ -1,2 +1,3 @@
-from .. import logger
-from . import main
+from .. import logger, np, contract
+from .maketest import *
+from .main import *

@@ -1,4 +1,4 @@
-from .. import logger
+from .. import logger, np, contract
 
 from ..utils import MyOptionParser
 from .utils import *

@@ -1,4 +1,5 @@
-from diffeoplan.configuration.master import DiffeoplanConfig
+from diffeoplan.configuration import DiffeoplanConfig
+from diffeoplan.library import UncertainImage
 
 def run_planning(id_algo, id_tc):
     config = DiffeoplanConfig
@@ -23,9 +24,29 @@ def run_planning(id_algo, id_tc):
     results['id_tc'] = id_tc
     results['id_discdds'] = id_discdds
     results['id_algo'] = id_algo
-    results['planning_results'] = planning_result
+    results['result'] = planning_result
     return results
 
-def compute_stats(id_algo, results):
-    return {}
+def run_planning_stats(results):
+    '''
+        Compute statistics for the result of planning.
+    
+        :param results: output of run_planning.
+    '''
+    result = results['result']
+    id_discdds = results['id_discdds']
+    id_tc = results['id_tc'] 
+    
+    # this is the planned plan
+    plan = result.plan
+    # reinstance system and test case
+    config = DiffeoplanConfig
+    testcase = config.testcases.instance(id_tc)
+    discdds = config.discdds.instance(id_discdds)
+    # predict result according to plan
+    y0 = testcase.y0
+    y1plan = discdds.predict(y0, plan)
+    # compute the 
+    results['dist_y0_y1p'] = UncertainImage.compute_all_distances(y0, y1plan) 
+    return results
 

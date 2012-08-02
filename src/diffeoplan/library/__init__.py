@@ -1,13 +1,8 @@
-from .. import logger
-from .sym_diffeo import *
-from .eval_diffeo import *
-from .deformations import *
+from .. import logger, np, contract
+
+from .images import *
+from .discdds import *
+from .symdiffeo import *
 from .load import *
-from .diffeo_action import *
-from .diffeo_system import *
-from .square_domain import *
-from .uncertain_image import *
-from .viewport import *
-from .ddsfromsymbolic import *
 from .algo import *
-from .testcases import *
+

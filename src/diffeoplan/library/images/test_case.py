@@ -1,4 +1,4 @@
-from .. import UncertainImage, contract, logger
+from . import UncertainImage, contract, logger
 from bootstrapping_olympics.utils import safe_pickle_dump
 from conf_tools.utils import friendly_path
 import os

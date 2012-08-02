@@ -2,7 +2,7 @@ from . import DiffeoAction, np, contract, UncertainImage
 
 class DiffeoSystem():
     """
-        A DiffeoSystem is a set of diffeomorphisms.
+        A DiffeoSystem is a set of discretized diffeomorphisms.
         
     """
     @contract(label='str', actions='list[>=1]')

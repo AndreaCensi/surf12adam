@@ -1,14 +1,12 @@
+from . import contract, np
 from boot_agents.diffeo.diffeo_display import (diffeo_to_rgb_norm,
     diffeo_to_rgb_angle, diffeo_to_rgb_curv)
 from boot_agents.diffeo.diffeo_estimator import Diffeomorphism2D
 from boot_agents.diffeo.tests.diffeo_creation_test import (CurvedPylab, plot_grid,
     plot_smiley)
-from diffeoplan.library.square_domain import SquareDomain
-from diffeoplan.library.viewport import diffeo_from_function_viewport
-from reprep.graphics.filter_scale import scale
-from reprep.plot_utils.axes import turn_all_axes_off
-import numpy as np
-from contracts import contract
+from diffeoplan.library import SquareDomain, diffeo_from_function_viewport
+from reprep import scale
+from reprep.plot_utils import turn_all_axes_off
 
 
 @contract(resolution='R,int,>0', template_rgb='array[RxRx3](uint8)')

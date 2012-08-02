@@ -1,6 +1,6 @@
-from contracts import contract
+from .. import UncertainImage
+from . import  contract
 from boot_agents.diffeo.diffeo_estimator import Diffeomorphism2D
-from diffeoplan.library.uncertain_image import UncertainImage
 
     
 class DiffeoAction():

@@ -1,7 +1,7 @@
-from contracts import contract
+from . import contract, np
 from abc import ABCMeta, abstractmethod
 from geometry import R2, TorusW
-import numpy as np
+
 
 class Topology:
     PLANE = 'plane'

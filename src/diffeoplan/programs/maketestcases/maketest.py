@@ -1,11 +1,8 @@
-from . import logger
-from conf_tools.utils import friendly_path
-from diffeoplan.configuration.master import DiffeoplanConfig
-from procgraph_pil.imwrite import imwrite
-from diffeoplan.library import UncertainImage
-from contracts import contract
+from . import  contract 
+from diffeoplan.configuration import DiffeoplanConfig
+from diffeoplan.library import TestCase, UncertainImage
 from procgraph_pil import resize
-from diffeoplan.library import TestCase
+#from procgraph_pil.imwrite import imwrite
 
 def discdds_make_test_cases(outdir, id_discdds, id_image, num_cases, plan_length):
     config = DiffeoplanConfig

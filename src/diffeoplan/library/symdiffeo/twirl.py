@@ -1,6 +1,5 @@
+from . import SymbolicDiffeo, Topology, NoInverseAvailable
 from boot_agents.diffeo.library.deformations import twirl
-from diffeoplan.library.sym_diffeo import (SymbolicDiffeo, Topology,
-    NoInverseAvailable)
 
 
 class Twirl(SymbolicDiffeo):

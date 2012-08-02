@@ -1,5 +1,5 @@
-from . import (DiffeoAction, DiffeoSystem, SquareDomain,
-    diffeo_from_function_viewport, logger, np)
+from . import SquareDomain, diffeo_from_function_viewport, logger, np
+from .. import DiffeoAction, DiffeoSystem
 from boot_agents.diffeo import Diffeomorphism2D
 from diffeoplan import DiffeoplanConfig
 
