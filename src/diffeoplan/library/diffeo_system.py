@@ -1,7 +1,4 @@
-from contracts import contract
-from diffeoplan.library.diffeo_action import DiffeoAction
-import numpy as np
-from diffeoplan.library.uncertain_image import UncertainImage
+from . import DiffeoAction, np, contract, UncertainImage
 
 class DiffeoSystem():
     """

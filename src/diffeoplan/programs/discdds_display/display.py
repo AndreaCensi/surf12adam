@@ -1,5 +1,3 @@
-from procgraph_pil import resize
-
 
 def discdds_display(report, dds, image):
     overview = 'Displaying a discrete DDS with %d actions' % len(dds.actions)
@@ -10,4 +8,6 @@ def discdds_display(report, dds, image):
 
 
 def diffeoaction_display(report, action):
-    pass
+    # TO finish
+    print('Sorry, this still needs to be implemented')
+    

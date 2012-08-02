@@ -9,3 +9,5 @@ from .square_domain import *
 from .uncertain_image import *
 from .viewport import *
 from .ddsfromsymbolic import *
+from .algo import *
+from .testcases import *

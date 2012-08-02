@@ -29,3 +29,9 @@ def show_config(global_config, parser): #@UnusedVariable
     print('Diffeos:')
     print(config.diffeos.summary_string_id_desc())
          
+    print('Algorithms:')
+    print(config.algos.summary_string_id_desc())
+
+    print('Test cases:')
+    print(config.testcases.summary_string_id_desc())
+    

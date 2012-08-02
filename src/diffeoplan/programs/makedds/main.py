@@ -31,7 +31,7 @@ def make_all_dds(which, outdir):
 
     for id_dds in which:
         if not id_dds in config.symdds:
-            raise_x_not_found('symdds', id_dds, config.dds)
+            raise_x_not_found('symdds', id_dds, config.symdds)
                 
     for id_dds in which:
         make_dds(id_dds, outdir)
@@ -40,7 +40,7 @@ def make_dds(id_dds, outdir):
     dds = instance_dds(id_dds)
     
     basename = os.path.join(outdir, id_dds)
-    filename_pickle = basename + '.pickle'
+    filename_pickle = basename + '.discdds.pickle'
     logger.info('Writing to %r ' % friendly_path(filename_pickle))
     safe_pickle_dump(dds, filename_pickle)
             
@@ -49,7 +49,7 @@ def make_dds(id_dds, outdir):
         'id': id_dds,
         'desc': 'Synthetic dataset',
         'code': ['diffeoplan.library.load_pickle',
-                 {'file:pickle': id_dds + '.pickle'}]
+                 {'file:pickle': id_dds + '.discdds.pickle'}]
     }
     logger.info('Writing to %r ' % friendly_path(filename_yaml))
     with open(filename_yaml, 'w') as f:

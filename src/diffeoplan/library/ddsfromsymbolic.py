@@ -1,10 +1,7 @@
-from . import logger
-from boot_agents.diffeo.diffeo_estimator import Diffeomorphism2D
+from . import (DiffeoAction, DiffeoSystem, SquareDomain,
+    diffeo_from_function_viewport, logger, np)
+from boot_agents.diffeo import Diffeomorphism2D
 from diffeoplan import DiffeoplanConfig
-from . import (DiffeoAction, DiffeoSystem, SquareDomain)
-import numpy as np
-from . import diffeo_from_function_viewport
-
 
 
 def DDSFromSymbolic(resolution, actions, topology=None):

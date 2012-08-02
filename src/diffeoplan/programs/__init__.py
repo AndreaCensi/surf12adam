@@ -8,5 +8,5 @@ from .symdiffeo_display import *
 from .makedds import *
 from .discdds_display import *
 from .maketestcases import *
-
+from .bench import *
 from .main import *

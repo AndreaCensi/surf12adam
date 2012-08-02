@@ -1,8 +1,9 @@
 from . import (check_valid_image_config, check_valid_image,
-    check_valid_diffeo_config, check_valid_diffeo, check_valid_dds)
-from conf_tools import ConfigMaster, GenericCall
-from diffeoplan.configuration.checks import (check_valid_symdiffeo_config,
-    check_valid_symdiffeo, check_valid_symdds_config, check_valid_discdds_config)
+    check_valid_diffeo_config, check_valid_diffeo, check_valid_dds,
+    check_valid_symdiffeo_config, check_valid_symdiffeo, check_valid_symdds_config,
+    check_valid_discdds_config)
+from conf_tools import (ConfigMaster, GenericCall,
+    check_generic_code_desc)
 
 
 class DiffeoplanConfigMaster(ConfigMaster):
@@ -28,12 +29,25 @@ class DiffeoplanConfigMaster(ConfigMaster):
         self.discdds = self.add_class('discdds', '*.discdds.yaml',
                                      check_valid_discdds_config,
                                      GenericCall(check_valid_dds))
+  
+        #from diffeoplan.library.algo import DiffeoPlanningAlgo
+
+        self.algos = self.add_class('algos', '*.algos.yaml',
+                                     check_generic_code_desc,
+                                     GenericCall(lambda _: None))
+ 
+        self.testcases = self.add_class('testcases', '*.tc.yaml',
+                                     check_generic_code_desc,
+                                     GenericCall(lambda _: None))
+ 
  
     def get_default_dir(self):
         from pkg_resources import resource_filename #@UnresolvedImport
         return resource_filename("diffeoplan", "configs")
 
 
+
 DiffeoplanConfig = DiffeoplanConfigMaster()
 DiffeoplanConfig.load()
+
 
