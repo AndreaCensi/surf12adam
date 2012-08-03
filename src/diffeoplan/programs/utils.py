@@ -7,6 +7,7 @@ class Storage:
 def declare_command(name, short_usage=None):
     if short_usage is None:
         short_usage = name
+    
     def wrap(f):
         f.short_usage = short_usage
         if name in Storage.commands:

@@ -64,7 +64,7 @@
 
 - id: drob1
   desc: |
-    Robot with differenital drive
+    Robot with differential drive
   code:
   - diffeoplan.library.DDSFromSymbolic
   - resolution: 64

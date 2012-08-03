@@ -1,6 +1,4 @@
-from contracts import contract
-import numpy as np
-from diffeoplan.library.sym_diffeo import SymbolicDiffeo
+from . import contract, np, SymbolicDiffeo
 
 class LinearCoordinateChange(SymbolicDiffeo):
     

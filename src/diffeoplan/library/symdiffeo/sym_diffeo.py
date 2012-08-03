@@ -1,7 +1,7 @@
-from contracts import contract
+from . import contract, np
 from abc import ABCMeta, abstractmethod
 from geometry import R2, TorusW
-import numpy as np
+
 
 class Topology:
     PLANE = 'plane'
@@ -15,7 +15,7 @@ class NoInverseAvailable(Exception):
     pass
 
 class SymbolicDiffeo:
-    """ This class is the interface for a symbolic diffeomorphism. """
+    """ Interface for a symbolic diffeomorphism. """
     
     __metaclass__ = ABCMeta
     

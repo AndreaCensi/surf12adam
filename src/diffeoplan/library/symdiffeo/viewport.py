@@ -1,8 +1,4 @@
-from . import contract
-import numpy as np
-from diffeoplan.library.square_domain import SquareDomain
-from diffeoplan.library.sym_diffeo import SymbolicDiffeo
-from diffeoplan.library.coordinate_change import LinearCoordinateChange
+from . import contract, np, SquareDomain, SymbolicDiffeo, LinearCoordinateChange
 from boot_agents.diffeo.misc_utils import coords_iterate
  
 

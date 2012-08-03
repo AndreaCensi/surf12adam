@@ -1,3 +1,3 @@
 from .. import logger, np, contract
-from .display import *
+from .maketest import *
 from .main import *

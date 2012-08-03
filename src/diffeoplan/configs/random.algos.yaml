@@ -1,0 +1,11 @@
+- id: random1
+  desc: An algorithm that just takes a random guess (1 step).
+  code:
+  - diffeoplan.library.RandomGuess
+  - nsteps: 1
+
+- id: random2
+  desc: An algorithm that just takes a random guess (2 steps).
+  code:
+  - diffeoplan.library.RandomGuess
+  - nsteps: 2

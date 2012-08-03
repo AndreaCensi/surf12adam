@@ -21,5 +21,4 @@ else:
 
 logger.setLevel(logging.DEBUG)
 
-
 from .configuration import *
