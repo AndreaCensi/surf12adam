@@ -40,22 +40,21 @@ class predictor:
         self.estimator.init_structures(y0[:,:,0])
         #self.neighbor_indices = estimator.neighbor_indices
         
-    def compare_neighbor(self, y0, yn):
+    def compare_neighbor(self, y0, yn, var=NONE):
         """
             Compare fullsize of images in neighbour area
         """
-        #estr = self.estimator
+        
         estr = learner((y0.shape[1],y0.shape[0]),[4,4]).new_estimator()
         estr.update(y0[:,:,0],yn[:,:,0])
         estr.update(y0[:,:,1],yn[:,:,1])
         estr.update(y0[:,:,2],yn[:,:,2])
         n = len(estr.neighbor_similarity_flat)
         best_sim = np.array([[0]]*n)
-        #pdb.set_trace()
         for k in range(n):
             best_sim[k] = max(estr.neighbor_similarity_flat[k])
-        #best_red = best_sim[best_sim>np.mean(best_sim)-np.std(best_sim)]
-        #pdb.set_trace()
+        if var != NONE:
+            best_sim = best_sim*var.flat
         return np.mean(best_sim)
         
         
