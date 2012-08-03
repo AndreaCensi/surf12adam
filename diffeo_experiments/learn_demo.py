@@ -20,6 +20,22 @@ def get_Y_pair((x0,y0),(dx,dy),im):
 	Y1 = np.array(imc2.getdata(),np.uint8).reshape((h,w,3))
 	return (Y0,Y1)
 
+def get_Y_pair_random(size,delta,im):
+	return get_Y_pair((np.random.randint(abs(delta[0]),im.size[0]-abs(delta[0])),np.random.randint(abs(delta[1]),im.size[1]-abs(delta[1]))),delta,im)
+	
+def add_noise(Y, noise):
+	"""
+	Add a noise of max size <noise> to the image Y
+	"""
+	dtype0 = Y.dtype
+	N = np.random.randint(-noise,noise,Y.shape).astype(np.int16)
+	Y = N + Y
+	if dtype0 == np.uint8:
+		Y[Y<0]=0
+		Y[Y>255]=255
+	return Y.astype(dtype0)
+	
+
 def get_angle(D):
 	Y,X = np.meshgrid(range(y0.shape[1]),range(y0.shape[0]))
 	Dx = D.d[:,:,0]-X
@@ -38,14 +54,27 @@ def get_angle(D):
 	return (np.mean(at), np.std(at))
 
 if __name__ == '__main__':
+	if '--help' in sys.argv:
+		print('Learn_demo')
+		print('')
+		print('		-i		input image name, without extension which has to be .png')
+		print('				enter \'random\' to generate a random image ')
+		print('		-nl		nois level on Y1')
+		print('		-delta	offset between images')
+		print('		-search	size of area to search, area is searchxsearch')
+		print('		-size	size of images to analyze')
+		print('')
+		print('')
+		
 	print 'starting main'
 	print sys.argv
 
 
-	print sys.argv[sys.argv.index('-d')+1].split(',')
-	print [int(s) for s in sys.argv[sys.argv.index('-d')+1].split(',')]
+	#print sys.argv[sys.argv.index('-d')+1].split(',')
+	#print [int(s) for s in sys.argv[sys.argv.index('-d')+1].split(',')]
 	try:
-		delta = [int(s) for s in sys.argv[sys.argv.index('-d')+1].split(',')]
+		#delta = [int(s) for s in sys.argv[sys.argv.index('-d')+1].split(',')]
+		delta = eval(sys.argv[sys.argv.index('-delta')+1])
 	except ValueError:
 		delta = [2,0]
 	print 'delta', delta
@@ -55,16 +84,31 @@ if __name__ == '__main__':
 		n = 10
 	print 'n: ', n
 
+	# noise level
+	try:
+		nl = float(sys.argv[sys.argv.index('-nl')+1])
+	except ValueError:
+		nl = 0
+
 	# Search Area = sa*sa
 	try:
-		sa = float(sys.argv[sys.argv.index('-s')+1])
+		sa = float(sys.argv[sys.argv.index('-search')+1])
 	except ValueError:
 		sa = 5.0
+		
+	# Image size
+	try:
+		size = float(sys.argv[sys.argv.index('-size')+1])
+	except ValueError:
+		size = [160,120]
+		
+	# Input image str
 	try:
 		image_str = sys.argv[sys.argv.index('-i')+1]
 	except ValueError:
 		image_str = 'random'
 	print image_str
+	
 	# Load image to crop subimages from
 	if image_str == 'random':
 		M = np.random.randint(0,255,(748,1024,3)).astype(np.uint8)
@@ -73,15 +117,16 @@ if __name__ == '__main__':
 		im = Image.open(image_str+'.png')
 		#im = im.resize((2048/8,1536/8))
 	
+
+	Y0,Y1 = get_Y_pair_random(size,delta,im)
+	Y1 = add_noise(Y1,nl)
+
 	# if argument demoseq, show image and two sub images
 	if 'demoseq' in sys.argv:
-		#im.show()
-		Y0, Y1 = get_Y_pair((20,20),delta,im)
 		Image.fromarray(Y0).show()
 		Image.fromarray(Y1).show()
 
-	Y0,Y1 = get_Y_pair((5,20),delta,im)
-
+#	pdb.set_trace()
 	print 'Initiate learning'
 	estr = DiffeomorphismEstimator((sa/h,sa/w),"continuous")
 	# Learn from n images times 3 channels
@@ -92,7 +137,9 @@ if __name__ == '__main__':
 			y0 = Y0[:,:,ch]
 			y1 = Y1[:,:,ch]
 			estr.update(y0,y1)
-		Y0,Y1 = get_Y_pair((np.random.randint(abs(delta[0]),im.size[0]-abs(delta[0])),np.random.randint(abs(delta[1]),im.size[1]-abs(delta[1]))),delta,im)
+		Y0,Y1 = get_Y_pair_random(size,delta,im)
+		Y1 = add_noise(Y1,nl)
+		#Y0,Y1 = get_Y_pair((np.random.randint(abs(delta[0]),im.size[0]-abs(delta[0])),np.random.randint(abs(delta[1]),im.size[1]-abs(delta[1]))),delta,im)
 	print 'summarizing'
 	D = estr.summarize_smooth()
 	# Save diffeomorphism images
