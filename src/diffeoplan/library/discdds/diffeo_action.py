@@ -29,7 +29,8 @@ class DiffeoAction():
             Returns the prediction of applying this action to the 
             given input y0. 
         """
-        y1, var1 = self.diffeo.apply(y0.values, y0.scalar_uncertainty)
+        y1, var1 = self.diffeo.apply(y0.get_values(),
+                                     y0.scalar_uncertainty)
         return UncertainImage(y1, var1) 
         
         

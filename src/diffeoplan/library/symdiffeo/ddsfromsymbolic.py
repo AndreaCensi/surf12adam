@@ -1,20 +1,21 @@
-from . import SquareDomain, diffeo_from_function_viewport, logger, np
+from . import (SquareDomain, diffeo_from_function_viewport, logger, np,
+    get_current_config)
 from .. import DiffeoAction, DiffeoSystem
 from boot_agents.diffeo import Diffeomorphism2D
-from diffeoplan import DiffeoplanConfig
-
 
 def DDSFromSymbolic(resolution, actions, topology=None):
     """ 
         Creates a synthetic example of a DDS from synthetic diffeomorphisms. 
     """  
+    config = get_current_config()
+    
     logger.info('Creating symbolic diffeomorphism (resolution = %d)' % 
                 resolution)
     
     diffeoactions = []
     for i, a in enumerate(actions):
         logger.info('Getting symbolic diffeomorphism %r' % a)
-        diffeo = DiffeoplanConfig.symdiffeos.instance(a) #@UndefinedVariable
+        diffeo = config.symdiffeos.instance(a) 
         
         shape = (resolution, resolution)
         viewport = SquareDomain([[-1, +1], [-1, +1]])

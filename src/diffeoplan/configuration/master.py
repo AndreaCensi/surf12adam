@@ -18,10 +18,10 @@ class DiffeoplanConfigMaster(ConfigMaster):
                                      check_valid_symdiffeo_config,
                                      GenericCall(check_valid_symdiffeo))
 
-        self.diffeos = self.add_class('diffeos', '*.diffeos.yaml',
-                                     check_valid_diffeo_config,
-                                     GenericCall(check_valid_diffeo))
- 
+#        self.diffeos = self.add_class('diffeos', '*.diffeos.yaml',
+#                                     check_valid_diffeo_config,
+#                                     GenericCall(check_valid_diffeo))
+# 
         self.symdds = self.add_class('symdds', '*.symdds.yaml',
                                      check_valid_symdds_config,
                                      GenericCall(check_valid_dds))
@@ -30,15 +30,13 @@ class DiffeoplanConfigMaster(ConfigMaster):
                                      check_valid_discdds_config,
                                      GenericCall(check_valid_dds))
   
-        #from diffeoplan.library.algo import DiffeoPlanningAlgo
-
         self.algos = self.add_class('algos', '*.algos.yaml',
                                      check_generic_code_desc,
-                                     GenericCall(lambda _: None))
+                                     GenericCall())
  
         self.testcases = self.add_class('testcases', '*.tc.yaml',
                                      check_generic_code_desc,
-                                     GenericCall(lambda _: None))
+                                     GenericCall())
  
  
     def get_default_dir(self):
@@ -47,7 +45,7 @@ class DiffeoplanConfigMaster(ConfigMaster):
 
 
 
-DiffeoplanConfig = DiffeoplanConfigMaster()
-DiffeoplanConfig.load()
+#DiffeoplanConfig = DiffeoplanConfigMaster()
+#DiffeoplanConfig.load()
 
 

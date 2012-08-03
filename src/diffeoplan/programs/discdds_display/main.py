@@ -1,16 +1,14 @@
 from . import discdds_display
 from .. import declare_command, logger
-from diffeoplan.configuration.master import DiffeoplanConfig
 from conf_tools.utils.friendly_paths import friendly_path
 
 
 @declare_command('discdds-display',
                  'discdds-display  [-i <image>] [<discdds1> <discdds2> ...]')
-def discdds_display_main(global_config, parser): #@UnusedVariable
+def discdds_display_main(config, parser): #@UnusedVariable
     parser.add_option("-i", "--id_image", help="ID image.", default='lena')
     options, which = parser.parse()
     
-    config = DiffeoplanConfig
     if not which:
         which = config.discdds.keys()
     

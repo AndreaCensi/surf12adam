@@ -1,12 +1,11 @@
 from . import symdiffeo_display
 from .. import declare_command, logger
-from diffeoplan.configuration.master import DiffeoplanConfig
 from procgraph_pil import resize
 
 
 @declare_command('symdiffeo-display',
                  'symdiffeo-display  [-i <image>] [-r <resolution>] [<diffeo1> <diffeo2> ...]')
-def symdiffeo_display_main(global_config, parser): #@UnusedVariable
+def symdiffeo_display_main(config, parser): #@UnusedVariable
     parser.add_option("-i", "--id_image", help="ID image.", default='lena')
     parser.add_option("-d", "--id_diffeo", help="ID diffeo.")
     parser.add_option("-r", "--resolution", default=64,
@@ -15,7 +14,6 @@ def symdiffeo_display_main(global_config, parser): #@UnusedVariable
     
     resolution = int(options.resolution)
     
-    config = DiffeoplanConfig
     if not which:
         which = config.symdiffeos.keys()
     

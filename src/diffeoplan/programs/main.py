@@ -4,7 +4,8 @@ from ..utils import (CmdOptionParser, MyOptionParser, UserError,
 from bootstrapping_olympics.utils import substitute
 from conf_tools import ConfToolsException
 import contracts
-from diffeoplan.configuration.master import DiffeoplanConfig
+from diffeoplan.configuration.master import DiffeoplanConfigMaster
+from diffeoplan.library.symdiffeo import set_current_config
 
 MAIN_CMD_NAME = 'dp'
 commands_list = "\n".join(['%25s   %s' % 
@@ -33,6 +34,9 @@ def dp(arguments):
     parser.add_option("--contracts", default=False, action='store_true',
                       help="Activate PyContracts (disabled by default)")
 
+    parser.add_option("-d", "--directory", default="default:.", action='store_true',
+                      help="Configuration directory")
+
     (options, args) = parser.parse_args(arguments)
 
     if not options.contracts:
@@ -51,15 +55,17 @@ def dp(arguments):
                (cmd, ", ".join(Storage.commands.keys())))
         raise UserError(msg)
 
-    confdir = '.'
-    DiffeoplanConfig.load(confdir)
-
+    confdir = options.directory
+    config = DiffeoplanConfigMaster()
+    config.load(confdir)
     
+    set_current_config(config)
+
     function = Storage.commands[cmd]
     usage = function.short_usage 
     parser = CmdOptionParser(prog='%s %s' % (MAIN_CMD_NAME, cmd), usage=usage,
                              args=cmd_args)
-    return function({}, parser)
+    return function(config, parser)
 
 
 def dpmain():

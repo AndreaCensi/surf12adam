@@ -1,14 +1,15 @@
-from . import (report_for_algo, write_report,
-    run_planning_stats, run_planning)
+from . import (create_tables, report_for_stats, write_report, run_planning_stats,
+    run_planning)
 from .. import declare_command, logger
 from bootstrapping_olympics.utils import UserError, expand_string
 from compmake import batch_command, compmake_console, comp, use_filesystem
-from diffeoplan import DiffeoplanConfig
+from compmake.scripts.master import read_rc_files
+from reprep.report_utils import StoreResults
 import os
 
 @declare_command('bench',
                  'bench -a <algorithms> -t <testcases>')
-def bench_main(global_config, parser): #@UnusedVariable
+def bench_main(config, parser): #@UnusedVariable
     parser.add_option("-a", "--algorithms", default='*',
                       help="Comma-separated list of algorithms. Can use *.")
     
@@ -23,18 +24,21 @@ def bench_main(global_config, parser): #@UnusedVariable
     
     options = parser.parse_options()
     
-    config = DiffeoplanConfig
-
-    def expand(what, options):
-        expanded = expand_string(what, options)
+    def expand(what, spec, options):
+        try:
+            expanded = expand_string(spec, options)
+        except ValueError:
+            expanded = []
         if not expanded:
-            msg = 'Specified sets %r not found.' % what
-            msg += ' Available: %s' % options
+            msg = 'Specified set %r of %s not found.' % (spec, what)
+            msg += ' Available %s: %s' % (spec, options)
             raise UserError(msg)
         return expanded
     
-    algos = expand(options.algorithms, config.algos.keys())
-    testcases = expand(options.testcases, config.testcases.keys())
+    algos = expand('algorithms', options.algorithms, config.algos.keys())
+    if not list(config.testcases.keys()):
+        raise UserError('No test cases defined (try `dp gentests`)')
+    testcases = expand('testcases', options.testcases, config.testcases.keys())
 
     logger.info('Using %d algorithms: %s' % (len(algos), algos))
     logger.info('Using %d testcases.' % (len(testcases)))
@@ -44,29 +48,55 @@ def bench_main(global_config, parser): #@UnusedVariable
     # Compmake storage for results
     storage = os.path.join(outdir, 'compmake')
     use_filesystem(storage)
+    read_rc_files()
     
+    allruns = StoreResults()
     
     for id_algo in algos:
-        algo_results = []
         for id_tc in testcases:
+            tc = config.testcases.instance(id_tc)
             job_id = 'plan-%s-%s' % (id_algo, id_tc)
-            result = comp(run_planning, id_algo, id_tc, job_id=job_id)
-            result_stats = comp(run_planning_stats, result,
+            result = comp(run_planning, config, id_algo, id_tc, job_id=job_id)
+            result_stats = comp(run_planning_stats, config, result,
                                 job_id=job_id + '-stats') 
-            algo_results.append(result_stats)
-        job_id = 'stats-%s' % id_algo
-        report = comp(report_for_algo, id_algo, algo_results, job_id=job_id)
-        report_basename = os.path.join(outdir, 'reports/algo-%s' % id_algo)
+
+            attrs = dict(id_algo=id_algo,
+                               id_tc=id_tc,
+                               id_discdds=tc.id_discdds,
+                               #id_image=xxx
+                               plan_length=len(tc.true_plan))
+            allruns[attrs] = result_stats
+    
+    
+    
+    def add_report(short, stats, desc):
+        job_id = 'report-%s' % short
+        report = comp(report_for_stats, short, stats, desc, job_id=job_id)
+        report_basename = os.path.join(outdir, 'reports/%s' % short)
         comp(write_report, report, report_basename, job_id=job_id + '-write')
-        #comp(create_report, id_algo, stats, out)
+    
+    for id_algo in algos:
+        this_algo = allruns.select(id_algo=id_algo)
+        
+        stats = list(this_algo.values())
+        add_report('%s' % id_algo, stats,
+                   'All runs of algorithm %s' % id_algo)
+    
+        alldiscdds = set(this_algo.field('id_discdds'))
+        print alldiscdds
+        for id_discdds in alldiscdds:
+            stats = list(this_algo.select(id_discdds=id_discdds).values())
+            add_report('%s-%s' % (id_algo, id_discdds), stats,
+                       'All runs of algorithm %s on %s' % (id_algo, id_discdds))
+    
+    
+    create_tables(outdir, allruns)
+    
     if options.command:
         return batch_command(options.command)
     else:
         compmake_console()
         return 0
-
-
-
 
 
 

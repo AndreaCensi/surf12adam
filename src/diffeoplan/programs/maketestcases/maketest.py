@@ -1,11 +1,9 @@
 from . import  contract 
-from diffeoplan.configuration import DiffeoplanConfig
 from diffeoplan.library import TestCase, UncertainImage
 from procgraph_pil import resize
 #from procgraph_pil.imwrite import imwrite
 
-def discdds_make_test_cases(outdir, id_discdds, id_image, num_cases, plan_length):
-    config = DiffeoplanConfig
+def discdds_make_test_cases(config, outdir, id_discdds, id_image, num_cases, plan_length):
     # Get the DiffeoSystem
     discdds = config.discdds.instance(id_discdds)
     # Get the RGB image
