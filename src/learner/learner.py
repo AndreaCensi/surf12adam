@@ -15,6 +15,10 @@ import boot_agents
 from boot_agents import *
 import pdb
 import pickle
+from diffeoplan.library.discdds import diffeo_action
+from diffeoplan.library.discdds import diffeo_system
+
+
 
 def get_image_array(image):
     im,data,dimsizes = ParseMessages.imgmsg_to_pil(image)
@@ -54,6 +58,7 @@ class learner:
             print 'Adding new command to command_list: ',str(command)
             self.command_list.append(command)
             self.estimators.append(self.new_estimator())
+            self.estimators_inv.append(self.new_estimator())
             index =  self.command_list.index(command)
         return index
     def update_ros(self,Y0_ros,U0_ros,Y1_ros):
@@ -68,6 +73,7 @@ class learner:
         #pdb.set_trace()
         for ch in range(3):
             self.estimators[cmd_ind].update(Y0[:,:,ch],Y1[:,:,ch])
+            self.estimators_inv[cmd_ind].update(Y1[:,:,ch],Y0[:,:,ch])
         
     def learn_bag(self,bagfile):
         print 'Learning from: ',bagfile
@@ -117,9 +123,17 @@ class learner:
                 All summarized diffeomorphisms stored in self.diffeo_list
         """
         n = len(self.estimators)
-        self.diffeo_list = [[]]*n
+        action_list = [[]]*n
+        
         for i in range(n):
-            self.diffeo_list[i] = self.estimators[i].summarize()
+            diffeo = self.estimators[i].summarize()
+            diffeo_inv = self.estimators_inv[i].summarize()
+            command = self.command_list[i]
+            action_list[i] = diffeo_action.DiffeoAction('Uniterpreted Diffeomorphism',
+                                       diffeo,
+                                       diffeo_inv,
+                                       command)
+        diffeo_system.DiffeoSystem('Uninterpreted Diffeomorphism System', action_list)
                 
     def diffeo_dump(self,file):
         ''' Save all summarized diffeomorphisms to a pickle file '''
@@ -147,6 +161,7 @@ class learner:
         self.command_list = []
 #        self.diffeomorphisms = []
         self.estimators = []
+        self.estimators_inv = []
         
         self.size = size
         self.search_area = search_area
