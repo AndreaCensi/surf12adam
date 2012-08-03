@@ -44,14 +44,30 @@ distance_function_list = [distance.distance_scaled_mean, distance.distance_scale
 #distance_function_list = [distance.distance_neighborhood]
 #opt_list = [1,1,[4,4],[6,6],[8,8]]
 #distance.neighborarea_default = [7,7]
-max_dept = 7
-n_samp = 25
+try:
+    max_dept = int(sys.argv[sys.argv.index('-d')+1])
+except ValueError:
+    print('Warning: specify dept of command sequence by: -d')
+    max_dept = 3
+try:
+    n_samp = int(sys.argv[sys.argv.index('-n')+1])
+except ValueError:
+    print('Warning: specify number of observations by: -n')
+    n_samp = 10
 
 dist_mean_list = []
 dist_std_list = []
 
 plt.figure()
 #for fi in range(len(distance_function_list)):
+
+def plot(data,std,color,text='Untitled'):
+    max_data = np.max(data+std)
+    data = data/max_data
+    std = std/max_data
+    plt.plot(range(len(data)),data,color=color,label=text)
+    plt.plot(range(len(data)),data+std,color+'s')
+    plt.plot(range(len(data)),data-std,color+'s')
 
 distance = distance()
 distance.neighbor_indices_flat_init(Y0list[0],[6,6])
@@ -132,9 +148,10 @@ dist_mean_list.append(dist_mean)
 dist_std_list.append(dist_std)
 print dist_mean
 print dist_std
-plt.plot(range(max_dept),dist_mean,color='g',label='distance_scaled_mean, scale=1.0')
-plt.plot(range(max_dept),dist_mean+dist_std,'gs')
-plt.plot(range(max_dept),dist_mean-dist_std,'gs')
+plot(dist_mean, dist_std, 'g','distance_scaled_mean, scale=1.0')
+#plt.plot(range(max_dept),dist_mean,color='g',label='distance_scaled_mean, scale=1.0')
+#plt.plot(range(max_dept),dist_mean+dist_std,'gs')
+#plt.plot(range(max_dept),dist_mean-dist_std,'gs')
 
 
 """ distance 2 """
@@ -158,9 +175,10 @@ dist_mean_list.append(dist_mean)
 dist_std_list.append(dist_std)
 print dist_mean
 print dist_std
-plt.plot(range(max_dept),dist_mean,color='b',label='distance_scaled_std, scale=1.0')
-plt.plot(range(max_dept),dist_mean+dist_std,'bs')
-plt.plot(range(max_dept),dist_mean-dist_std,'bs')
+plot(dist_mean, dist_std, 'b','distance_scaled_std, scale=1.0')
+#plt.plot(range(max_dept),dist_mean,color='b',label='distance_scaled_std, scale=1.0')
+#plt.plot(range(max_dept),dist_mean+dist_std,'bs')
+#plt.plot(range(max_dept),dist_mean-dist_std,'bs')
 
 
 """ distance 3 """
@@ -185,9 +203,10 @@ dist_mean_list.append(dist_mean)
 dist_std_list.append(dist_std)
 print dist_mean
 print dist_std
-plt.plot(range(max_dept),dist_mean,color='r',label='distance_neighborhood_bestmatch, area=[4,4]')
-plt.plot(range(max_dept),dist_mean+dist_std,'rs')
-plt.plot(range(max_dept),dist_mean-dist_std,'rs')
+plot(dist_mean, dist_std, 'r','distance_neighborhood_bestmatch, area=[4,4]')
+#plt.plot(range(max_dept),dist_mean,color='r',label='distance_neighborhood_bestmatch, area=[4,4]')
+#plt.plot(range(max_dept),dist_mean+dist_std,'rs')
+#plt.plot(range(max_dept),dist_mean-dist_std,'rs')
 
 
 """ distance 4 """
@@ -212,9 +231,10 @@ dist_mean_list.append(dist_mean)
 dist_std_list.append(dist_std)
 print dist_mean
 print dist_std
-plt.plot(range(max_dept),dist_mean,color='m',label='distance_neighborhood_bestmatch, area=[6,6]')
-plt.plot(range(max_dept),dist_mean+dist_std,'ms')
-plt.plot(range(max_dept),dist_mean-dist_std,'ms')
+plot(dist_mean, dist_std, 'm','distance_neighborhood_bestmatch, area=[6,6]')
+#plt.plot(range(max_dept),dist_mean,color='m',label='distance_neighborhood_bestmatch, area=[6,6]')
+#plt.plot(range(max_dept),dist_mean+dist_std,'ms')
+#plt.plot(range(max_dept),dist_mean-dist_std,'ms')
 
 
 #plt.legend(loc='best')
@@ -222,4 +242,4 @@ plt.plot(range(max_dept),dist_mean-dist_std,'ms')
 
 plt.savefig('distande-plot.png')
 
-pdb.set_trace()
+#pdb.set_trace()

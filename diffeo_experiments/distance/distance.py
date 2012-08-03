@@ -17,7 +17,7 @@ class distance:
         """
         Calculate max distance for the metric
         """
-        pdb.set_trace()
+#        pdb.set_trace()
         imr1 = np.random.randint(0,255,(size[1],size[0],3)).astype(np.uint8)
         imr2 = np.random.randint(0,255,(size[1],size[0],3)).astype(np.uint8)
         self.maxval_distance_scaled_mean = self.distance_scaled_mean(imr1,imr2)
@@ -33,14 +33,14 @@ class distance:
     #    pdb.set_trace()
         y1 = np.array(Image.fromarray(Y1).resize(size).getdata(),np.int16)
         y2 = np.array(Image.fromarray(Y2).resize(size).getdata(),np.int16)
-        return np.mean(np.abs(y1-y2))/self.maxval_distance_scaled_mean
+        return np.mean(np.abs(y1-y2))#/self.maxval_distance_scaled_mean
         
     def distance_scaled_std(self,Y1,Y2,scale=1):
         size = [Y1.shape[1]*scale,Y1.shape[0]*scale]
     #    pdb.set_trace()
         y1 = np.array(Image.fromarray(Y1).resize(size).getdata(),np.int16)
         y2 = np.array(Image.fromarray(Y2).resize(size).getdata(),np.int16)
-        return np.std(np.abs(y1-y2))/self.maxval_distance_scaled_std
+        return np.std(np.abs(y1-y2))#/self.maxval_distance_scaled_std
     
 
     def neighbor_indices_flat_init(self,Y1,neighborarea):
@@ -109,7 +109,7 @@ class distance:
                 b = y2_flat[neighbor_indices_flat[k]]
                 diff = np.abs(a-b)
                 best[k,c] = np.min(diff)
-        return np.mean(best)/self.maxval_distance_neighborhood_bestmatch
+        return np.mean(best)#/self.maxval_distance_neighborhood_bestmatch
 
     
     def distance_neighborhood_distance(self,Y1, Y2, scale=1.0):
