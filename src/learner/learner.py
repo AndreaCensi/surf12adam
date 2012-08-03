@@ -298,7 +298,6 @@ def main(args):
 
 
 if __name__ == '__main__':
-    print('Do not use this version of learner.py')
     try:
         if sys.argv.index('test'):
             test = True
