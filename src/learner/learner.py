@@ -128,18 +128,16 @@ class learner:
         for i in range(n):
             diffeo = self.estimators[i].summarize()
             diffeo_inv = self.estimators_inv[i].summarize()
-            command = self.command_list[i]
+            command = np.array(self.command_list[i])
             action_list[i] = diffeo_action.DiffeoAction('Uniterpreted Diffeomorphism',
                                        diffeo,
                                        diffeo_inv,
                                        command)
-        diffeo_system.DiffeoSystem('Uninterpreted Diffeomorphism System', action_list)
+        self.system = diffeo_system.DiffeoSystem('Uninterpreted Diffeomorphism System', action_list)
                 
     def diffeo_dump(self,file):
-        ''' Save all summarized diffeomorphisms to a pickle file '''
-        for i in range(len(self.diffeo_list)):
-            self.diffeo_list[i].command = self.command_list[i]
-        pickle.dump(self.diffeo_list,file)
+        ''' Save the summarized diffeomorphisms system to a pickle file '''
+        pickle.dump(self.system,file)
             
     def show_diffeomorphisms(self):
         for i in range(len(self.estimators)): #estr in self.estimators:
@@ -297,8 +295,10 @@ def main(args):
     learn = learner(size,area)
     learn.learn_bag(bagfile)
     print 'Commands: ',learn.command_list
+    pdb.set_trace()
     learn.summarize()
-    #pdb.set_trace()
+    pdb.set_trace()
+    
     learn.diffeo_dump(open(dfile,'wb'))
     learn.show_diffeomorphisms()
 #    print learn.command_index([0,0,0])
