@@ -15,9 +15,10 @@ import boot_agents
 from boot_agents import *
 import pdb
 import pickle
+import yaml
 from diffeoplan.library.discdds import diffeo_action
 from diffeoplan.library.discdds import diffeo_system
-
+from optparse import OptionParser
 
 
 def get_image_array(image):
@@ -129,15 +130,27 @@ class learner:
             diffeo = self.estimators[i].summarize()
             diffeo_inv = self.estimators_inv[i].summarize()
             command = np.array(self.command_list[i])
-            action_list[i] = diffeo_action.DiffeoAction('Uniterpreted Diffeomorphism',
+            action_list[i] = diffeo_action.DiffeoAction('Uniterpreted Diffeomorphism'+str(i),
                                        diffeo,
                                        diffeo_inv,
                                        command)
         self.system = diffeo_system.DiffeoSystem('Uninterpreted Diffeomorphism System', action_list)
                 
-    def diffeo_dump(self,file):
+    def diffeo_dump(self,path,name):
         ''' Save the summarized diffeomorphisms system to a pickle file '''
-        pickle.dump(self.system,file)
+        pickle_file = open(path + name + '.discdds.pickle','wb')
+        pickle.dump(self.system,pickle_file)
+                
+        filename_yaml = path + name + '.discdds.yaml'
+        description = {
+                       'id': name,
+                       'desc': 'Synthetically generated from symbolic DDS %r.' % name,
+                       'code': ['diffeoplan.library.load_pickle',
+                                {'file:pickle': name + '.discdds.pickle'}]
+                       }
+#        logger.info('Writing to %r ' % friendly_path(filename_yaml))
+        with open(filename_yaml, 'w') as f:
+            yaml.dump([description], f, default_flow_style=False, explicit_start=True)
             
     def show_diffeomorphisms(self):
         for i in range(len(self.estimators)): #estr in self.estimators:
@@ -266,51 +279,28 @@ def test_diffeo(argv):
     logfile.close()
 
 def main(args):
-    print args
-    try:
-        bagfile = args[args.index('-i')+1]
-    except ValueError:
-        print 'No input bag specified'
-    try:
-        dfile = args[args.index('-o')+1]
-    except ValueError:
-        print 'No input bag specified'
-    try:
-        size = eval(args[args.index('-size')+1])
-    except ValueError:
-        size = [160,120]
-    try:
-        area = eval(args[args.index('-area')+1])
-    except ValueError:
-        area = [8,8]
-#    try:
-#        w = args[args.index['-w']+1]
-#    except ValueError:
-#        print 'No input width specified'
-#    try:
-#        h = args[args.index['-h']+1]
-#    except ValueError:
-#        print 'No input height specified'
-#    pdb.set_trace()
+    usage = "usage: %prog -i inputbag -p outputpath -n ddsname -s [W,H] -a [rx,ry]"
+    parser = OptionParser(usage=usage, version="%prog 1.0")
+    parser.add_option("-i", "--input", default='/media/data/processed-data/commands100t60.processed.bag',
+                      help="Input processed.bag file")
+    parser.add_option("-p", "--path", default='/media/data/learned_diffeo',help="Path to output files")
+    parser.add_option("-n", "--name", default='camdds',help="Output dds system name")
+    parser.add_option("-s", "--size", default='[160,120]',help="Image size WxH")
+    parser.add_option("-a", "--area", default='[6,6]',help="Size of search area")
+    options, which = parser.parse_args()
+    bagfile = options.input
+    dpath = options.path
+    name = options.name
+    size = eval(options.size)
+    area = eval(options.area)
+
     learn = learner(size,area)
     learn.learn_bag(bagfile)
     print 'Commands: ',learn.command_list
-    pdb.set_trace()
     learn.summarize()
-    pdb.set_trace()
     
-    learn.diffeo_dump(open(dfile,'wb'))
+    learn.diffeo_dump(dpath,name)
     learn.show_diffeomorphisms()
-#    print learn.command_index([0,0,0])
-#    print learn.command_index([1,0,0])
-#    print learn.command_index([1,0,0])
-#
-#if __name__ == '__main__':
-#    main(sys.argv)
-
-
-
-
 
 if __name__ == '__main__':
     try:
