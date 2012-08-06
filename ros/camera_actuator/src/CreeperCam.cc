@@ -49,7 +49,7 @@ void CreeperCam::close(void) {
 void CreeperCam::Reset(void) {
 
 	// For some straing reason, this is a pan/tilt reset...
-	const char *reset_name = "tilt reset";
+	const char *reset_name = "Tilt Reset";
 
 	// Object that's needed for resetting the camera
 	CControlValue reset_int;
@@ -62,7 +62,7 @@ void CreeperCam::Reset(void) {
 	// Now actually reset the camera
 	c_set_control(this->ptz_handle, control_id, &reset_int);
 
-	const char *reset2 = "pan reset";
+	const char *reset2 = "Tilt Reset";
 	control_id = get_control_id(this->ptz_handle, reset2);
 	c_set_control(this->ptz_handle, control_id, &reset_int);
 
