@@ -62,6 +62,9 @@ void CreeperCam::Reset(void) {
 	// Now actually reset the camera
 	c_set_control(this->ptz_handle, control_id, &reset_int);
 
+	// Stall to make sure tilt reset is done
+	stall(1);
+
 	const char *reset2 = "Tilt Reset";
 	control_id = get_control_id(this->ptz_handle, reset2);
 	c_set_control(this->ptz_handle, control_id, &reset_int);
