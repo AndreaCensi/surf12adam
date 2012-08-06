@@ -1,0 +1,17 @@
+<package>
+  <description brief="camera_actuator">
+
+     camera_actuator
+
+  </description>
+  <author>Adam</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/camera_actuator</url>
+  <depend package="std_msgs"/>
+  <depend package="rospy"/>
+  <depend package="roscpp"/>
+
+</package>
+
+
