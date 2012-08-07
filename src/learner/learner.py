@@ -237,16 +237,19 @@ def test_diffeo(argv):
     #Y0,Y1 = get_Y_pair((30,30),(0,0),(160,120),im)
 #    pdb.set_trace()
     diffeo_list = pickle.load(open(dfile,'rb'))
-    
-    for D in diffeo_list:
+#    pdb.set_trace()
+    for i in range(len(diffeo_list.actions)):
+#    for D in diffeo_list:
+        D = diffeo_list.actions[i].diffeo
+#        pdb.set_trace()
         logfile.write('<tr>')
-        
-        cmdstr = str(D.command).replace(' ','')
+        cmdstr = str(diffeo_list.actions[i].original_cmd).replace(' ','_')
+#        cmdstr = str(D.command).replace(' ','')
         
 #        outpath+prefix+'diffeo'+cmdstr+'angle'+'.png'
         
         logfile.write('<td>')
-        logfile.write(str(D.command))
+        logfile.write(str(cmdstr))
         logfile.write('</td>')
         Image.fromarray(diffeo_to_rgb_angle(D.d)).save(outpath+prefix+'diffeo'+cmdstr+'angle'+'.png')
         logfile.write('<td>')
@@ -264,6 +267,7 @@ def test_diffeo(argv):
         
         Y = im
         Image.fromarray(Y).save(outpath+prefix+cmdstr+str(0)+'.png')
+#        pdb.set_trace()
         logfile.write('<td>')
         logfile.write('<img src="'+outpath+prefix+cmdstr+str(0)+'.png'+'"/>')
         logfile.write('</td>')
