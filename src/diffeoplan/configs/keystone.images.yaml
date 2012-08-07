@@ -1,0 +1,5 @@
+- id: keystone
+  desc: Simple test image from Co
+  code: 
+    - procgraph_pil.imread.imread
+    - filename: images/keystone.png
