@@ -1,3 +1,4 @@
+/diffeo_experiments/distance/distande-plot.png
 /diffeo_experiments/diffeoimages/
 *.*~
 /diffeo_experiments/test.py~
@@ -6,7 +7,12 @@
 /documents/planning.lyx~
 /documents/surfupdate.lyx
 /logitech_cam/.pydevproject
+.project
+.pydevproject
+*/.project
+*/.pydevproject
 *.py[co]
+/diffeo_experiments/distance/distande-plot.png
 
 # Packages
 *.egg
