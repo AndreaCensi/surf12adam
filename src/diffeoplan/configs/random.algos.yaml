@@ -9,3 +9,9 @@
   code:
   - diffeoplan.library.RandomGuess
   - nsteps: 2
+
+- id: graphsearch1
+  desc: First graph search algo
+  code:
+  - diffeoplan.library.GraphSearch
+  - alpha: 0

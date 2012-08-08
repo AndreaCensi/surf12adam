@@ -27,16 +27,18 @@ class UncertainImage():
         r = {}
         r['values_L2'] = UncertainImage.dist_values_L2(y0, y1)
         r['values_L1'] = UncertainImage.dist_values_L1(y0, y1)
-        # ...
+        # add here
         return r
     
     @staticmethod
     def dist_values_L2(y0, y1):
         diff = (y0.get_values() - y1.get_values()).flatten()
-        return float(np.linalg.norm(diff, 2))
+        return float(np.linalg.norm(diff, 2)) #/ y0.size
 
     @staticmethod
     def dist_values_L1(y0, y1):
         diff = (y0.get_values() - y1.get_values()).flatten()
-        return float(np.linalg.norm(diff, 1))
+        return float(np.linalg.norm(diff, 1)) #/ y0.size
+
+    # ADD here
     

@@ -1,4 +1,4 @@
-from . import  contract 
+from . import  contract, logger
 from diffeoplan.library import TestCase, UncertainImage
 from procgraph_pil import resize
 #from procgraph_pil.imwrite import imwrite
@@ -8,10 +8,13 @@ def discdds_make_test_cases(config, outdir, id_discdds, id_image, num_cases, pla
     discdds = config.discdds.instance(id_discdds)
     # Get the RGB image
     rgb = config.images.instance(id_image)
-    # resize if necessary
-#    h, w = rgb.shape[0], rgb.shape[1]
+    
     shape = discdds.get_shape()
-    rgb = resize(rgb, shape[0], shape[1])
+    rgb = resize(rgb, shape[1], shape[0])
+        
+    assert rgb.shape[0] == shape[0]
+    assert rgb.shape[1] == shape[1]
+    
     image = UncertainImage(rgb)
     
     for i in range(num_cases):

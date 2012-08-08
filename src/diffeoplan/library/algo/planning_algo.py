@@ -16,7 +16,10 @@ class DiffeoPlanningAlgo:
         
     @contract(y0=UncertainImage, y1=UncertainImage, returns=PlanningResult)
     def plan(self, y0, y1): #@UnusedVariable
-        """ Must be redefined by subclasses. """
+        """ Must be redefined by subclasses. 
+        
+            This must return an instance of PlanningResult.
+        """
         return PlanningResult(success=False, plan=None, status='Not implemented')
 
     
