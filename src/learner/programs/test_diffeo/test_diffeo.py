@@ -78,7 +78,7 @@ def test_diffeo_main(argv):
         logfile.write('<td>')
         logfile.write(str(cmdstr))
         logfile.write('</td>')
-        pim = Image.fromarray(diffeo_to_rgb_angle(D.d)).
+        pim = Image.fromarray(diffeo_to_rgb_angle(D.d))
         pim.save(outpath + prefix + 'diffeo' + cmdstr + 'angle' + '.png')
         logfile.write('<td>')
         logfile.write('<img src="' + outpath + prefix + 'diffeo' + cmdstr + 'angle' + '.png' + '"/>')
@@ -100,7 +100,7 @@ def test_diffeo_main(argv):
         logfile.write('<img src="' + outpath + prefix + cmdstr + str(0) + '.png' + '"/>')
         logfile.write('</td>')
         for i in range(levels):
-            Y, var = D.apply(Y)
+            Y, _ = D.apply(Y)
             Image.fromarray(Y).save(outpath + prefix + cmdstr + str(i + 1) + '.png')
             logfile.write('<td>')
             logfile.write('<img src="' + outpath + prefix + cmdstr + str(i + 1) + '.png' + '"/>')
