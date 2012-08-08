@@ -9,10 +9,12 @@ def run_planning(config, id_algo, id_tc):
     discdds = config.discdds.instance(id_discdds)
     # instance the algorithm
     algo = config.algos.instance(id_algo)
-    # initialize with the dynamics
+    
+    
+    # initialize the algorithm with the dynamics
     # TODO: add computation time
     t0 = time.clock()
-    algo.init(discdds)
+    algo.init(discdds) 
     init_time = time.clock() - t0
     
     # run the planning
@@ -21,6 +23,7 @@ def run_planning(config, id_algo, id_tc):
     
     # TODO: add computation time
     t0 = time.clock()
+    # Run the planning
     planning_result = algo.plan(y0, y1)
     plan_time = time.clock() - t0
     
@@ -50,8 +53,12 @@ def run_planning_stats(config, results):
     discdds = config.discdds.instance(id_discdds)
     # predict result according to plan
     y0 = testcase.y0
+    y1 = testcase.y1
     y1plan = discdds.predict(y0, plan)
-    # compute the 
+    # computes all distances as specified in this functions
+    # This compares y0 with plan * y0 (wrong)
     results['dist_y0_y1p'] = UncertainImage.compute_all_distances(y0, y1plan) 
+    results['dist_y1_y1p'] = UncertainImage.compute_all_distances(y1, y1plan)
     return results
+
 

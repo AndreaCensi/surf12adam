@@ -1,0 +1,7 @@
+
+- id: orbit_outdoor
+  desc:  Learned from the data taken indoor
+  code: 
+  - diffeoplan.library.load_pickle
+  - file:pickle: /home/adam/data/learned_diffeo/outdoor/outdoor_pantilt60s.discdds.pickle
+

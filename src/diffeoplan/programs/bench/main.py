@@ -56,7 +56,14 @@ def bench_main(config, parser): #@UnusedVariable
         for id_tc in testcases:
             tc = config.testcases.instance(id_tc)
             job_id = 'plan-%s-%s' % (id_algo, id_tc)
+            # If you didn't use compmake
+            #  result = run_planning(config, id_algo, id_tc, job_id=job_id)
+            #  result_stats = run_planning_stats(config, result)
+            # To use compamke, 
+            # change  result = f(parma, param)
+            # into:   result = comp(f, param, param)
             result = comp(run_planning, config, id_algo, id_tc, job_id=job_id)
+            
             result_stats = comp(run_planning_stats, config, result,
                                 job_id=job_id + '-stats') 
 

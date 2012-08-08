@@ -62,3 +62,4 @@ class GraphSearch(DiffeoPlanningAlgo):
         for i in range(len(plans)):
             extplans.extend(expand_alldir(plans[i]))
         return extplans
+
