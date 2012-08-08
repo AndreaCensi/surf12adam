@@ -46,6 +46,6 @@ class DiffeoSystem():
         y1 = y0
         for p in plan:
             action = self.actions[p]
-            y1 = action.predict(y0)
+            y1 = action.predict(y1)
         return y1
         
