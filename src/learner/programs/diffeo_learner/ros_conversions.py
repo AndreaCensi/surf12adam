@@ -2,17 +2,24 @@
 # http://nullege.com/codes/show/src%40c%40m%40cmu-ros-pkg-HEAD%40trunk%40posedetectiondb%40src%40ParseMessages.py/75/sensor_msgs.msg.Image/python
 # 
 
-import roslib#; roslib.load_manifest(PKG)
-import os, sys, signal, time, threading, struct, string
-import numpy, scipy
-import PIL.Image
-  
+import PIL.Image #@UnresolvedImport
+import numpy
+import scipy
+import os
+import sys
+import signal
+import time
+import threading
+import struct
+import string
+import roslib #; roslib.load_manifest(PKG)
 import rospy
 import sensor_msgs.msg
+  
 
   
 # Number of channels used by a PIL image mode
-def imgmsg_to_pil(rosimage, encoding_to_mode = {
+def imgmsg_to_pil(rosimage, encoding_to_mode={
         'mono8' :     'L',
         '8UC1' :      'L',
         '8UC3' :      'RGB',
@@ -25,7 +32,8 @@ def imgmsg_to_pil(rosimage, encoding_to_mode = {
         'bayer_grbg': 'L',
         'bayer_bggr': 'L',
         'yuv422':     'YCbCr',
-        'yuv411':     'YCbCr'}, PILmode_channels = { 'L' : 1, 'RGB' : 3, 'RGBA' : 4, 'YCbCr' : 3 }):
+        'yuv411':     'YCbCr'},
+        PILmode_channels={ 'L' : 1, 'RGB' : 3, 'RGBA' : 4, 'YCbCr' : 3 }):
     conversion = 'B'
     channels = 1
     if rosimage.encoding.find('32FC') >= 0:
@@ -72,9 +80,9 @@ def imgmsg_to_pil(rosimage, encoding_to_mode = {
         im = PIL.Image.frombuffer(mode,dimsizes[1::-1], rosimage.data,'raw',mode,0,1)
         if mode == 'RGB':
             im = PIL.Image.merge('RGB',im.split()[-1::-1])
-        return im,data,dimsizes
+        return im, data, dimsizes
   
-def pil_to_imgmsg(image,encodingmap={'L':'mono8', 'RGB':'rgb8','RGBA':'rgba8', 'YCbCr':'yuv422'},
+def pil_to_imgmsg(image, encodingmap={'L':'mono8', 'RGB':'rgb8', 'RGBA':'rgba8', 'YCbCr':'yuv422'},
                         PILmode_channels = { 'L' : 1, 'RGB' : 3, 'RGBA' : 4, 'YCbCr' : 3 }):
     rosimage = sensor_msgs.msg.Image()
     # adam print 'Channels image.mode: ',PILmode_channels[image.mode]
@@ -84,7 +92,7 @@ def pil_to_imgmsg(image,encodingmap={'L':'mono8', 'RGB':'rgb8','RGBA':'rgba8', '
     rosimage.data = image.tostring()
     return rosimage
   
-def numpy_to_imgmsg(image,stamp=None):
+def numpy_to_imgmsg(image, stamp=None):
     print image.shape
     rosimage = sensor_msgs.msg.Image()
     rosimage.height = image.shape[0]

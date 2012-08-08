@@ -35,6 +35,8 @@ setup(name='surf12adam',
        entry_points={
          'console_scripts': [
            'dp = diffeoplan.programs:dpmain',
+           'diffeo-learner = learner:diffeo_learner_main',
+           'diffeo-tests = learner:diffeo_learner_main',
         ]
     }
 )
