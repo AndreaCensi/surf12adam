@@ -54,11 +54,14 @@ def run_planning_stats(config, results):
     # predict result according to plan
     y0 = testcase.y0
     y1 = testcase.y1
-    y1plan = discdds.predict(y0, plan)
-    # computes all distances as specified in this functions
-    # This compares y0 with plan * y0 (wrong)
-    results['dist_y0_y1p'] = UncertainImage.compute_all_distances(y0, y1plan) 
-    results['dist_y1_y1p'] = UncertainImage.compute_all_distances(y1, y1plan)
+    
+    if plan is not None:
+        y1plan = discdds.predict(y0, plan)
+        # computes all distances as specified in this functions
+        # This compares y0 with plan * y0 (wrong)
+        results['dist_y0_y1p'] = UncertainImage.compute_all_distances(y0, y1plan) 
+        results['dist_y1_y1p'] = UncertainImage.compute_all_distances(y1, y1plan)
+    
     return results
 
 

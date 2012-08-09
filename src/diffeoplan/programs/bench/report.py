@@ -11,22 +11,23 @@ def report_for_stats(short, stats, desc):
     
 
 def report_stats(r, stats):
-    sub = r.section('init_time', caption='Initialization time')
-    values = [s['init_time'] for s in stats]
-    report_values(sub, values)
-
-    sub = r.section('plan_time', caption='Planning time')
-    values = [s['plan_time'] for s in stats]
-    report_values(sub, values)
-
-    sub = r.section('plan_length', caption='Length of plan found')
-    values = [len(s['result'].plan) for s in stats]
-    report_values(sub, values)
-
-    distance_measures = stats[0]['dist_y0_y1p'].keys()
-    for d in distance_measures:
-        values = [s['dist_y0_y1p'][d] for s in stats]
-        report_values(r.section(d), values)
+    if False: # need to update, like in tables.py
+        sub = r.section('init_time', caption='Initialization time')
+        values = [s['init_time'] for s in stats]
+        report_values(sub, values)
+    
+        sub = r.section('plan_time', caption='Planning time')
+        values = [s['plan_time'] for s in stats]
+        report_values(sub, values)
+    
+        sub = r.section('plan_length', caption='Length of plan found')
+        values = [len(s['result'].plan) for s in stats]
+        report_values(sub, values)
+    
+        distance_measures = stats[0]['dist_y0_y1p'].keys()
+        for d in distance_measures:
+            values = [s['dist_y0_y1p'][d] for s in stats]
+            report_values(r.section(d), values)
 
     
 import numpy as np

@@ -21,15 +21,35 @@ def plan_found(stats):
 
 @add_statistics
 def plan_length(stats):
-    if plan_found(stats) is not None:
+    if plan_found(stats):
         return len(stats['result'].plan)
     else:
         return np.nan
-        
-statistics['dist_values_L1_old'] = lambda s: s['dist_y0_y1p']['values_L1']
-statistics['dist_values_L2_old'] = lambda s: s['dist_y0_y1p']['values_L2']
-statistics['dist_values_L1'] = lambda s: s['dist_y1_y1p']['values_L1']
-statistics['dist_values_L2'] = lambda s: s['dist_y1_y1p']['values_L2']
+    
+@add_statistics
+def dist_values_L1_old(s):
+    if not 'dist_y0_y1p' in s: 
+        return np.nan
+    return s['dist_y0_y1p']['values_L1']
+
+@add_statistics
+def dist_values_L2_old(s):
+    if not 'dist_y0_y1p' in s: 
+        return np.nan
+    return s['dist_y0_y1p']['values_L2']
+
+@add_statistics
+def dist_values_L1(s):
+    if not 'dist_y1_y1p' in s: 
+        return np.nan
+    return s['dist_y1_y1p']['values_L1']
+
+@add_statistics
+def dist_values_L2(s):
+    if not 'dist_y1_y1p' in s: 
+        return np.nan
+    return s['dist_y1_y1p']['values_L2']
+
 
 reductions = {}
 reductions['min'] = np.nanmin

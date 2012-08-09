@@ -90,7 +90,7 @@ def bench_main(config, parser): #@UnusedVariable
                    'All runs of algorithm %s' % id_algo)
     
         alldiscdds = set(this_algo.field('id_discdds'))
-        print alldiscdds
+        
         for id_discdds in alldiscdds:
             stats = list(this_algo.select(id_discdds=id_discdds).values())
             add_report('%s-%s' % (id_algo, id_discdds), stats,
