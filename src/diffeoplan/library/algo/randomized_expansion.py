@@ -30,7 +30,7 @@ class RandomizedExpansion(DiffeoPlanningAlgo):
     @contract(y0=UncertainImage, y1=UncertainImage, returns=PlanningResult)
     def plan(self, y0, y1): #@UnusedVariable
         
-        print('Engering graphsearch plan()')
+        print('Entering graphsearch plan()')
         dds = self.get_dds()
         
         start_node = Node(y0,[])

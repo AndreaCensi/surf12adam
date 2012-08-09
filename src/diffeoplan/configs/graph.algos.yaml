@@ -3,7 +3,7 @@
   code:
   - diffeoplan.library.GraphSearch
   - nsteps: 3
-    tresh: 7000
+    tresh: 5000
   
 
     
@@ -11,7 +11,7 @@
   desc: Expansive planner Algorithm.
   code:
   - diffeoplan.library.RandomizedExpansion
-  - max_ittr: 50
-    tresh: 7000
+  - max_ittr: 250
+    tresh: 5000
     region: 12000
   
