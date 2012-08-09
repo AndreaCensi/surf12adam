@@ -2,21 +2,40 @@ from . import write_report, np
 from compmake import comp
 from reprep import Report
 import itertools
+import scipy.stats
+from scipy.stats.stats import nanmean, nanstd
 
 statistics = {}
+
+def add_statistics(f):
+    statistics[f.__name__] = f
+    return f
+
 statistics['init_time'] = lambda s: s['init_time']
 statistics['plan_time'] = lambda s: s['plan_time']
-statistics['plan_length'] = lambda s: len(s['result'].plan)
+
+
+@add_statistics
+def plan_found(stats):
+    return stats['result'].plan is not None
+
+@add_statistics
+def plan_length(stats):
+    if plan_found(stats) is not None:
+        return len(stats['result'].plan)
+    else:
+        return np.nan
+        
 statistics['dist_values_L1_old'] = lambda s: s['dist_y0_y1p']['values_L1']
 statistics['dist_values_L2_old'] = lambda s: s['dist_y0_y1p']['values_L2']
 statistics['dist_values_L1'] = lambda s: s['dist_y1_y1p']['values_L1']
 statistics['dist_values_L2'] = lambda s: s['dist_y1_y1p']['values_L2']
 
 reductions = {}
-reductions['min'] = np.min
-reductions['max'] = np.max
-reductions['mean'] = np.mean
-reductions['stddev'] = np.std
+reductions['min'] = np.nanmin
+reductions['max'] = np.nanmax
+reductions['mean'] = nanmean
+reductions['stddev'] = nanstd 
     
 def f(stats, s, r):
     reduce_ = reductions[r]
