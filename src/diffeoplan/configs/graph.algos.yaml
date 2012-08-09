@@ -1,0 +1,16 @@
+- id: graphsearch
+  desc: An algorithm that searches all possible sequences of (3 step).
+  code:
+  - diffeoplan.library.GraphSearch
+  - nsteps: 3
+    tresh: 7000
+  
+
+    
+- id: expansive
+  desc: Expansive planner Algorithm.
+  code:
+  - diffeoplan.library.RandomizedExpansion
+  - max_ittr: 50
+    tresh: 7000
+  
