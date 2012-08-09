@@ -1,11 +1,11 @@
 import random
 from . import DiffeoPlanningAlgo, PlanningResult, contract, logger
 from .. import  UncertainImage
-from diffeoplan.library.graph import *
 import numpy as np
-import time
 import copy
 import pdb
+from ..graph import Node, Tree, TreeConnector
+
 
 class RandomizedExpansion(DiffeoPlanningAlgo):
     """ 
@@ -33,10 +33,10 @@ class RandomizedExpansion(DiffeoPlanningAlgo):
         print('Engering graphsearch plan()')
         dds = self.get_dds()
         
-        start_node = Node(y0,[])
+        start_node = Node(y0, [])
         start_tree = Tree(start_node)
         
-        goal_node = Node(y1,[])
+        goal_node = Node(y1, [])
         goal_tree = Tree(goal_node)
         
         connector = TreeConnector(start_tree, goal_tree, self.tresh)
@@ -68,20 +68,20 @@ class RandomizedExpansion(DiffeoPlanningAlgo):
             extplans.extend(self.expand_alldir(plans[i]))
         return extplans
 
-    def get_next_node(self,tree):
+    def get_next_node(self, tree):
         dds = self.get_dds()
         n = len(dds.actions)
         tresh = self.region
-        pmf = 1/np.sum((tree.distances<tresh).astype(np.float),0)
+        pmf = 1 / np.sum((tree.distances < tresh).astype(np.float), 0)
         exp_index = random_pmf(pmf)
         return exp_index
     
     def get_next_command(self):
         dds = self.get_dds()
         n = len(dds.actions)
-        return random.randint(0,n-1)
+        return np.random.randint(0, n - 1)
     
-    def get_new_node(self,tree):
+    def get_new_node(self, tree):
         exp_ind = self.get_next_node(tree)
         exp_cmd = self.get_next_command()
         
@@ -99,16 +99,16 @@ def random_pmf(pmf):
         returns a random integer from the probability mass function <pmf> given as a vector.    
     """
     total_prob = sum(pmf)
-    pmf = np.array(pmf)/total_prob
+    pmf = np.array(pmf) / total_prob
     prob = pmf[0]
 #    pdb.set_trace()
-    rval = random.random()
+    rval = np.random.rand()
     
-    for i in range(len(pmf)-1):
+    for i in range(len(pmf) - 1):
         if rval < prob:
             return i
-        prob = prob + pmf[i+1]
-    return len(pmf)-1
+        prob = prob + pmf[i + 1]
+    return len(pmf) - 1
     
     
     
