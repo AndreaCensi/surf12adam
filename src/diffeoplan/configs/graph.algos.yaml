@@ -11,7 +11,7 @@
   desc: Expansive planner Algorithm.
   code:
   - diffeoplan.library.RandomizedExpansion
-  - max_ittr: 250
+  - max_ittr: 25
     tresh: 5000
     region: 12000
   
