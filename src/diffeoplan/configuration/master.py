@@ -1,9 +1,8 @@
 from . import (check_valid_image_config, check_valid_image,
-    check_valid_diffeo_config, check_valid_diffeo, check_valid_dds,
+    check_valid_dds,
     check_valid_symdiffeo_config, check_valid_symdiffeo, check_valid_symdds_config,
     check_valid_discdds_config)
-from conf_tools import (ConfigMaster, GenericCall,
-    check_generic_code_desc)
+from conf_tools import ConfigMaster, GenericCall, check_generic_code_desc
 
 
 class DiffeoplanConfigMaster(ConfigMaster):
