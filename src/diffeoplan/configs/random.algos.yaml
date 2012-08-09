@@ -10,8 +10,8 @@
   - diffeoplan.library.RandomGuess
   - nsteps: 2
 
-- id: graphsearch1
-  desc: First graph search algo
+- id: random3
+  desc: An algorithm that just takes a random guess (3 steps).
   code:
-  - diffeoplan.library.GraphSearch
-  - alpha: 0
+  - diffeoplan.library.RandomGuess
+  - nsteps: 3
