@@ -15,7 +15,7 @@ class RandomizedExpansion(DiffeoPlanningAlgo):
     """
     
     
-    def __init__(self, max_ittr, tresh, directions=1):
+    def __init__(self, max_ittr, tresh, region, directions=1):
         '''
         :param nsteps: Number of steps in the random guess.
         '''
@@ -24,6 +24,7 @@ class RandomizedExpansion(DiffeoPlanningAlgo):
         self.max_ittr = max_ittr
         self.tresh = tresh
         self.directions = directions
+        self.region = region
 #        self.max_cpu_time = max_cpu_time
         
     @contract(y0=UncertainImage, y1=UncertainImage, returns=PlanningResult)
@@ -70,7 +71,7 @@ class RandomizedExpansion(DiffeoPlanningAlgo):
     def get_next_node(self,tree):
         dds = self.get_dds()
         n = len(dds.actions)
-        tresh = 250
+        tresh = self.region
         pmf = 1/np.sum((tree.distances<tresh).astype(np.float),0)
         exp_index = random_pmf(pmf)
         return exp_index

@@ -13,4 +13,5 @@
   - diffeoplan.library.RandomizedExpansion
   - max_ittr: 50
     tresh: 7000
+    region: 12000
   

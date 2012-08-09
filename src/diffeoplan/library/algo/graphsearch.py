@@ -50,8 +50,8 @@ class GraphSearch(DiffeoPlanningAlgo):
             nplans = connector.connect_update()
             if nplans > 0:
                 plan = connector.get_connection()
-                return PlanningResult(True, plan, 'Randomized Expansive Planner')
-        return PlanningResult(True, [0], 'Randomized Expansive Planner')
+                return PlanningResult(True, plan, 'Graph Search Plan')
+        return PlanningResult(True, [0], 'Graph Search Plan')
         
 
     
