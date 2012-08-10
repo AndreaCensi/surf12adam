@@ -46,9 +46,4 @@ class DiffeoplanConfigMaster(ConfigMaster):
         from pkg_resources import resource_filename #@UnresolvedImport
         return resource_filename("diffeoplan", "configs")
 
-
-
-DiffeoplanConfig = DiffeoplanConfigMaster()
-#DiffeoplanConfig.load()
-
-
+ 

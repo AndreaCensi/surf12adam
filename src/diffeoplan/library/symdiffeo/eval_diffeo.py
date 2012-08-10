@@ -1,8 +1,8 @@
-from contracts import contract
 from . import SymbolicDiffeo
-import numpy as np
+from .. import get_current_config
+from contracts import contract
 import geometry
-from diffeoplan.library.symdiffeo import get_current_config
+import numpy as np
 
 
 def rotdeg(p, deg):

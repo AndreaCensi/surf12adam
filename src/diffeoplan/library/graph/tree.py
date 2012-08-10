@@ -5,7 +5,7 @@ from diffeoplan.library.images.distance.distance_L2 import Distance_L2
 class Tree():
     def __init__(self, root_node, metric=Distance_L2()):
         self.nodes = [root_node]
-        self.distances =  np.zeros((1, 1))
+        self.distances = np.zeros((1, 1))
         self.size = 1
         self.metric = metric
         
@@ -35,7 +35,7 @@ def extend_distances(distances):
 #    s0, s1 = distances.shape
 #    new_dist = np.zeros((s0,s1))
 #    new_dist[:s0,:s1] = distances
-    return extend_array(distances, np.array(distances.shape)+(1, 1))
+    return extend_array(distances, np.array(distances.shape) + (1, 1))
 
 def extend_array(array, size):
     """
@@ -45,5 +45,5 @@ def extend_array(array, size):
 #    pdb.set_trace()
     s0, s1 = array.shape
     new_dist = -np.ones(size)
-    new_dist[:s0,:s1] = array
+    new_dist[:s0, :s1] = array
     return new_dist

@@ -1,11 +1,11 @@
 from . import Storage, logger
+from .. import set_current_config
 from ..utils import (CmdOptionParser, MyOptionParser, UserError,
     wrap_script_entry_point)
 from bootstrapping_olympics.utils import substitute
 from conf_tools import ConfToolsException
+from diffeoplan.configuration import DiffeoplanConfigMaster
 import contracts
-from diffeoplan.configuration.master import DiffeoplanConfigMaster
-from diffeoplan.library.symdiffeo import set_current_config
 
 MAIN_CMD_NAME = 'dp'
 commands_list = "\n".join(['%25s   %s' % 

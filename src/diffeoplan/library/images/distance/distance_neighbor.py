@@ -1,10 +1,11 @@
-from . import logger
+from . import logger, np, contract
 from boot_agents.diffeo import Flattening, cmap, coords_iterate
-import numpy as np
 
 
 class DistanceNeighbor():
-    def __init__(self,size=[160, 120],neighborarea=[8, 8]):
+    
+    @contract(size='seq[2](int)', neighborarea='seq[2](int)')
+    def __init__(self, size=[160, 120], neighborarea=[8, 8]):
         shape = size
         nsensels = shape[0]*shape[1]
     

@@ -1,4 +1,4 @@
-from .. import logger, np, contract
+from .. import logger, np, contract, get_current_config
 
 from .images import *
 from .discdds import *
