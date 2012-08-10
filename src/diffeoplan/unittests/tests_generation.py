@@ -1,4 +1,6 @@
+
 from .. import DiffeoplanConfig
+
 from bootstrapping_olympics.unittests.utils import fancy_test_decorator
 
 config = DiffeoplanConfig

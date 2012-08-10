@@ -4,14 +4,14 @@
   - diffeoplan.library.GraphSearch
   - nsteps: 3
     tresh: 5000
-  
+    metric: neigh1
 
     
 - id: expansive
   desc: Expansive planner Algorithm.
   code:
   - diffeoplan.library.RandomizedExpansion
-  - max_ittr: 25
+  - max_ittr: 250
     tresh: 5000
     region: 12000
   

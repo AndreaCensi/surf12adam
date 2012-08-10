@@ -32,6 +32,10 @@ class DiffeoplanConfigMaster(ConfigMaster):
         self.algos = self.add_class('algos', '*.algos.yaml',
                                      check_generic_code_desc,
                                      GenericCall())
+        
+        self.distances = self.add_class('distances', '*.distances.yaml',
+                                     check_generic_code_desc,
+                                     GenericCall())
  
         self.testcases = self.add_class('testcases', '*.tc.yaml',
                                      check_generic_code_desc,
@@ -44,7 +48,7 @@ class DiffeoplanConfigMaster(ConfigMaster):
 
 
 
-#DiffeoplanConfig = DiffeoplanConfigMaster()
+DiffeoplanConfig = DiffeoplanConfigMaster()
 #DiffeoplanConfig.load()
 
 

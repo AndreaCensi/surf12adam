@@ -2,7 +2,6 @@
 import numpy as np
 from PIL import Image
 import pdb
-import boot_agents
 from boot_agents import *
 
 

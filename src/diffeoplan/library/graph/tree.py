@@ -1,13 +1,14 @@
 import numpy as np
-import pdb
-from .. import  UncertainImage
+
+from diffeoplan.library.images.distance.distance_L2 import Distance_L2
 
 class Tree():
-    def __init__(self, root_node):
+    def __init__(self, root_node, metric=Distance_L2()):
         self.nodes = [root_node]
         self.distances =  np.zeros((1, 1))
         self.size = 1
-    
+        self.metric = metric
+        
     def add_node(self, node):
         self.nodes.append(node)
         self.distances = extend_distances(self.distances)
@@ -16,13 +17,14 @@ class Tree():
     
     def calculate_distances(self, node_index):
         for i in range(self.size):
-            dist_i = distance(self.nodes[node_index].y, self.nodes[i].y)
+#            pdb.set_trace()
+            dist_i = self.metric.distance(self.nodes[node_index].y, self.nodes[i].y)
             self.distances[node_index, i] = dist_i
             self.distances[i, node_index] = dist_i
     
-def distance(y0, y1):
-#    pdb.set_trace()
-    return UncertainImage.dist_values_L2(y0, y1)
+#def distance(y0, y1):
+##    pdb.set_trace()
+#    return UncertainImage.dist_values_L2(y0, y1)
         
 def extend_distances(distances):
     """

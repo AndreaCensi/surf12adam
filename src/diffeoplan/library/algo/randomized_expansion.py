@@ -1,5 +1,5 @@
-import random
-from . import DiffeoPlanningAlgo, PlanningResult, contract, logger
+
+from . import DiffeoPlanningAlgo, PlanningResult, contract
 from .. import  UncertainImage
 import numpy as np
 import copy
@@ -31,7 +31,7 @@ class RandomizedExpansion(DiffeoPlanningAlgo):
     def plan(self, y0, y1): #@UnusedVariable
         
         print('Entering graphsearch plan()')
-        dds = self.get_dds()
+
         
         start_node = Node(y0, [])
         start_tree = Tree(start_node)
@@ -41,7 +41,7 @@ class RandomizedExpansion(DiffeoPlanningAlgo):
         
         connector = TreeConnector(start_tree, goal_tree, self.tresh)
         
-        for i in range(self.max_ittr):
+        for _ in range(self.max_ittr):
             start_tree.add_node(self.get_new_node(start_tree))
             if self.directions == 2:
                 goal_tree.add_node(self.get_new_node(goal_tree))
@@ -49,6 +49,7 @@ class RandomizedExpansion(DiffeoPlanningAlgo):
             nplans = connector.connect_update()
             if nplans > 0:
                 plan = connector.get_connection()
+                print('REP Returning plan: ' + str(plan))
                 return PlanningResult(True, plan, 'Randomized Expansive Planner')
         return PlanningResult(False, None, 'Randomized Expansive Planner')
         

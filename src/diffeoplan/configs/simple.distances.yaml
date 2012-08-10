@@ -1,0 +1,8 @@
+- id: neigh1
+  desc: Example distance
+  code:
+  - DistanceNeighbor
+  - size: [160, 120]
+    area: [8, 8]
+
+    
