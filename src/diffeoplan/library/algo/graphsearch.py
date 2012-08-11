@@ -1,11 +1,8 @@
-from . import DiffeoPlanningAlgo, PlanningResult, contract, np
+from . import DiffeoPlanningAlgo, PlanningResult, contract
 from .. import UncertainImage
 from ..graph import Node, TreeConnector
 from diffeoplan.configuration import get_current_config
 from diffeoplan.library.graph.graph import Graph
-import pdb
-#import copy
-#import pdb
 
 class GraphSearch(DiffeoPlanningAlgo):
     """ 
@@ -15,16 +12,16 @@ class GraphSearch(DiffeoPlanningAlgo):
     """
     
     @contract(nsteps='int,>=1')
-    def __init__(self, nsteps, tresh, metric, directions=1, match_thresh=0):
+    def __init__(self, nsteps, thresh, metric, directions=1):
         '''
         :param nsteps: Number of steps in the random guess.
         '''
         config = get_current_config()
         self.metric = config.distances.instance(metric)
-        
-        self.tresh = tresh
+        self.thresh = thresh
         self.nsteps = nsteps
         self.directions = directions
+        
         self.comp_ind = 0 # Dont look for nodes of lower inde than this
         
     @contract(y0=UncertainImage, y1=UncertainImage, returns=PlanningResult)
@@ -37,11 +34,11 @@ class GraphSearch(DiffeoPlanningAlgo):
         start_node = Node(y0, [])
         start_node.command_stack = range(ncmd)
         start_node.child_nodes = []
-        start_tree = Graph(start_node, self.metric)
+        start_tree = Graph(start_node, self.metric, self.thresh)
         
         goal_node = Node(y1, [])
         goal_node.command_stack = range(ncmd)
-        goal_tree = Graph(goal_node, self.metric)
+        goal_tree = Graph(goal_node, self.metric, self.thresh)
         
         connector = TreeConnector(start_tree, goal_tree, self.tresh)
         
@@ -72,5 +69,5 @@ class GraphSearch(DiffeoPlanningAlgo):
                 return False
         return True
     
-    def get_new_node(self, tree):
+    def get_new_node(self):
         return None
