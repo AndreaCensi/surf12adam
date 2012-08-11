@@ -1,6 +1,6 @@
 import numpy as np
 
-import pdb
+#import pdb
 from diffeoplan.library.graph.tree import extend_array
 
 class TreeConnector():
@@ -13,7 +13,7 @@ class TreeConnector():
     def connection(self, n1, n2):
 #        pdb.set_trace()
         dist = self.T1.metric.distance(self.T1.nodes[n1].y, self.T2.nodes[n2].y)
-#        print('Distance ' + str(dist))
+        print('Distance ' + str(dist))
         if dist < self.tresh:
             return 1
         else:
@@ -37,8 +37,6 @@ class TreeConnector():
     def get_connection(self):
         npaths = np.sum((self.connections==1).astype(np.int))
         if npaths >0:
-            plans = []
-
             paths = np.array(np.nonzero((self.connections==1).astype(np.int)))
             plan = self.T1.nodes[paths[0,0]].path
             return plan
