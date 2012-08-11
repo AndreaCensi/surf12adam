@@ -2,7 +2,7 @@ from . import write_report, np
 from compmake import comp
 from reprep import Report
 import itertools
-import scipy.stats
+#import scipy.stats
 from scipy.stats.stats import nanmean, nanstd
 
 statistics = {}
