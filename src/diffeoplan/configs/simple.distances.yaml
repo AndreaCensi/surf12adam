@@ -3,6 +3,12 @@
   code:
   - diffeoplan.library.DistanceNeighbor
   - size: [160, 120]
-    neighborarea: [8, 8]
+    neighborarea: [4, 4]
 
+- id: neigh2
+  desc: Neighbor distance for a scaled image
+  code:
+  - diffeoplan.library.DistanceNeighbor
+  - size: [40, 30]
+    neighborarea: [2, 2]
     

@@ -13,7 +13,7 @@ class TreeConnector():
     def connection(self, n1, n2):
 #        pdb.set_trace()
         dist = self.T1.metric.distance(self.T1.nodes[n1].y, self.T2.nodes[n2].y)
-        print('Distance ' + str(dist))
+#        print('Distance ' + str(dist))
         if dist < self.tresh:
             return 1
         else:

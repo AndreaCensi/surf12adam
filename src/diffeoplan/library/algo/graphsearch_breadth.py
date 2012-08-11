@@ -12,8 +12,9 @@ class GraphSearchBreadth(GraphSearch):
         # Search for node with unevaluated command
         for i in range(self.comp_ind, len(tree.nodes)):
             if len(tree.nodes[i].command_stack) > len(tree.nodes[i].child_nodes):
-                self.comp_ind = i # don't look for nodes with lower index than this
                 return i
+            else:
+                self.comp_ind = min(i,self.comp_ind) # don't look for nodes with lower index than this
         
         return None # Algorithm complete
     
@@ -41,9 +42,6 @@ class GraphSearchBreadth(GraphSearch):
         node_new.parent = next_node
         node_new.command_stack = range(ncmd)
         node_new.child_nodes = []
-        
-        # Add child index to parent
-        node.child_nodes.append(next_node)
-        
+                
         return node_new
         

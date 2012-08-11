@@ -1,4 +1,6 @@
 from . import contract, np
+from PIL import Image #@UnresolvedImport
+import pdb
 
 
 class UncertainImage():
@@ -17,7 +19,6 @@ class UncertainImage():
     @contract(returns='array[HxW](float32)|array[HxWxN](float32)')
     def get_values(self):
         return self._values
-        
 
     @staticmethod
     @contract(returns='dict(str:*)')
@@ -42,3 +43,11 @@ class UncertainImage():
 
     # ADD here
     
+    def resize(self, size):
+#        pdb.set_trace()
+        y = np.array(Image.fromarray(self.get_values().astype('uint8')).resize(size))
+        if self.scalar_uncertainty <> None:
+            var = np.array(Image.fromarray(self.scalar_uncertainty, 'L').resize(size))
+        else:
+            var = None
+        return UncertainImage(y, var)

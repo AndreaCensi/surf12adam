@@ -1,7 +1,6 @@
 from diffeoplan.library.graph.tree import Tree
 from diffeoplan.library.images.distance.distance_L2 import Distance_L2
 import numpy as np
-import pdb
 
 class Graph(Tree):
     def __init__(self, root_node, metric=Distance_L2(), match_thresh=0.0):
@@ -16,21 +15,16 @@ class Graph(Tree):
     def add_node(self, node):
         # Add child-parent index references
         self.nodes[node.parent].child_nodes.append(len(self.nodes))
-#        print('Node ' + str(node.parent) + 'now has childs: ' + str(self.nodes[node.parent].child_nodes))
         
         # Check distance to all existing nodes
         dist_list = self.get_distances(node)
         dist_min = np.min(dist_list)
         dist_min_ind = np.nonzero(dist_list == dist_min)[0]
-#        print(' ')
-#        print('This path is: ' + str(node.path))
-#        print('Closest Node in tree is on distance :' + str(dist_min))
         if dist_min < self.match_thresh:
             # The new node is matching an old node, do not add to graph
             
             self.nodes[dist_min_ind].alt_paths.append(node.path)
             self.blocked.append(node.path)
-#            print('Node already exist with path' + str(self.nodes[dist_min_ind].path) + ', adding alternative path %')
         else:
             # The new node is unique, add to graph
             self.nodes.append(node)

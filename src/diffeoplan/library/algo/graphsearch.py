@@ -26,7 +26,7 @@ class GraphSearch(DiffeoPlanningAlgo):
         
     @contract(y0=UncertainImage, y1=UncertainImage, returns=PlanningResult)
     def plan(self, y0, y1): #@UnusedVariable
-        print('Engering graphsearch plan()')
+#        print('Engering graphsearch plan()')
         dds = self.get_dds()
         
         ncmd = len(dds.actions)
@@ -40,7 +40,7 @@ class GraphSearch(DiffeoPlanningAlgo):
         goal_node.command_stack = range(ncmd)
         goal_tree = Graph(goal_node, self.metric, self.thresh)
         
-        connector = TreeConnector(start_tree, goal_tree, self.tresh)
+        connector = TreeConnector(start_tree, goal_tree, self.thresh)
         
         while True:
             new_start_node = self.get_new_node(start_tree)
@@ -58,7 +58,9 @@ class GraphSearch(DiffeoPlanningAlgo):
                 plan = connector.get_connection()
                 print('Returning plan: ' + str(plan))
                 return PlanningResult(True, plan, 'Graph Search Plan')
-        return PlanningResult(True, [0], 'Graph Search Plan')
+        
+        print('Planning failed.')
+        return PlanningResult(False, None, 'Graph Search Plan')
         
      
     @staticmethod
