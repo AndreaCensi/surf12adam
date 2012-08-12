@@ -14,6 +14,15 @@
   - nsteps: 3
     thresh: 0.1
     metric: neigh2
+
+- id: informed
+  desc: Expansive Planner Algorithm with downscaled image for distance.
+  code:
+  - diffeoplan.library.InformedSearch
+  - max_ittr: 250
+    thresh: 0.1
+    nsteps: 5
+    metric: neigh2
         
 - id: expansive_3
   desc: Expansive Planner Algorithm with downscaled image for distance.

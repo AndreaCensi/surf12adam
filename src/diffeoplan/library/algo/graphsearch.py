@@ -12,7 +12,7 @@ class GraphSearch(DiffeoPlanningAlgo):
     """
     
     @contract(nsteps='int,>=1')
-    def __init__(self, nsteps, thresh, metric, directions=1):
+    def __init__(self, nsteps, thresh, metric, directions=1, max_ittr=1000):
         '''
         :param nsteps: Number of steps in the random guess.
         '''
@@ -21,7 +21,7 @@ class GraphSearch(DiffeoPlanningAlgo):
         self.thresh = thresh
         self.nsteps = nsteps
         self.directions = directions
-        
+        self.max_ittr = max_ittr
         self.comp_ind = 0 # Dont look for nodes of lower inde than this
         
     @contract(y0=UncertainImage, y1=UncertainImage, returns=PlanningResult)
@@ -41,7 +41,7 @@ class GraphSearch(DiffeoPlanningAlgo):
         goal_tree = Graph(goal_node, self.metric, self.thresh)
         
         connector = TreeConnector(start_tree, goal_tree, self.thresh)
-        
+                
         while True:
             new_start_node = self.get_new_node(start_tree)
             if len(new_start_node.path) <= self.nsteps:

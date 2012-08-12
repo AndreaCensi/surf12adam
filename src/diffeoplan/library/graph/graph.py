@@ -1,6 +1,7 @@
 from diffeoplan.library.graph.tree import Tree
 from diffeoplan.library.images.distance.distance_L2 import Distance_L2
 import numpy as np
+import pdb
 
 class Graph(Tree):
     def __init__(self, root_node, metric=Distance_L2(), match_thresh=0.0):
@@ -47,7 +48,20 @@ class Graph(Tree):
         for tnode in self.nodes:
             dist_list.append(self.metric.distance(tnode.y, node.y))
         return dist_list
+    
+    def get_closest_node(self):
+        '''
         
+        '''
+#        pdb.set_trace()
+        min_ind = np.nonzero(self.connector.distances==np.min(self.connector.distances))
+        if self.connector.T1 == self:
+            print('current path' + str(self.nodes[min_ind[0][0]].path))
+            return min_ind[0][0]
+        if self.connector.T2 == self:
+            return min_ind[0][1]
+        print('Node evaluation failed, get_closest_node')
+        return None
 def extend_distances(distances):
     """
         Takes a distances array as input and returns 

@@ -13,6 +13,7 @@
 */.pydevproject
 *.py[co]
 /diffeo_experiments/distance/distande-plot.png
+src/diffeoplan/testfiles/
 
 /ros/camera_actuator/msg_gen
 
@@ -43,3 +44,4 @@ pip-log.txt
 .mr.developer.cfg
 .noseids
 out
+.compmake_history.txt
