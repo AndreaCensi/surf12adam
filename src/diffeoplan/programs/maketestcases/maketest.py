@@ -1,4 +1,4 @@
-from . import  contract, logger
+from . import  contract
 from diffeoplan.library import TestCase, UncertainImage
 from procgraph_pil import resize
 #from procgraph_pil.imwrite import imwrite
