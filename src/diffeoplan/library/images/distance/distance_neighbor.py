@@ -1,4 +1,4 @@
-from . import logger, np, contract
+from . import np, contract
 from boot_agents.diffeo import Flattening, cmap, coords_iterate
 
 
@@ -6,20 +6,17 @@ class DistanceNeighbor():
     
     @contract(size='seq[2](int)', neighborarea='seq[2](int)')
     def __init__(self, size=[160, 120], neighborarea=[8, 8]):
+        self.size = size
         shape = size
         nsensels = shape[0]*shape[1]
     
         # for each sensel, create an area
         lengths = np.array(neighborarea)
-#        print(' Field Shape: %s' % str(shape))
-    #        print('    Fraction: %s' % str(max_displ))
-#        print(' Search area: %s' % str(lengths))
     
         neighbor_coords = [None] * nsensels
         self.neighbor_indices_flat = [None] * nsensels
     
         flattening = Flattening.by_rows(shape)
-#        pdb.set_trace()
         cmg = cmap(lengths)
         self.cmg = cmg
         for coord in coords_iterate(shape):
@@ -37,28 +34,27 @@ class DistanceNeighbor():
                 indices[a, b] = flattening.cell2index[c]
     
             self.neighbor_indices_flat[k] = np.array(indices.flat)
-        print('DistanceNeighbor initiated.')
+#        print('DistanceNeighbor initiated.')
         
     def distance(self, y0, y1):
         """
             Compare Y1(s) with best matching pixel in Y2(s_n) 
             where s_s \in (the neighbourhood of s)
         """
-        logger.info('Using DistanceNeighbour Distance')
-        Y1 = y0.get_values()
-        Y2 = y1.get_values()
+
+        Y1 = y0.resize(self.size).get_values()
+        Y2 = y1.resize(self.size).get_values()
         neighbor_indices_flat = self.neighbor_indices_flat
 
         nsensel = Y1[:,:,0].size
         best = np.zeros((nsensel,Y1.shape[2]))
         for c in range(Y1.shape[2]):
-    #        pdb.set_trace()
             y1_flat = Y1[:,:,c].astype(np.int16).flat
             y2_flat = Y2[:,:,c].astype(np.int16).flat
             for k in range(nsensel):
-#                pdb.set_trace()
                 a = y1_flat[k].astype(np.float)
                 b = y2_flat[neighbor_indices_flat[k]]
                 diff = np.abs(a-b)
                 best[k,c] = np.min(diff)
         return np.mean(best)#/self.maxval_distance_neighborhood_bestmatch
+    

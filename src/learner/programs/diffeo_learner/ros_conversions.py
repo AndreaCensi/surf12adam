@@ -2,19 +2,20 @@
 # http://nullege.com/codes/show/src%40c%40m%40cmu-ros-pkg-HEAD%40trunk%40posedetectiondb%40src%40ParseMessages.py/75/sensor_msgs.msg.Image/python
 # 
 
+#import os
+#import scipy
+#import signal
+#import string
+#import sys
+#import threading
+#import time
 import PIL.Image #@UnresolvedImport
 import numpy
-import scipy
-import os
-import sys
-import signal
-import time
-import threading
-import struct
-import string
-import roslib #; roslib.load_manifest(PKG)
-import rospy
+import roslib    #@UnresolvedImport 
+#; roslib.load_manifest(PKG)
+import rospy     #@UnresolvedImport
 import sensor_msgs.msg
+import struct
   
 
   

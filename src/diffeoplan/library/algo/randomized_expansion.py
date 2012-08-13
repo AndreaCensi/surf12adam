@@ -1,99 +1,79 @@
-
-from . import DiffeoPlanningAlgo, PlanningResult, contract
-from .. import  UncertainImage
-import numpy as np
+from diffeoplan.configuration import get_current_config
 import copy
-import pdb
-from ..graph import Node, Tree, TreeConnector
+import numpy as np
+import numpy.linalg as LA
+from diffeoplan.library.algo.graphsearch import GraphSearch
+from diffeoplan.library.graph.node import Node
 
 
-class RandomizedExpansion(DiffeoPlanningAlgo):
+class RandomizedExpansion(GraphSearch):
     """ 
         This is an algorithm that returns the best plan
         after trying all possible plans of exact length <nsteps> 
 
     """
     
-    
-    def __init__(self, max_ittr, tresh, region, directions=1):
+    def __init__(self, max_ittr, thresh, region, nsteps, metric, directions=1):
         '''
         :param nsteps: Number of steps in the random guess.
-        '''
-#        dds = self.get_dds()
-#        self.ncommands = len(dds.actions)
+        '''        
+        config = get_current_config()
+        self.metric = config.distances.instance(metric)
+        self.thresh = thresh
+        self.nsteps = nsteps
+        self.directions = directions
+        
         self.max_ittr = max_ittr
-        self.tresh = tresh
         self.directions = directions
         self.region = region
-#        self.max_cpu_time = max_cpu_time
         
-    @contract(y0=UncertainImage, y1=UncertainImage, returns=PlanningResult)
-    def plan(self, y0, y1): #@UnusedVariable
-        
-        print('Entering graphsearch plan()')
-
-        
-        start_node = Node(y0, [])
-        start_tree = Tree(start_node)
-        
-        goal_node = Node(y1, [])
-        goal_tree = Tree(goal_node)
-        
-        connector = TreeConnector(start_tree, goal_tree, self.tresh)
-        
-        for _ in range(self.max_ittr):
-            start_tree.add_node(self.get_new_node(start_tree))
-            if self.directions == 2:
-                goal_tree.add_node(self.get_new_node(goal_tree))
-            
-            nplans = connector.connect_update()
-            if nplans > 0:
-                plan = connector.get_connection()
-                print('REP Returning plan: ' + str(plan))
-                return PlanningResult(True, plan, 'Randomized Expansive Planner')
-        return PlanningResult(False, None, 'Randomized Expansive Planner')
-        
-    def expand_alldir(self, plan):
-        n = len(self.get_dds().actions)
-        expanded = []
-#        pdb.set_trace()
-        for i in range(n):
-            plani = copy.deepcopy(plan)
-            plani.append(i)
-            expanded.append(plani)
-        return expanded
-    
-    def expand_level(self, plans):
-        extplans = []
-        for i in range(len(plans)):
-            extplans.extend(self.expand_alldir(plans[i]))
-        return extplans
+        config = get_current_config()
+        self.metric = config.distances.instance(metric)
 
     def get_next_node(self, tree):
-        dds = self.get_dds()
-        n = len(dds.actions)
-        tresh = self.region
-        pmf = 1 / np.sum((tree.distances < tresh).astype(np.float), 0)
+        pmf = 1 / np.sum((tree.distances < self.region).astype(np.float), 0)
+        
+        # Make sure full-length paths is not expanded
+        for i in range(len(pmf)):
+            if len(tree.nodes[i].path) >= self.nsteps:
+                pmf[i] = 0
+        print('Norm pmf: ' + str(LA.norm(pmf)))
         exp_index = random_pmf(pmf)
         return exp_index
     
-    def get_next_command(self):
+    def get_next_cmd(self):
         dds = self.get_dds()
         n = len(dds.actions)
         return np.random.randint(0, n - 1)
     
     def get_new_node(self, tree):
-        exp_ind = self.get_next_node(tree)
-        exp_cmd = self.get_next_command()
+                
+        dds = self.get_dds()
+        ncmd = len(dds.actions)
         
-        parent = tree.nodes[exp_ind]
-        new_node = copy.deepcopy(parent)
-        new_node.path.append(exp_cmd)
-#        new_node.parent = parent
-#        pdb.set_trace()
-        y_new = self.get_dds().actions[exp_cmd].predict(tree.nodes[exp_ind].y)
-        new_node.y = y_new
-        return new_node
+        # Node index to expand
+        next_node = self.get_next_node(tree)
+        if next_node == None:
+            return None
+        
+        node = tree.nodes[next_node]
+        path = copy.deepcopy(node.path)
+        next_cmd = self.get_next_cmd()
+        next_action = dds.actions[next_cmd]
+        y_new = next_action.predict(node.y)
+        path.append(next_cmd)
+        node_new = Node(y_new, path)
+        
+        # Set data for node
+        node_new.parent = next_node
+        if len(path) < self.nsteps:
+            node_new.command_stack = range(ncmd)
+        else:
+            node_new.command_stack = []
+        node_new.child_nodes = []
+        
+
+        return node_new
                 
 def random_pmf(pmf):
     """
@@ -110,9 +90,3 @@ def random_pmf(pmf):
             return i
         prob = prob + pmf[i + 1]
     return len(pmf) - 1
-    
-    
-    
-    
-    
-    
