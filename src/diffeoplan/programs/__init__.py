@@ -9,4 +9,5 @@ from .makedds import *
 from .discdds_display import *
 from .maketestcases import *
 from .bench import *
+from .logcases import *
 from .main import *

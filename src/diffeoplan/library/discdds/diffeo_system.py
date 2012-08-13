@@ -48,4 +48,21 @@ class DiffeoSystem():
             action = self.actions[p]
             y1 = action.predict(y1)
         return y1
-        
+    
+    @contract(us='list[N](array)', returns='list[N](int)')
+    def commands_to_indices(self, us):
+        """ Given the sequence of commands (e.g. [[0,0,+100], [0,100,0],...]),
+            return the corresponding indices. """
+        return [self.command_to_index(u) for u in us]
+    
+    @contract(u='array[K]', returns='int,>=0')
+    def command_to_index(self, u):
+        """ Return the index for a given command. """
+        for i, action in enumerate(self.actions):
+            same = np.all(action.original_cmd == u)
+            if same:
+                return i
+        msg = 'Could not find action corresponding to command %s.\n' % u
+        msg += 'This DiffeoSystem has %s' % [a.original_cmd for a in self.actions]
+        raise ValueError(msg)
+    
