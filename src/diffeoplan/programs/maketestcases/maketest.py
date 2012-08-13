@@ -38,37 +38,3 @@ def discdds_make_test_case(outdir, tcname, id_discdds,
     
     
     
-    
-    
-    
-    
-##    
-##    # write everything
-##    image1_filename = '%s-start.pickle' % tcname 
-##    image2_filename = '%s-goal.pickle' % tcname
-##    safe_pickle_dump(image1, os.path.join(outdir, image1_filename))
-##    safe_pickle_dump(image2, os.path.join(outdir, image2_filename))
-##    image1_values_filename = '%s-start.values.png' % tcname 
-##    image2_values_filename = '%s-goal.values.png' % tcname
-##    imwrite(image1.get_values(), os.path.join(outdir, image1_values_filename))
-##    imwrite(image2.get_values(), os.path.join(outdir, image2_values_filename))
-##    
-#    description = {'id': tcname,
-#                   'desc': 'Automatically generated test case',
-#                   'code': ['diffeoplan.library.TestCase',
-#                            {
-#                            'file:image1_filename': image1_filename,
-#                            'file:image2_filename': image2_filename,
-#                            'id_discdds': id_discdds,
-#                            'ground_truth': plan
-#                            }
-#                            ]
-#                   }
-#    pprint(description)
-#    filename_yaml = os.path.join(outdir, '%s.tc.yaml' % tcname)
-#    logger.info('Writing to %r ' % friendly_path(filename_yaml))
-#    with open(filename_yaml, 'w') as f:
-#        yaml.dump([description], f,
-#                  default_flow_style=False, explicit_start=True)
-#    
-    

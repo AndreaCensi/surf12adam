@@ -1,8 +1,6 @@
-from . import discdds_display
-from .. import declare_command
-import os
-from diffeoplan.programs.utils import write_report_files
+from .. import declare_command, write_report_files
 from reprep import Report
+import os
 
 
 @declare_command('show-discdds',
@@ -26,7 +24,6 @@ def show_discdds(config, parser): #@UnusedVariable
         report = Report(id_dds)
         
         dds.display(report, image=image)
-        #discdds_display(report, dds, image)
     
         write_report_files(report, basename=os.path.join(outdir, id_dds))    
 

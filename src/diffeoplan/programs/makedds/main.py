@@ -2,11 +2,10 @@ from . import logger
 from .. import declare_command
 from bootstrapping_olympics.utils import raise_x_not_found, safe_pickle_dump
 from conf_tools.utils import friendly_path
+from contracts import describe_type
+from diffeoplan.library import DiffeoSystem
 import os
 import yaml
-from diffeoplan.library.discdds.diffeo_system import DiffeoSystem
-from compmake.utils.describe import describe_type
-from conf_tools.code_desc import instance_generic_code_desc
 
 @declare_command('makedds',
                  'makedds [<dds1> <dds2> ...]')

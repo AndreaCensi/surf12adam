@@ -81,6 +81,7 @@ class DiffeoLearner:
                        'code': ['diffeoplan.library.load_pickle',
                                 {'file:pickle': name + '.discdds.pickle'}]
                        }
+        # XXX: repeated code
         logger.info('Writing to %r ' % friendly_path(filename_yaml))
         with open(filename_yaml, 'w') as f:
             yaml.dump([description], f,
