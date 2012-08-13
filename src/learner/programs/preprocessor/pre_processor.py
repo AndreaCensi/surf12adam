@@ -1,16 +1,9 @@
 #!/usr/bin/env python
-import roslib
-import pdb
-from learner.programs.diffeo_learner.ros_conversions import *
-roslib.load_manifest('logitech_cam')
-import rosbag
-import cv
-from cv_bridge import CvBridge, CvBridgeError
+from PIL import Image, ImageOps #@UnresolvedImport @UnusedImport
+from learner.programs.diffeo_learner.ros_conversions import * #@UnusedWildImport
 from optparse import OptionParser
-from PIL import Image, ImageOps
-
-# Initiate CV Britge for image manipulation in opencv
-bridge = CvBridge()
+import rosbag
+roslib.load_manifest('logitech_cam')
 
 
 #def resize_image(image, size):
@@ -248,7 +241,6 @@ def main():
     infile = options.input + options.name + '.raw.bag'
     outfile = options.output + options.name + options.namefix + '.processed.bag'
     output_size = eval(options.size)
-    pdb.set_trace()
     
     pproc = PreProcessor(infile, outfile, output_size)
     pproc.process_bag()
