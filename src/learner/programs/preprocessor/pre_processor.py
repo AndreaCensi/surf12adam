@@ -1,57 +1,29 @@
 #!/usr/bin/env python
 import roslib
 import pdb
+from learner.programs.diffeo_learner.ros_conversions import *
 roslib.load_manifest('logitech_cam')
 import rosbag
 import cv
 from cv_bridge import CvBridge, CvBridgeError
 from optparse import OptionParser
+from PIL import Image, ImageOps
 
 # Initiate CV Britge for image manipulation in opencv
 bridge = CvBridge()
 
 
-def resize_image(image, size):
-    # Convert image to cv image to zoom
-    try:
-        cv_image = bridge.imgmsg_to_cv(image, "bgr8")
-    except CvBridgeError, e:
-        print e
-    cvi2 = cv.CreateImage(size, cv.IPL_DEPTH_8U, 3)
-    cv.Resize(cv_image, cvi2, interpolation=cv.CV_INTER_LINEAR)
-    return bridge.cv_to_imgmsg(cvi2, "bgr8")
+#def resize_image(image, size):
+#    # Convert image to cv image to zoom
+#    try:
+#        cv_image = bridge.imgmsg_to_cv(image, "bgr8")
+#    except CvBridgeError, e:
+#        print e
+#    cvi2 = cv.CreateImage(size, cv.IPL_DEPTH_8U, 3)
+#    cv.Resize(cv_image, cvi2, interpolation=cv.CV_INTER_LINEAR)
+#    return bridge.cv_to_imgmsg(cvi2, "bgr8")
 
-# Zoom an image with zoom center
-def zoom_image(image, zoom):
-    # Convert image to cv image to zoom
-    try:
-        cv_image = bridge.imgmsg_to_cv(image, "bgr8")
-    except CvBridgeError, e:
-        print e
-        
-    (cols, rows) = cv.GetSize(cv_image)
-    if vars().has_key('centerx'):
-        zcx = centerx 
-    else:
-        zcx = cols / 2
-        
-    if vars().has_key('centery'):
-        zcy = centery
-    else:
-        zcy = rows / 2
-    
-    M = cv.CreateMat(2, 3, cv.CV_32FC1)
-    M[0, 0] = zoom / 100.
-    M[0, 1] = 0
-    M[0, 2] = -zcx * (zoom / 100. - 1)
-    M[1, 0] = 0
-    M[1, 1] = zoom / 100.
-    M[1, 2] = -zcy * (zoom / 100. - 1)
-   
-    cvi2 = cv_image
-    cv.WarpAffine(cv_image, cvi2, M)
 
-    return bridge.cv_to_imgmsg(cvi2, "bgr8")
 
 
 # compare_images
@@ -187,8 +159,8 @@ class PreProcessor():
             print 'Camera Instruction Read: (', msg.data, ')' 
             print 'Writing Y0 and U0'
             print 'Time = ', t.to_time()
-            #write_img = resize_image(zoom_image(Y_last,zoom_last),output_size)
-            write_img = resize_image(zoom_image(self.last_container[5], self.zoom_last), self.output_size)
+            write_img = self.zoom_image(self.last_container[5], self.zoom_last)
+#            write_img = resize_image(zoom_image(self.last_container[5], self.zoom_last), self.output_size)
             self.out_bag.write('Y0', write_img, t)
             self.out_bag.write('U0', msg, t)
             
@@ -236,7 +208,7 @@ class PreProcessor():
             print 'Writing Y1'
             #print output_size
             #print output_size.__class__
-            write_img = resize_image(zoom_image(msg, self.zoom), self.output_size)
+            write_img = self.zoom_image(msg, self.zoom)
             self.out_bag.write('Y1', write_img,self. t0)
             self.i += 1
             
@@ -248,7 +220,19 @@ class PreProcessor():
         self.zoom_last = self.zoom
         
         return next_state
-    
+    # Zoom an image with zoom center
+    def zoom_image(self,image, zoom):
+        pim, _, (h, w, _) = imgmsg_to_pil(image)
+        z = float(zoom)
+        z0 = 100.0 # original size zoom
+        
+        x0 = int(w/2*(1.0 - z0/z))
+        y0 = int(h/2*(1.0 - z0/z))
+        dx = int(w*z0/z)
+        dy = int(h*z0/z)
+        pim_crop = pim.crop((x0, y0, dx, dy))
+        pim_out = pim_crop.resize(self.output_size)    
+        return pil_to_imgmsg(pim_out)
 
 def main():
     usage = "usage: %prog -n name -i inputpath -o outputpath -s [W,H] -p string"
@@ -259,10 +243,12 @@ def main():
     parser.add_option("-o", "--output", default='/media/data/processed-data/', help="Path to output file")
     parser.add_option("-p", "--namefix", default='', help='Additional string for output filename')
     parser.add_option("-s", "--size", default='[160,120]', help="Image size WxH")
+#    parser.add_option("-zc", "--zoom_center", default=[0,0], help="Not Impl: Zoom center offset from mid image")
     options, _ = parser.parse_args()
     infile = options.input + options.name + '.raw.bag'
     outfile = options.output + options.name + options.namefix + '.processed.bag'
     output_size = eval(options.size)
+    pdb.set_trace()
     
     pproc = PreProcessor(infile, outfile, output_size)
     pproc.process_bag()
