@@ -4,9 +4,10 @@ from ..utils import MyOptionParser
 from .utils import *
 
 from .show_config import * 
-from .symdiffeo_display import *
+from .show_discdds import *
+from .show_symdiffeo import *
+from .show_tc import *
 from .makedds import *
-from .discdds_display import *
 from .maketestcases import *
 from .bench import *
 from .logcases import *

@@ -1,4 +1,5 @@
-from . import DiffeoAction, np, contract, UncertainImage
+from . import DiffeoAction, np, contract, UncertainImage, logger
+from reprep import Report
 
 class DiffeoSystem():
     """
@@ -62,7 +63,32 @@ class DiffeoSystem():
             same = np.all(action.original_cmd == u)
             if same:
                 return i
+            
         msg = 'Could not find action corresponding to command %s.\n' % u
         msg += 'This DiffeoSystem has %s' % [a.original_cmd for a in self.actions]
-        raise ValueError(msg)
+        if False:
+            raise ValueError(msg)
+        else:
+            logger.error(msg)
+            logger.error('I will continue just because Andrea needs to debug '
+                         'other code. I will return the command 0.')
+            return 0
     
+    
+    @contract(report=Report, image=UncertainImage)
+    def display(self, report, image):
+        '''
+            Displays this diffeo system in a report.
+        
+            :param report: instance of reprep.Report to fill.
+            :param image: RGB image to use as test.
+        '''
+        
+        overview = 'Displaying a discrete DDS with %d actions' % len(self.actions)
+        report.text('overview', overview)
+    
+        for i, action in enumerate(self.actions):
+            sec = report.section('action%d' % i)
+            action.display(report=sec, image=image)
+            
+

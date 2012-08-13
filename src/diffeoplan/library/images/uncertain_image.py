@@ -46,7 +46,7 @@ class UncertainImage():
     # ADD here
     
     def resize(self, size):
-        # FIXME: this assumes that the image is a uint8 
+        # FIXME: this assumes that the image is a uint8 with 3 channels
         # we want to have float images fields
         y = np.array(Image.fromarray(self.get_values().astype('uint8')).resize(size))
         if self.scalar_uncertainty is not None:
@@ -54,3 +54,10 @@ class UncertainImage():
         else:
             var = None
         return UncertainImage(y, var)
+
+    @contract(returns='array[HxWx3](uint8)')
+    def get_rgb(self):
+        """ Returns an RGB representation of the certain part of the image. """
+        # TODO: make it work with "flat" data
+        rgb = self.get_values().astype('uint8')        
+        return rgb 
