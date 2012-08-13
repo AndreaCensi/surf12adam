@@ -71,6 +71,7 @@ def symdiffeo_display(report, template_rgb, diffeo, resolution): #@UnusedVariabl
                         'Note: must transpose rgb data on diagonal to make it coherent with'
                         ' plots above.')
     
+    # TODO: use code in diffeomoprhism2d
     report.data_rgb('norm_D', diffeo_to_rgb_norm(D),
                     caption="Norm(D). white=0, blue=maximum. Note: wrong in case of wraparound").add_to(fig)
     report.data_rgb('phase_D', diffeo_to_rgb_angle(D),

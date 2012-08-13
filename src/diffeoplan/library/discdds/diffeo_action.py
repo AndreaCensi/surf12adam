@@ -39,6 +39,11 @@ class DiffeoAction():
         report.data('label', self.label)
         report.data('original_cmd', self.original_cmd)
         
+        s1 = report.section('forward')
+        self.diffeo.display(s1) 
+        s2 = report.section('backward')
+        self.diffeo.display(s2)
+        
         # TO finish
         
         

@@ -1,9 +1,8 @@
 from . import symdiffeo_display
-from .. import declare_command
+from .. import declare_command, write_report_files
 from procgraph_pil import resize
-import os
-from diffeoplan.programs.utils import write_report_files
 from reprep import Report
+import os
 
 
 @declare_command('show-symdiffeo',
@@ -23,6 +22,7 @@ def show_symdiffeo(config, parser): #@UnusedVariable
     
     if not which:
         which = config.symdiffeos.keys()
+    # TODO: add expand
     
     id_image = options.id_image
     image = config.images.instance(id_image)
