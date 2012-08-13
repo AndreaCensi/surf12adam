@@ -34,6 +34,9 @@ def dp(arguments):
     parser.add_option("--contracts", default=False, action='store_true',
                       help="Activate PyContracts (disabled by default)")
 
+    parser.add_option("--profile", default=False, action='store_true',
+                      help="Use Python profiler")
+
     parser.add_option("-d", "--directory", default="default:.", action='store_true',
                       help="Configuration directory")
 
@@ -65,8 +68,21 @@ def dp(arguments):
     usage = function.short_usage 
     parser = CmdOptionParser(prog='%s %s' % (MAIN_CMD_NAME, cmd), usage=usage,
                              args=cmd_args)
-    return function(config, parser)
 
+    def go():
+        return function(config, parser)
+
+    if not options.profile:
+        go()
+    else:
+        logger.warning('Note: the profiler does not work when using '
+                       'parallel execution. (use "make" instead of "parmake").')
+        import cProfile
+        cProfile.runctx('go()', globals(), locals(), 'dp_prof')
+        import pstats
+        p = pstats.Stats('dp_prof')
+        p.sort_stats('cumulative').print_stats(30)
+        p.sort_stats('time').print_stats(30)
 
 def dpmain():
     exceptions_no_traceback = (UserError, ConfToolsException)

@@ -1,5 +1,5 @@
 from .. import declare_command
-from diffeoplan.programs.maketestcases.maketest import discdds_make_test_cases
+from . import discdds_make_test_cases
 
 
 @declare_command('gentests',

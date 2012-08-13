@@ -1,4 +1,5 @@
-
+import os
+from . import logger
 
 class Storage:
     commands = {}
@@ -15,3 +16,15 @@ def declare_command(name, short_usage=None):
         Storage.commands[name] = f
         return f
     return wrap
+
+
+def write_report_files(report, basename):
+    # TODO: hdf output
+    
+    filename = basename + '.html'
+    dirname = os.path.dirname(filename)
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+        
+    logger.info('Writing to %r.' % filename)
+    report.to_html(filename)

@@ -1,6 +1,6 @@
 from . import contract, np
 from PIL import Image #@UnresolvedImport
-    
+
 class UncertainImage():
     
     @contract(values='array[HxWx...]', scalar_uncertainty='None|array[HxW]')
@@ -8,8 +8,7 @@ class UncertainImage():
         """ 
             To avoid errors later, the values are stored as float values.
             (If we use uint8, then taking differences might introduce
-             strange effects.)
-            
+             strange effects.)      
         """  
         self._values = values.astype('float32')
         self.scalar_uncertainty = scalar_uncertainty
@@ -18,6 +17,10 @@ class UncertainImage():
     def get_values(self):
         return self._values
 
+
+    # TODO: we don't really need these, now that we have
+    # a generic mechanism for instantiating images
+    
     @staticmethod
     @contract(returns='dict(str:*)')
     def compute_all_distances(y0, y1):
@@ -42,10 +45,18 @@ class UncertainImage():
     # ADD here
     
     def resize(self, size):
-#        pdb.set_trace()
+        # FIXME: this assumes that the image is a uint8 with 3 channels
+        # we want to have float images fields
         y = np.array(Image.fromarray(self.get_values().astype('uint8')).resize(size))
-        if self.scalar_uncertainty <> None:
+        if self.scalar_uncertainty is not None:
             var = np.array(Image.fromarray(self.scalar_uncertainty, 'L').resize(size))
         else:
             var = None
         return UncertainImage(y, var)
+
+    @contract(returns='array[HxWx3](uint8)')
+    def get_rgb(self):
+        """ Returns an RGB representation of the certain part of the image. """
+        # TODO: make it work with "flat" data
+        rgb = self.get_values().astype('uint8')        
+        return rgb 

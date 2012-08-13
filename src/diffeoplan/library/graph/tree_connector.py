@@ -6,6 +6,7 @@ from numpy.core.numeric import inf
 
 class TreeConnector():
     inf = 1e10
+    
     def __init__(self, T1, T2, tresh):
         self.tresh = tresh
         self.connections = -np.ones((T1.size,T2.size))

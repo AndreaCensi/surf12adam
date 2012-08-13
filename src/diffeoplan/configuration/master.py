@@ -17,10 +17,6 @@ class DiffeoplanConfigMaster(ConfigMaster):
                                      check_valid_symdiffeo_config,
                                      GenericCall(check_valid_symdiffeo))
 
-#        self.diffeos = self.add_class('diffeos', '*.diffeos.yaml',
-#                                     check_valid_diffeo_config,
-#                                     GenericCall(check_valid_diffeo))
-# 
         self.symdds = self.add_class('symdds', '*.symdds.yaml',
                                      check_valid_symdds_config,
                                      GenericCall(check_valid_dds))

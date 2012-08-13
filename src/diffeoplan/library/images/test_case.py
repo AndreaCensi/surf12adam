@@ -41,6 +41,14 @@ class TestCase():
         with open(filename_yaml, 'w') as f:
             yaml.dump([description], f,
                       default_flow_style=False, explicit_start=True)
+            
+    def display(self, report):
+        report.data('id_tc', self.id_tc)
+        report.data('true_plan', self.true_plan)
+        f = report.figure()
+        f.data_rgb('y0_rgb', self.y0.get_rgb(), caption='y0 (rgb)')
+        f.data_rgb('y1_rgb', self.y1.get_rgb(), caption='y1 (rgb)')
+        
 #    
 #    
 #def tc_to_yaml():

@@ -1,6 +1,7 @@
 from .. import UncertainImage
 from . import  contract
 from boot_agents.diffeo.diffeo_estimator import Diffeomorphism2D
+from reprep import Report
 
     
 class DiffeoAction():
@@ -32,5 +33,17 @@ class DiffeoAction():
         y1, var1 = self.diffeo.apply(y0.get_values(),
                                      y0.scalar_uncertainty)
         return UncertainImage(y1, var1) 
+        
+    @contract(report=Report, image=UncertainImage)
+    def display(self, report, image):
+        report.data('label', self.label)
+        report.data('original_cmd', self.original_cmd)
+        
+        s1 = report.section('forward')
+        self.diffeo.display(s1) 
+        s2 = report.section('backward')
+        self.diffeo.display(s2)
+        
+        # TO finish
         
         
