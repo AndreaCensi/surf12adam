@@ -75,6 +75,7 @@ def main(args):
             n = n +1
         else:
             ri = random.randint(0,num_cmd-1)
+            n = 0
             
         print rospy.get_time()-time0
         this_cmd = cmd_list[ri]
