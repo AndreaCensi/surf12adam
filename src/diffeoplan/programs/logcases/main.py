@@ -6,16 +6,13 @@ import os
 @declare_command('logcases',
                  'logcases --log <logname (bag)> -n <number> -d <delay>')
 def logcases_main(config, parser): #@UnusedVariable
-    """ 
-        Creates test cases from log files. 
-    
-        Example uses:
-        
-            logcases --log mycam-0.processed.bag -n 10 --delay 1 --dds mycam
-                      
-    
-    """
-    
+    """ Creates test cases from log files. """
+#    
+#        Example uses:
+#        
+#            logcases --log mycam-0.processed.bag -n 10 --delay 1 --dds mycam
+#                      
+#    
     parser.add_option('-n', help="Number of test cases.", default=1, type='int')
     parser.add_option('-d', '--delay', help="Delay between data (>=1)", default=1, type='int')
     parser.add_option('-l', '--log', help='Log filename')

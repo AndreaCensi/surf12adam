@@ -1,6 +1,9 @@
 from diffeoplan.library import UncertainImage
 import time
 
+
+
+
 def run_planning(config, id_algo, id_tc):
     # load the test case 
     testcase = config.testcases.instance(id_tc)

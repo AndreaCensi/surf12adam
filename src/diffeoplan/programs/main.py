@@ -8,16 +8,21 @@ from diffeoplan.configuration import DiffeoplanConfigMaster
 import contracts
 
 MAIN_CMD_NAME = 'dp'
-commands_list = "\n".join(['%25s   %s' % 
+commands_list = "\n".join(['    %-16s   %s' % 
                            #(f.short_usage, f.__doc__)
-                           (cmd, str(f.__doc__).strip())
-                           for cmd, f in Storage.commands.items()])
+                           (cmd, str(Storage.commands[cmd].__doc__).strip())
+                           for cmd in sorted(Storage.commands)])
 
 usage_pattern = """
 
     ${cmd} [global options]  <command>  [command options]
+
+See the manual at 
+
+    http://github.com/AndreaCensi/surf12adam/wiki/dp
     
 Available commands:
+
 ${commands_list}
 
 Use: `${cmd}  <command> -h' to get more information about that command.  
@@ -68,7 +73,8 @@ def dp(arguments):
     usage = function.short_usage 
     parser = CmdOptionParser(prog='%s %s' % (MAIN_CMD_NAME, cmd), usage=usage,
                              args=cmd_args)
-
+    parser.enable_interspersed_args()
+    
     def go():
         return function(config, parser)
 

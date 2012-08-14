@@ -1,4 +1,5 @@
 from conf_tools.code_desc import check_generic_code_desc
+from conf_tools.checks import check_necessary
 
 
 def check_valid_image_config(spec):
@@ -35,3 +36,13 @@ def check_valid_discdds_config(spec):
 
 def check_valid_dds(x):
     pass # TODO
+
+def check_valid_set(x):
+    necessary = [ 
+                  ('id', str),
+                  ('desc', str),
+                  ('algorithms', list),
+                  ('testcases', list),
+              ]
+    check_necessary(x, necessary)
+

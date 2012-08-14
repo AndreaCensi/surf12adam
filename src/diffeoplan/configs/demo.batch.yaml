@@ -1,0 +1,18 @@
+
+
+- id: demo1
+  desc: One set of experiments (with length=5)
+  algorithms:
+  - random1
+  - random2
+  testcases:
+  - tc_dtx1_lena_d5_*
+
+
+- id: demo2
+  desc: Another independent set of experiments (with length=10)
+  algorithms:
+  - random1
+  - random2
+  testcases:
+  - tc_dtx1_lena_d10_*

@@ -9,7 +9,6 @@ def show_config(config, parser): #@UnusedVariable
 
     options = parser.parse_options() 
 
-
     print('Images:')    
     print(config.images.summary_string_id_desc())
 
@@ -28,6 +27,8 @@ def show_config(config, parser): #@UnusedVariable
     print('Algorithms:')
     print(config.algos.summary_string_id_desc())
 
+    print('Batch experiments:')
+    print(config.sets.summary_string_id_desc())
     
     if options.verbose:
         print('Test cases:')

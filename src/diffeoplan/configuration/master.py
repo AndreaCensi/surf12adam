@@ -3,6 +3,7 @@ from . import (check_valid_image_config, check_valid_image,
     check_valid_symdiffeo_config, check_valid_symdiffeo, check_valid_symdds_config,
     check_valid_discdds_config)
 from conf_tools import ConfigMaster, GenericCall, check_generic_code_desc
+from diffeoplan.configuration.checks import check_valid_set
 
 
 class DiffeoplanConfigMaster(ConfigMaster):
@@ -37,7 +38,9 @@ class DiffeoplanConfigMaster(ConfigMaster):
                                      check_generic_code_desc,
                                      GenericCall())
  
- 
+        self.sets = self.add_class('sets', '*.batch.yaml', check_valid_set)
+  
+  
     def get_default_dir(self):
         from pkg_resources import resource_filename #@UnresolvedImport
         return resource_filename("diffeoplan", "configs")

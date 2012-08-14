@@ -1,11 +1,11 @@
 from . import declare_command
 from reprep import Report
 import os
-from diffeoplan.programs.utils import write_report_files
+from .. import write_report_files
 
 @declare_command('show-tc', 'show-tc [-o <dir>] [<tc1> <tc2> ...]')
 def show_tc(config, parser): #@UnusedVariable
-    """ Visualizes some test cases. """ 
+    """ Displays the test cases. """ 
     parser.add_option("-o", "--output", help="Output directory",
                       default='out/show_tc/')
     

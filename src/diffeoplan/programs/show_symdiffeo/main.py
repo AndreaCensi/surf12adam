@@ -8,7 +8,7 @@ import os
 @declare_command('show-symdiffeo',
                  'show-symdiffeo  [-i <image>] [-r <resolution>] [<diffeo1> <diffeo2> ...]')
 def show_symdiffeo(config, parser): #@UnusedVariable
-    """ Displays a discrete DDS (class DiffeoSystem) """
+    """ Displays a symbolically-defined DDS """
     parser.add_option("-o", "--output", help="Output directory",
                       default='out/show_symdiffeos/')
     parser.add_option("-i", "--id_image", help="ID image.", default='lena')
@@ -21,15 +21,16 @@ def show_symdiffeo(config, parser): #@UnusedVariable
     resolution = int(options.resolution)
     
     if not which:
-        which = config.symdiffeos.keys()
-    # TODO: add expand
-    
+        todo = config.symdiffeos.keys()  
+    else:
+        todo = config.symdiffeos.expand_names(which)
+
     id_image = options.id_image
     image = config.images.instance(id_image)
     
     image = resize(image, resolution, resolution) 
     
-    for id_diffeo in which:
+    for id_diffeo in todo:
         diffeo = config.symdiffeos.instance(id_diffeo) 
         report = Report(id_diffeo)
         

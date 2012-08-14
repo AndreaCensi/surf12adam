@@ -19,7 +19,7 @@ def discdds_make_test_cases(config, outdir, id_discdds,
     image = UncertainImage(rgb)
     
     for i in range(num_cases):
-        tcname = 'tc_%s_%s_%02d_%03d' % (id_discdds, id_image, plan_length, i)
+        tcname = 'tc_%s_%s_d%d_%03d' % (id_discdds, id_image, plan_length, i)
         discdds_make_test_case(outdir, tcname, id_discdds,
                                discdds, image, plan_length)
 
