@@ -21,6 +21,14 @@
     neighborarea: [2, 2]
     
 
+- id: neigh2eff
+  desc: Neighbor distance for a scaled image
+  code:
+  - diffeoplan.library.DistanceNeighborEff
+  - size: [40, 30]
+    neighborarea: [2, 2]
+    
+
 - id: L1
   desc: L1 distance
   code:
