@@ -6,6 +6,7 @@ import rospy
 import random
 from std_msgs.msg import String
 from camera_actuator.msg import IntArray
+from optparse import OptionParser
 
 
 def parse_commands(str):
