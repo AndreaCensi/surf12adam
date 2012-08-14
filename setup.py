@@ -36,7 +36,8 @@ setup(name='surf12adam',
          'console_scripts': [
            'dp = diffeoplan.programs:dpmain',
            'diffeo-learner = learner:diffeo_learner_main',
-           'diffeo-tests = learner:diffeo_learner_main',
+#           'diffeo-tests = learner:diffeo_learner_main',
+           'preprocess = learner:preprocessor_main',
         ]
     }
 )
