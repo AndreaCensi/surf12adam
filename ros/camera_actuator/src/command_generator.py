@@ -6,6 +6,7 @@ import rospy
 import random
 from std_msgs.msg import String
 from camera_actuator.msg import IntArray
+from optparse import OptionParser
 
 
 def parse_commands(str):
@@ -41,41 +42,12 @@ def main(args):
     parser.add_option("-f", "--freq", default='1',help="Command generation frequence in Hz.")
     parser.add_option("-s", "--size", default='[160,120]',help="Image size WxH")
     parser.add_option("-a", "--area", default='[6,6]',help="Size of search area")
+    parser.add_option("-n", "--num", default=5,help="Number of same command in a sequence.")
     options, which = parser.parse_args()
     cmd_list = eval(options.commands)
     duration = eval(options.time)
     freq = eval(options.freq)
-    
-    
-    
-#    
-#    try:
-#        cmd_str = args[args.index('-c')+1]
-#    except ValueError:
-#        print 'No given commands found, using default command string' 
-#        cmd_str = '[[150,0,0],[-150,0,0],[0,100,0],[0,-100,0],[0,0,10],[0,0,-10]]'
-#    
-#    try:
-#        duration = int(args[args.index('-t')+1])
-#        print 'Running for ',duration,'s'
-#    except ValueError:
-#        print 'No duration found, running for 60s.'
-#        duration = 60
-#    
-#    # Generation frequency
-#    try:
-#        freq = float(args[args.index('-f')+1])
-#    except ValueError:
-#        freq = 1.0
-#    print freq
-#    
-#    
-#    # Start at random position ?
-#    try:
-#        start_random = args[args.index('-r')+1].lower() in ("yes", "true", "t", "1")
-#    except ValueError:
-#        start_random = False
-#    print 'start random position:     ',start_random
+    num = options.num
     
     time0 = rospy.get_time()
     
@@ -89,11 +61,21 @@ def main(args):
     # Set the frequence for sending commands
     ### make rate as parameter
     r = rospy.Rate(freq)
+    ri = random.randint(0,num_cmd-1)
     #while not rospy.is_shutdown():
+    
+    n = 0
+    
+    
     while rospy.get_time()-time0 < duration:
         if rospy.is_shutdown():
             break
-        ri = random.randint(0,num_cmd-1)
+        
+        if n < num:
+            n = n +1
+        else:
+            ri = random.randint(0,num_cmd-1)
+            
         print rospy.get_time()-time0
         this_cmd = cmd_list[ri]
         print 'Sending command:     ',this_cmd

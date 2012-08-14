@@ -1,3 +1,11 @@
+- id: graphsearch_dir2
+  desc: An algorithm that searches all possible sequences of (3 step).
+  code:
+  - diffeoplan.library.GraphSearchBreadth
+  - nsteps: 3
+    thresh: 0.1
+    metric: neigh2
+    directions: 2
 
 - id: graphsearch_breadth_3
   desc: An algorithm that searches all possible sequences of (3 step).

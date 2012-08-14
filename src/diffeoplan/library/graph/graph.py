@@ -1,7 +1,6 @@
 from diffeoplan.library.graph.tree import Tree
 from diffeoplan.library.images.distance.distance_L2 import Distance_L2
 import numpy as np
-import pdb
 
 class Graph(Tree):
     def __init__(self, root_node, metric=Distance_L2(), match_thresh=0.0):

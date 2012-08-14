@@ -1,7 +1,6 @@
 from . import contract, np
 from PIL import Image #@UnresolvedImport
 
-
 class UncertainImage():
     
     @contract(values='array[HxWx...]', scalar_uncertainty='None|array[HxW]')

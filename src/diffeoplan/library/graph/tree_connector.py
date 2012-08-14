@@ -3,7 +3,6 @@ import numpy as np
 #import pdb
 from diffeoplan.library.graph.tree import extend_array
 from numpy.core.numeric import inf
-import pdb
 
 class TreeConnector():
     inf = 1e10

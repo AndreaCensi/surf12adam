@@ -11,9 +11,9 @@
 #import time
 import PIL.Image #@UnresolvedImport
 import numpy
-import roslib    #@UnresolvedImport 
+import roslib    #@UnresolvedImport @UnusedImport
 #; roslib.load_manifest(PKG)
-import rospy     #@UnresolvedImport
+import rospy     #@UnresolvedImport @UnusedImport
 import sensor_msgs.msg
 import struct
   
@@ -69,7 +69,7 @@ def imgmsg_to_pil(rosimage, encoding_to_mode={
   
     if conversion == 'f' or conversion == 'd':
         dimsizes = [rosimage.height, rosimage.width, channels]
-        imagearr = numpy.array(255*I,dtype=numpy.uint8)
+        imagearr = numpy.array(255*I,dtype=numpy.uint8) #@UndefinedVariable
         im = PIL.Image.frombuffer('RGB' if channels == 3 else 'L',dimsizes[1::-1],imagearr.tostring(), 'raw','RGB',0,1)
         if channels == 3:
             im = PIL.Image.merge('RGB',im.split()[-1::-1])
