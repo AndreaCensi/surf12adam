@@ -8,9 +8,9 @@ class GraphSearchDeep(GraphSearch):
         after trying all possible plans of exact length <nsteps> 
 
     """
-    def get_next_node(self,tree):
+    def get_next_node(self, tree): 
         # Search for node with unevaluated command
-        for i in range(len(tree.nodes)-1, -1, -1):
+        for i in range(len(tree.nodes) - 1, -1, -1): 
             if len(tree.nodes[i].command_stack) > len(tree.nodes[i].child_nodes):
                 return i
         

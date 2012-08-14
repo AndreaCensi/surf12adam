@@ -29,6 +29,7 @@ def discdds_make_test_case(outdir, tcname, id_discdds,
                            discdds, image1, plan_length):
     # Get a random plan
     plan = discdds.get_random_plan(plan_length)
+    
     # predict the result
     image2 = discdds.predict(image1, plan)
     

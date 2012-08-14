@@ -1,6 +1,7 @@
 from . import logger, read_bag
 from ... import DiffeoLearner
 from optparse import OptionParser
+import os
 
 
 def diffeo_learner_main():
@@ -8,7 +9,7 @@ def diffeo_learner_main():
     parser = OptionParser(usage=usage, version="%prog 1.0")
     parser.add_option("-i", "--input", default=None,
                       help="Input processed.bag file")
-    parser.add_option("-p", "--path", default='learned_diffeo',
+    parser.add_option("-p", "--path", default=None,
                       help="Path to output files")
     parser.add_option("-n", "--name", default='camdds',
                       help="Output dds system name")
@@ -23,8 +24,13 @@ def diffeo_learner_main():
     if options.input is None:
         raise ValueError('Required options -i')
     
+    if options.path is None:
+        dirname = os.path.dirname(options.input)
+        logger.info('No path given; using %s' % dirname)
+    else:
+        dirname = options.path
+        
     bagfile = options.input
-    dpath = options.path
     name = options.name
     size = eval(options.size)
     area = eval(options.area)
@@ -37,6 +43,6 @@ def diffeo_learner_main():
     logger.info('Commands: %s' % learn.command_list)
     learn.summarize()
     
-    learn.diffeo_dump(dpath, name)
+    learn.diffeo_dump(dirname, name)
     learn.show_diffeomorphisms()
 

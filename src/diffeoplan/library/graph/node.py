@@ -2,9 +2,11 @@
 
 
 class Node():
-    def __init__(self, y, path):
+    def __init__(self, y, path, children=None):
         self.y = y
         self.path = path
         self.alt_paths = [[]]
         self.parent = None
-        self.child_nodes = []
+        if children is None:
+            children = []
+        self.child_nodes = children

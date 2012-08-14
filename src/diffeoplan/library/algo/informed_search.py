@@ -10,8 +10,8 @@ class InformedSearch(GraphSearch):
         after trying all possible plans of exact length <nsteps> 
 
     """
-    def get_next_node(self,tree):
-        return len(tree.nodes)-1
+    def get_next_node(self, tree): 
+        return len(tree.nodes) - 1 
 #        try:
 ##        if self.active_node == None:
 ##            self.active_node = 0
@@ -36,7 +36,7 @@ class InformedSearch(GraphSearch):
         node = tree.nodes[next_node]
         
         min_dist = np.zeros(ncmd)
-        node_new = [0]*ncmd       
+        node_new = [0] * ncmd 
 #        pdb.set_trace()
         for i in range(ncmd):
             
@@ -48,7 +48,7 @@ class InformedSearch(GraphSearch):
             min_dist[i] = np.min(tree.connector.T2.get_distances(node_new[i]))
             ### has to fix for dual direction search
         
-        best_ind = np.nonzero(min_dist==np.min(min_dist))[0]
+        best_ind = np.nonzero(min_dist == np.min(min_dist))[0] 
         node_new = node_new[best_ind]
         
         # Set data for node

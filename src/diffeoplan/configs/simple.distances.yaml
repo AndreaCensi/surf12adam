@@ -1,9 +1,17 @@
 - id: neigh1
-  desc: Example distance
+  desc: "Neighbor distance for a scaled image (160,120)"
   code:
   - diffeoplan.library.DistanceNeighbor
   - size: [160, 120]
     neighborarea: [4, 4]
+
+- id: neigh1eff
+  desc: "More efficient"
+  code:
+  - diffeoplan.library.DistanceNeighborEff
+  - size: [160, 120]
+    neighborarea: [4, 4]
+
 
 - id: neigh2
   desc: Neighbor distance for a scaled image
@@ -12,3 +20,16 @@
   - size: [40, 30]
     neighborarea: [2, 2]
     
+
+- id: L1
+  desc: L1 distance
+  code:
+  - diffeoplan.library.DistanceNorm
+  - order: 1
+
+
+- id: L2
+  desc: L2
+  code:
+  - diffeoplan.library.DistanceNorm
+  - order: 2

@@ -8,13 +8,14 @@ class GraphSearchBreadth(GraphSearch):
         after trying all possible plans of exact length <nsteps> 
 
     """
-    def get_next_node(self,tree):
+    def get_next_node(self, tree): 
         # Search for node with unevaluated command
         for i in range(self.comp_ind, len(tree.nodes)):
             if len(tree.nodes[i].command_stack) > len(tree.nodes[i].child_nodes):
                 return i
             else:
-                self.comp_ind = min(i,self.comp_ind) # don't look for nodes with lower index than this
+                # don't look for nodes with lower index than this
+                self.comp_ind = min(i, self.comp_ind) 
         
         return None # Algorithm complete
     

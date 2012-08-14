@@ -2,9 +2,14 @@ import numpy as np
 
 
 
-class Distance_L1():
+class DistanceNorm():
+
+    def __init__(self, order):
+        self.order = order
+        
     def distance(self, y0, y1):
-        print('Using distance_L1 :).')
-        diff = (y0.get_values() - y1.get_values()).flatten()
-        return float(np.linalg.norm(diff, 1)) / y0.size
+        v0 = y0.get_values()
+        v1 = y1.get_values()
+        diff = (v0 - v1).flatten()
+        return float(np.linalg.norm(diff, self.order)) / diff.size
 

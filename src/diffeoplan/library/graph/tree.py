@@ -1,7 +1,7 @@
 import numpy as np
 
 from diffeoplan.library.images.distance.distance_L2 import Distance_L2
-import pdb
+
 
 class Tree():
     def __init__(self, root_node, metric=Distance_L2()):

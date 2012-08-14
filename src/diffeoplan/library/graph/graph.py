@@ -31,16 +31,16 @@ class Graph(Tree):
             
             # Add distance list to distance matrix
             n = len(dist_list)
-            self.size = n+1
-            self.distances = extend_array(self.distances,(n+1, n+1)) 
-            self.distances[n,:n] = dist_list
-            self.distances[:n,n] = dist_list
-            self.distances[n,n] = 0
+            self.size = n + 1 
+            self.distances = extend_array(self.distances, (n + 1, n + 1))  
+            self.distances[n, :n] = dist_list 
+            self.distances[:n, n] = dist_list 
+            self.distances[n, n] = 0 
     
     def calculate_distances(self, node_index):
         dist_list = self.getDistances(self.nodes[node_index])
-        self.distances[node_index,:] = dist_list
-        self.distances[:,node_index] = dist_list
+        self.distances[node_index, :] = dist_list 
+        self.distances[:, node_index] = dist_list 
     
     def get_distances(self, node):
         dist_list = []
@@ -53,7 +53,7 @@ class Graph(Tree):
         
         '''
 #        pdb.set_trace()
-        min_ind = np.nonzero(self.connector.distances==np.min(self.connector.distances))
+        min_ind = np.nonzero(self.connector.distances == np.min(self.connector.distances)) 
         if self.connector.T1 == self:
             print('current path' + str(self.nodes[min_ind[0][0]].path))
             return min_ind[0][0]
@@ -61,6 +61,9 @@ class Graph(Tree):
             return min_ind[0][1]
         print('Node evaluation failed, get_closest_node')
         return None
+    
+    
+    
 def extend_distances(distances):
     """
         Takes a distances array as input and returns 

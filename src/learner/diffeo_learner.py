@@ -8,6 +8,7 @@ import numpy as np
 import pickle
 import yaml
 from contracts import contract
+import os
 
 
 class DiffeoLearner:
@@ -70,11 +71,23 @@ class DiffeoLearner:
         self.system = DiffeoSystem(name, action_list)
                 
     def diffeo_dump(self, path, name):
-        ''' Save the summarized diffeomorphisms system to a pickle file '''
-        pickle_file = open(path + name + '.discdds.pickle', 'wb')
-        pickle.dump(self.system, pickle_file)
+        '''
+            Save the summarized diffeomorphisms system to a pickle file
+        
+            :param path: output directory
+            :param name: name of this system
+        '''
+        
+        if not os.path.exists(path):
+            os.makedirs(path)
+ 
+        basename = os.path.join(path, '%s.discdds' % name)
+        
+        pickle_file = basename + '.pickle'
+        with open(pickle_file, 'wb') as f:
+            pickle.dump(self.system, f)
                 
-        filename_yaml = path + name + '.discdds.yaml'
+        filename_yaml = basename + '.yaml'
         description = {
                        'id': name,
                        'desc': 'Learned diffeomorphism',
@@ -87,6 +100,7 @@ class DiffeoLearner:
             yaml.dump([description], f,
                       default_flow_style=False, explicit_start=True)
             
+    # TODO: remove
     def show_diffeomorphisms(self):
         for i in range(len(self.estimators)): #estr in self.estimators:
             D = self.estimators[i].summarize()

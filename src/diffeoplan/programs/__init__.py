@@ -11,4 +11,6 @@ from .makedds import *
 from .maketestcases import *
 from .bench import *
 from .logcases import *
+from .distances import *
+
 from .main import *

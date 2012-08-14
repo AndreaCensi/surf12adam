@@ -8,7 +8,7 @@ class DistanceNeighbor():
     def __init__(self, size=[160, 120], neighborarea=[8, 8]):
         self.size = size
         shape = size
-        nsensels = shape[0]*shape[1]
+        nsensels = shape[0] * shape[1] 
     
         # for each sensel, create an area
         lengths = np.array(neighborarea)
@@ -34,7 +34,6 @@ class DistanceNeighbor():
                 indices[a, b] = flattening.cell2index[c]
     
             self.neighbor_indices_flat[k] = np.array(indices.flat)
-#        print('DistanceNeighbor initiated.')
         
     def distance(self, y0, y1):
         """
@@ -46,15 +45,15 @@ class DistanceNeighbor():
         Y2 = y1.resize(self.size).get_values()
         neighbor_indices_flat = self.neighbor_indices_flat
 
-        nsensel = Y1[:,:,0].size
-        best = np.zeros((nsensel,Y1.shape[2]))
+        nsensel = Y1[:, :, 0].size 
+        best = np.zeros((nsensel, Y1.shape[2])) 
         for c in range(Y1.shape[2]):
-            y1_flat = Y1[:,:,c].astype(np.int16).flat
-            y2_flat = Y2[:,:,c].astype(np.int16).flat
+            y1_flat = Y1[:, :, c].astype(np.int16).flat 
+            y2_flat = Y2[:, :, c].astype(np.int16).flat 
             for k in range(nsensel):
                 a = y1_flat[k].astype(np.float)
                 b = y2_flat[neighbor_indices_flat[k]]
-                diff = np.abs(a-b)
-                best[k,c] = np.min(diff)
+                diff = np.abs(a - b) 
+                best[k, c] = np.min(diff) 
         return np.mean(best)#/self.maxval_distance_neighborhood_bestmatch
     

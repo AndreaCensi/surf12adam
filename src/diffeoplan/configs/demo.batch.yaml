@@ -6,7 +6,7 @@
   - random1
   - random2
   testcases:
-  - tc_dtx1_lena_d5_*
+  - tc_dcam1_lena_d5_*
 
 
 - id: demo2
@@ -15,4 +15,13 @@
   - random1
   - random2
   testcases:
-  - tc_dtx1_lena_d10_*
+  - tc_dcam1_lena_d10_*
+
+
+
+- id: demo3
+  desc: Tests for graphsearch
+  algorithms:
+  - graphsearch_breadth_3
+  testcases:
+  - tc_dcam1_lena_d10_*
