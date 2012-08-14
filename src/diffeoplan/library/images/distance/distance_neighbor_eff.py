@@ -109,7 +109,7 @@ class DistanceNeighborEff():
         diff1 = np.abs(Y2_unrolled - Y1_repeated)
         myres = np.mean(np.min(diff1, axis=1))
         
-        if True:
+        if False:
             # old method, equivalent
             neighbor_indices_flat = self.fs.neighbor_indices_flat
             nchannels = Y1.shape[2]
