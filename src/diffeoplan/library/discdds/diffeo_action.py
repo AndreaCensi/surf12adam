@@ -42,7 +42,7 @@ class DiffeoAction():
         s1 = report.section('forward')
         self.diffeo.display(s1) 
         s2 = report.section('backward')
-        self.diffeo.display(s2)
+        self.diffeo_inv.display(s2)
         
         # TO finish
         

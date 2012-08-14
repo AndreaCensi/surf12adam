@@ -1,11 +1,11 @@
 from . import (create_tables, report_for_stats, write_report, run_planning_stats,
     run_planning)
 from .. import declare_command, logger
-from bootstrapping_olympics.utils import UserError, expand_string
 from compmake import batch_command, compmake_console, comp, use_filesystem
 from compmake.scripts.master import read_rc_files
 from reprep.report_utils import StoreResults
 import os
+
 
 @declare_command('bench',
                  'bench -a <algorithms> -t <testcases>')
@@ -24,21 +24,8 @@ def bench_main(config, parser): #@UnusedVariable
     
     options = parser.parse_options()
     
-    def expand(what, spec, options):
-        try:
-            expanded = expand_string(spec, options)
-        except ValueError:
-            expanded = []
-        if not expanded:
-            msg = 'Specified set %r of %s not found.' % (spec, what)
-            msg += ' Available %s: %s' % (spec, options)
-            raise UserError(msg)
-        return expanded
-    
-    algos = expand('algorithms', options.algorithms, config.algos.keys())
-    if not list(config.testcases.keys()):
-        raise UserError('No test cases defined (try `dp gentests`)')
-    testcases = expand('testcases', options.testcases, config.testcases.keys())
+    algos = config.algos.expand_names(options.algorithms)
+    testcases = config.testcases.expand_names(options.testcases)
 
     logger.info('Using %d algorithms: %s' % (len(algos), algos))
     logger.info('Using %d testcases.' % (len(testcases)))

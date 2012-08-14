@@ -14,11 +14,13 @@ def maketestcases_display_main(config, parser): #@UnusedVariable
                       help="Output directory")
     
     options, which = parser.parse()
-
+        
     if not which:
-        which = config.discdds.keys()
-    
-    for id_discdds in which: 
+        todo = config.discdds.keys()  
+    else:
+        todo = config.discdds.expand_names(which)
+
+    for id_discdds in todo: 
         discdds_make_test_cases(config=config, id_discdds=id_discdds,
                                 id_image=options.id_image,
                                 outdir=options.output,

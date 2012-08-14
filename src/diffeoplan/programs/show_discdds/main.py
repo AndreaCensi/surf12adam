@@ -14,12 +14,14 @@ def show_discdds(config, parser): #@UnusedVariable
     outdir = options.output 
   
     if not which:
-        which = config.discdds.keys()  
-    
+        todo = config.discdds.keys()  
+    else:
+        todo = config.discdds.expand_names(which)
+
     id_image = options.id_image
     image = config.images.instance(id_image)
     
-    for id_dds in which:
+    for id_dds in todo:
         dds = config.discdds.instance(id_dds) 
         report = Report(id_dds)
         

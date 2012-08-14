@@ -14,9 +14,11 @@ def show_tc(config, parser): #@UnusedVariable
     outdir = options.output
     
     if not which:
-        which = config.testcases.keys()
-    
-    for id_tc in which:
+        todo = config.testcases.keys()  
+    else:
+        todo = config.testcases.expand_names(which)
+
+    for id_tc in todo:
         tc = config.testcases.instance(id_tc) 
         report = Report(id_tc)
         tc.display(report)

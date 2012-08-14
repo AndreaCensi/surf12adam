@@ -54,7 +54,7 @@ def make_dds(config, id_symdds, outdir):
 def instance_dds(config, id_symdds): 
     dds = config.symdds.instance(id_symdds) #@UndefinedVariable
     if not isinstance(dds, DiffeoSystem):
-        msg = 'I expect to find a DDSFromSymbolic, not %r' % describe_type(dds)
+        msg = 'I expect to find a DiffeoSystem, not %r' % describe_type(dds)
         raise ValueError(msg)
     dds.label = id_symdds
     return dds
