@@ -1,8 +1,8 @@
 import numpy as np
 
-#import pdb
 from diffeoplan.library.graph.tree import extend_array
 from numpy.core.numeric import inf
+import pdb
 
 class TreeConnector():
     
@@ -48,10 +48,11 @@ class TreeConnector():
     def get_connection(self):
         npaths = np.sum((self.connections == 1).astype(np.int)) 
         if npaths > 0: 
-            paths = np.array(np.nonzero((self.connections == 1).astype(np.int))) 
-            plan_start = self.T1.nodes[paths[0, 0]].path 
-            plan_goal = self.T2.nodes[paths[0, 1]].path
-            plan = np.concatenate((plan_start,np.fliplr(plan_goal))) 
+            paths = np.array(np.nonzero((self.connections == 1).astype(np.int)))
+#            pdb.set_trace() 
+            plan_start = self.T1.nodes[paths[0][0]].path 
+            plan_goal = self.T2.nodes[paths[1][0]].path
+            plan = list(np.concatenate((plan_start,np.flipud(plan_goal))).astype(np.int)) 
             return plan
         else:
             return None
