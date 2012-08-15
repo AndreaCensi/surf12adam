@@ -160,8 +160,8 @@ class PreProcessor():
 
         x0 = int(w / 2 * (1.0 - z0 / z)) 
         y0 = int(h / 2 * (1.0 - z0 / z)) 
-        dx = int(w * z0 / z) 
-        dy = int(h * z0 / z) 
+        dx = int(w / 2 * (1.0 + z0 / z)) 
+        dy = int(h / 2 * (1.0 + z0 / z)) 
         pim_crop = pim.crop((x0, y0, dx, dy))
         pim_out = pim_crop.resize(self.output_size)    
         return pil_to_imgmsg(pim_out)
