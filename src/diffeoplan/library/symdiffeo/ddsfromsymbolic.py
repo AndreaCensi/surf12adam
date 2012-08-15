@@ -13,9 +13,13 @@ def DDSFromSymbolic(resolution, actions, topology=None):
                 resolution)
     
     diffeoactions = []
-    for i, a in enumerate(actions):
-        logger.info('Getting symbolic diffeomorphism %r' % a)
-        diffeo = config.symdiffeos.instance(a) 
+    for i, action in enumerate(actions):
+        
+        id_diffeo = action['diffeo']
+        original_cmd = np.array(action['original_cmd'])
+        logger.info('Getting symbolic diffeomorphism %r' % id_diffeo)
+        
+        diffeo = config.symdiffeos.instance(id_diffeo) 
         
         shape = (resolution, resolution)
         viewport = SquareDomain([[-1, +1], [-1, +1]])
@@ -28,8 +32,7 @@ def DDSFromSymbolic(resolution, actions, topology=None):
                                                           manifold, viewport, shape)    
         D2d_inv = Diffeomorphism2D(D_inv, Dinfo_inv) 
 
-        original_cmd = np.array([i + 1])
-        action = DiffeoAction(label=a,
+        action = DiffeoAction(label=id_diffeo,
                               diffeo=D2d,
                               diffeo_inv=D2d_inv,
                               original_cmd=original_cmd)

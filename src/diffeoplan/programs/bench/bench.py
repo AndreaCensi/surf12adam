@@ -1,8 +1,6 @@
 from diffeoplan.library import UncertainImage
 import time
-
-
-
+ 
 
 def run_planning(config, id_algo, id_tc):
     # load the test case 
@@ -12,7 +10,6 @@ def run_planning(config, id_algo, id_tc):
     discdds = config.discdds.instance(id_discdds)
     # instance the algorithm
     algo = config.algos.instance(id_algo)
-    
     
     # initialize the algorithm with the dynamics
     # TODO: add computation time
@@ -62,6 +59,7 @@ def run_planning_stats(config, results):
         y1plan = discdds.predict(y0, plan)
         # computes all distances as specified in this functions
         # This compares y0 with plan * y0 (wrong)
+        # TODO: use the distances that we know
         results['dist_y0_y1p'] = UncertainImage.compute_all_distances(y0, y1plan) 
         results['dist_y1_y1p'] = UncertainImage.compute_all_distances(y1, y1plan)
     

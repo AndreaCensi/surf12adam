@@ -15,6 +15,7 @@ class GraphSearch(DiffeoPlanningAlgo):
     
     @contract(nsteps='int,>=1')
     def __init__(self, nsteps, thresh, metric, directions=1, max_ittr=1000):
+        DiffeoPlanningAlgo.__init__(self)
         self.thresh = thresh
         self.nsteps = nsteps
         self.directions = directions
@@ -39,28 +40,44 @@ class GraphSearch(DiffeoPlanningAlgo):
         goal_tree = Graph(goal_node, self.metric, self.thresh)
         
         connector = TreeConnector(start_tree, goal_tree, self.thresh)
+
+        def make_extra():
+            """ Extra information to return about the search """
+            extra = self.make_extra()
+            extra['start_tree'] = start_tree
+            extra['goal_tree'] = goal_tree
+            extra['connector'] = connector
+            return extra
+
                 
+        self.info('GraphSearch starting')
         while True:
             new_start_node = self.get_new_node(start_tree)
+            self.info('Chosen new_start_node = %s' % new_start_node)
             if len(new_start_node.path) <= self.nsteps:
                 start_tree.add_node(new_start_node)
             else:
+                self.info('Breaking and failing.')
                 break
             
             if self.directions == 2:
+
                 new_goal_node = self.get_new_node(goal_tree, 'self.diffeo_inv.apply')
-                print(str(new_goal_node.path))
+                self.info('Goal node is %s.' % new_goal_node)
                 if len(new_goal_node.path) <= self.nsteps:
                     goal_tree.add_node(new_goal_node)
 #            pdb.set_trace()
+
             nplans = connector.connect_update()
             if nplans > 0:
                 plan = connector.get_connection()
-                logger.info('Returning plan: ' + str(plan))
-                return PlanningResult(True, plan, 'Graph Search Plan')
+                self.info('Returning plan: ' + str(plan))
+                return PlanningResult(True, plan, 'Graph Search Plan',
+                                      extra=make_extra())
         
-        logger.info('Planning failed.')
-        return PlanningResult(False, None, 'GraphSearch failed')
+        self.info('Planning failed.')
+        return PlanningResult(False, None, 'GraphSearch failed',
+                              extra=make_extra())
         
      
     @staticmethod
@@ -73,4 +90,8 @@ class GraphSearch(DiffeoPlanningAlgo):
     
     def get_new_node(self): # XXX: with tree or without?
         raise ValueError('not implemented')
+        
+
+    
+    
         

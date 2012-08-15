@@ -10,3 +10,6 @@ class Node():
         if children is None:
             children = []
         self.child_nodes = children
+
+    def __repr__(self):
+        return "Node(path=%s, alt_paths=%s)" % (self.path, self.alt_paths)
