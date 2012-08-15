@@ -2,7 +2,7 @@ from . import PreProcessor, logger
 from optparse import OptionParser
 from diffeoplan.utils.script_utils import UserError, wrap_script_entry_point
 import os
-from conf_tools.exceptions import ConfToolsException
+from conf_tools.exceptions import ConfToolsException #@UnresolvedImport
 
 
 def preprocessor(args):
