@@ -3,7 +3,11 @@
   code:
   - diffeoplan.library.DDSFromSymbolic
   - resolution: 64
-    actions: [px1, Ipx1]
+    actions: 
+    - original_cmd: [1] # for visualization
+      diffeo: px1
+    - original_cmd: [-1]
+      diffeo: Ipx1
     topology: plane
 
 - id: dpx2
@@ -13,7 +17,11 @@
   code:
   - diffeoplan.library.DDSFromSymbolic
   - resolution: 64
-    actions: [px1, R2Ipx1]
+    actions: 
+    - original_cmd: [1] 
+      diffeo: px1
+    - original_cmd: [-2]
+      diffeo: R2Ipx1
     topology: plane
 
 - id: dtx1
@@ -22,7 +30,11 @@
   code:
   - diffeoplan.library.DDSFromSymbolic
   - resolution: 64
-    actions: [tx1, Itx1]
+    actions: 
+    - original_cmd: [1] 
+      diffeo: tx1
+    - original_cmd: [-1]
+      diffeo: Itx1
     topology: torus
 
 - id: dtx2
@@ -31,7 +43,9 @@
   code:
   - diffeoplan.library.DDSFromSymbolic
   - resolution: 64
-    actions: [tx1]
+    actions:
+    - original_cmd: [1] 
+      diffeo: tx1
     topology: torus
 
 - id: dpr1
@@ -40,7 +54,9 @@
   code:
   - diffeoplan.library.DDSFromSymbolic
   - resolution: 64
-    actions: [pr1]
+    actions: 
+    - original_cmd: [1] 
+      diffeo: pr1
     topology: plane
 
 
@@ -50,7 +66,16 @@
   code:
   - diffeoplan.library.DDSFromSymbolic
   - resolution: 64
-    actions: [px1, Ipx1, py1, Ipy1]
+    actions: 
+    - original_cmd: [1, 0] 
+      diffeo: px1
+    - original_cmd: [-1, 0] 
+      diffeo: Ipx1
+    - original_cmd: [0, 1] 
+      diffeo: py1
+    - original_cmd: [0, -1] 
+      diffeo: Ipy1
+
     topology: plane
 
 - id: dcamz1
@@ -59,7 +84,19 @@
   code:
   - diffeoplan.library.DDSFromSymbolic
   - resolution: 64
-    actions: [px1, Ipx1, py1, Ipy1, pz1, Ipz1]
+    actions: 
+    - original_cmd: [1, 0, 0] 
+      diffeo: px1
+    - original_cmd: [-1, 0, 0] 
+      diffeo: Ipx1
+    - original_cmd: [0, 1, 0] 
+      diffeo: py1
+    - original_cmd: [0, -1, 0] 
+      diffeo: Ipy1
+    - original_cmd: [0, 0, 1] 
+      diffeo: pz1
+    - original_cmd: [0, 0, -1] 
+      diffeo: Ipz1
     topology: plane
 
 - id: drob1
@@ -68,6 +105,14 @@
   code:
   - diffeoplan.library.DDSFromSymbolic
   - resolution: 64
-    actions: [px1, Ipx1, pr1, Ipr1]
+    actions: 
+    - original_cmd: [1, 0, 0] 
+      diffeo: px1
+    - original_cmd: [-1, 0, 0] 
+      diffeo: Ipx1
+    - original_cmd: [0, 0, 0.1] 
+      diffeo: pr1
+    - original_cmd: [0, 0, -0.1] 
+      diffeo: Ipr1
     topology: plane
 

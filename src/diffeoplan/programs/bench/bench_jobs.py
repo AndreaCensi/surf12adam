@@ -3,6 +3,7 @@ from . import (create_tables, report_for_stats, write_report, run_planning_stats
 from compmake import comp
 from reprep.report_utils import StoreResults
 import os
+from diffeoplan.programs.bench.visualization import create_visualization_jobs
 
 def create_bench_jobs(config, algos, testcases, outdir):
     allruns = StoreResults()
@@ -51,3 +52,6 @@ def create_bench_jobs(config, algos, testcases, outdir):
                        'All runs of algorithm %s on %s' % (id_algo, id_discdds))
         
     create_tables(outdir, allruns)
+    
+    create_visualization_jobs(config, outdir, allruns)
+    

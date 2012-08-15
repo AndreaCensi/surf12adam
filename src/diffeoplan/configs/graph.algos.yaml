@@ -16,7 +16,7 @@
     metric: neigh2
     
 - id: graphsearch_deep_3
-  desc: An algorithm that searches all possible sequences of (3 step).
+  desc: An algorithm that searches all possible sequences of 3 steps.
   code:
   - diffeoplan.library.GraphSearchDeep
   - nsteps: 3
@@ -44,7 +44,7 @@
 
 
 - id: graphsearch_breadth_5
-  desc: An algorithm that searches all possible sequences of (3 step).
+  desc: An algorithm that searches all possible sequences of (5 step).
   code:
   - diffeoplan.library.GraphSearchBreadth
   - nsteps: 5
@@ -52,7 +52,7 @@
     metric: neigh2
     
 - id: graphsearch_deep_5
-  desc: An algorithm that searches all possible sequences of (3 step).
+  desc: An algorithm that searches all possible sequences of (5 step).
   code:
   - diffeoplan.library.GraphSearchDeep
   - nsteps: 5
@@ -89,3 +89,11 @@
     nsteps: 3
     metric: neigh2    
     
+
+- id: "graphsearch_deep_${n}"
+  desc: "Graph search; deep; ${n} steps."
+  code:
+  - diffeoplan.library.GraphSearchDeep
+  - nsteps: "${n}"
+    thresh: 0.1
+    metric: neigh1eff

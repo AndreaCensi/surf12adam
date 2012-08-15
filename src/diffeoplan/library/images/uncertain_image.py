@@ -1,5 +1,6 @@
 from . import contract, np
 from PIL import Image #@UnresolvedImport
+from boot_agents.diffeo.diffeo_estimator import scalaruncertainty2rgb
 
 class UncertainImage():
     
@@ -23,7 +24,7 @@ class UncertainImage():
     
     @staticmethod
     @contract(returns='dict(str:*)')
-    def compute_all_distances(y0, y1):
+    def compute_all_distances(y0, y1):  # TODO: remove
         """ Computes all measures of difference between y0 and y1. 
             Returns a dictionary. """
         r = {}
@@ -33,17 +34,16 @@ class UncertainImage():
         return r
     
     @staticmethod
-    def dist_values_L2(y0, y1):
+    def dist_values_L2(y0, y1): # TODO: remove
         diff = (y0.get_values() - y1.get_values()).flatten()
         return float(np.linalg.norm(diff, 2)) #/ y0.size
 
     @staticmethod
-    def dist_values_L1(y0, y1):
+    def dist_values_L1(y0, y1): # TODO: remove
         diff = (y0.get_values() - y1.get_values()).flatten()
         return float(np.linalg.norm(diff, 1)) #/ y0.size
 
-    # ADD here
-    
+
     def resize(self, size):
         # FIXME: this assumes that the image is a uint8 with 3 channels
         # we want to have float images fields
@@ -57,6 +57,13 @@ class UncertainImage():
     @contract(returns='array[HxWx3](uint8)')
     def get_rgb(self):
         """ Returns an RGB representation of the certain part of the image. """
-        # TODO: make it work with "flat" data
+        # TODO: make it work with "float" data
         rgb = self.get_values().astype('uint8')        
         return rgb 
+
+
+    @contract(returns='array[HxWx3](uint8)')
+    def get_rgb_uncertain(self):
+        """ Returns an RGB representation of the uncertainty of the image. """
+        return scalaruncertainty2rgb(self.scalar_uncertainty)        
+         

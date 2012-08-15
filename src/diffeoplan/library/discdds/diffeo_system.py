@@ -74,7 +74,11 @@ class DiffeoSystem():
                          'other code. I will return the command 0.')
             return 0
     
-    
+    @contract(returns='list[N](array)', plan='list[N](int)')
+    def indices_to_commands(self, plan):
+        """ Converts from indices to the original commands. """
+        return [self.actions[x].original_cmd for x in plan]
+  
     @contract(report=Report, image=UncertainImage)
     def display(self, report, image):
         '''
