@@ -1,9 +1,9 @@
 from diffeoplan.library.graph.tree import Tree
-from diffeoplan.library.images.distance.distance_L2 import Distance_L2
+from diffeoplan.library.images.distance.distance_L1 import DistanceNorm
 import numpy as np
 
 class Graph(Tree):
-    def __init__(self, root_node, metric=Distance_L2(), match_thresh=0.0):
+    def __init__(self, root_node, metric=DistanceNorm(2), match_thresh=0.0):
         self.nodes = [root_node]
         self.distances = np.zeros((1, 1))
         self.size = 1

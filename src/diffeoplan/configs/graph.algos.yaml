@@ -4,7 +4,7 @@
   - diffeoplan.library.GraphSearchBreadth
   - nsteps: 3
     thresh: 0.1
-    metric: neigh2
+    metric: neigh1eff
     directions: 2
 
 - id: graphsearch_breadth_3

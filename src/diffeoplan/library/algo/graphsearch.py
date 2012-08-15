@@ -4,6 +4,7 @@ from ..graph import Node, TreeConnector
 from diffeoplan.configuration import get_current_config
 from diffeoplan.library.graph.graph import Graph
 from . import logger
+#import pdb
  
 class GraphSearch(DiffeoPlanningAlgo):
     """ 
@@ -47,11 +48,11 @@ class GraphSearch(DiffeoPlanningAlgo):
                 break
             
             if self.directions == 2:
-                new_goal_node = self.get_new_node(goal_tree)
+                new_goal_node = self.get_new_node(goal_tree, 'self.diffeo_inv.apply')
                 print(str(new_goal_node.path))
                 if len(new_goal_node.path) <= self.nsteps:
                     goal_tree.add_node(new_goal_node)
-            #pdb.set_trace()
+#            pdb.set_trace()
             nplans = connector.connect_update()
             if nplans > 0:
                 plan = connector.get_connection()

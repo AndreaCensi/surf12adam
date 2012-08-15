@@ -23,7 +23,7 @@ class GraphSearchBreadth(GraphSearch):
         next_cmd = node.command_stack[len(node.child_nodes)]
         return next_cmd
     
-    def get_new_node(self, tree):
+    def get_new_node(self, tree, apply_function='self.diffeo.apply'):
         dds = self.get_dds()
         ncmd = len(dds.actions)
         
@@ -35,7 +35,7 @@ class GraphSearchBreadth(GraphSearch):
         path = copy.deepcopy(node.path)
         next_cmd = self.get_next_cmd(node)
         next_action = dds.actions[next_cmd]
-        y_new = next_action.predict(node.y)
+        y_new = next_action.predict(node.y, apply_function)
         path.append(next_cmd)
         node_new = Node(y_new, path)
         
