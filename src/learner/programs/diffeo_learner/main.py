@@ -5,10 +5,8 @@ import os
 
 
 def diffeo_learner_main():
-    usage = "usage: %prog -i inputbag -p outputpath -n ddsname -s [W,H] -a [rx,ry]"
-    parser = OptionParser(usage=usage, version="%prog 1.0")
-    parser.add_option("-i", "--input", default=None,
-                      help="Input processed.bag file")
+    usage = "usage: %prog   -p outputpath -n ddsname -s [W,H] -a [rx,ry] bag1 bag2 .."
+    parser = OptionParser(usage=usage, version="%prog 1.0") 
     parser.add_option("-p", "--path", default=None,
                       help="Path to output files")
     parser.add_option("-n", "--name", default='camdds',
@@ -18,26 +16,28 @@ def diffeo_learner_main():
     parser.add_option("-a", "--area", default='[6,6]',
                       help="Size of search area")
     options, args = parser.parse_args()
-    if args: 
-        raise ValueError('spurious arguments %s' % args)
-    
-    if options.input is None:
-        raise ValueError('Required options -i')
+     
+    if not args:
+        raise ValueError('Required file names/.')
     
     if options.path is None:
         dirname = os.path.dirname(options.input)
         logger.info('No path given; using %s' % dirname)
     else:
         dirname = options.path
-        
-    bagfile = options.input
+         
     name = options.name
     size = eval(options.size)
     area = eval(options.area)
 
-    learn = DiffeoLearner(size, area)
-    for y0, u, y1 in read_bag(bagfile):
-        learn.update(y0, u, y1)
+    
+    for bagfile in args:
+        learn = DiffeoLearner(size, area)
+        i = 0
+        for y0, u, y1 in read_bag(bagfile):    
+            logger.info('Iteration number %d' % i)
+            i = i+1
+            learn.update(y0, u, y1)
         
         
     logger.info('Commands: %s' % learn.command_list)
