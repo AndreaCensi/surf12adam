@@ -1,6 +1,7 @@
 from . import np, contract
 from boot_agents.diffeo import Flattening, cmap, coords_iterate
 from geometry.utils.numpy_backport import assert_allclose
+import pdb
 
 
 class FlatStructure():

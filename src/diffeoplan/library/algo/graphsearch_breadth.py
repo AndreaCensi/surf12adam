@@ -1,48 +1,62 @@
-from ..graph import Node
-import copy
-from diffeoplan.library.algo.graphsearch import GraphSearch
 
-class GraphSearchBreadth(GraphSearch):
-    """ 
-        This is an algorithm that returns the best plan
-        after trying all possible plans of exact length <nsteps> 
+from diffeoplan.library.algo.graphsearch import GenericGraphPlanner
+from diffeoplan.library.graph.node import Node
+
+class GraphSearchQueue(GenericGraphPlanner): # todo: move
+    """  
 
     """
-    def get_next_node(self, tree): 
-        # Search for node with unevaluated command
-        for i in range(self.comp_ind, len(tree.nodes)):
-            if len(tree.nodes[i].command_stack) > len(tree.nodes[i].child_nodes):
-                return i
-            else:
-                # don't look for nodes with lower index than this
-                self.comp_ind = min(i, self.comp_ind) 
+    
+    def __init__(self,  thresh, metric, max_ittr, nsteps):
+        GenericGraphPlanner.__init__(self, thresh, metric, max_ittr)
+        self.open = None
+        self.nsteps = nsteps
+    
+    def get_new_node(self, tree):
+        # First time: I put the initial one
+        if self.open is None:
+            self.open = [0]
+    
+        toexpand = self.get_next_index(tree, open) 
         
-        return None # Algorithm complete
-    
-    def get_next_cmd(self, node):
-        next_cmd = node.command_stack[len(node.child_nodes)]
-        return next_cmd
-    
-    def get_new_node(self, tree, apply_function='self.diffeo.apply'):
         dds = self.get_dds()
-        ncmd = len(dds.actions)
+        all_actions = range(len(dds.actions))
+        available = tree.actions_available_for_node(toexpand, all_actions)
+        assert len(available) >= 1
         
-        # Node index to expand
-        next_node = self.get_next_node(tree)
-        if next_node == None:
-            return None
-        node = tree.nodes[next_node]
-        path = copy.deepcopy(node.path)
-        next_cmd = self.get_next_cmd(node)
-        next_action = dds.actions[next_cmd]
-        y_new = next_action.predict(node.y, apply_function)
-        path.append(next_cmd)
-        node_new = Node(y_new, path)
+        next_cmd = self.get_next_cmd(tree, toexpand, available)
+                 
+        next_node = get_next_node(tree, toexpand, next_cmd, 
+                                    dds=self.get_dds())
         
-        # Set data for node
-        node_new.parent = next_node
-        node_new.command_stack = range(ncmd)
-        node_new.child_nodes = []
-                
-        return node_new
+        # put the new one
+        next_index = len(tree.nodes) # xxx don't like
         
+        if len(self.path) < self.nsteps:
+            self.open.append(next_index)
+        
+        if len(available) == 1:
+            # this node is now closed
+            self.open.remove(toexpand)
+        
+        return next_node
+
+    def get_next_cmd(self, tree, node_index, available):
+        return available[0]
+
+    def get_next_index(self, tree, open_nodes):
+        raise ValueError('to implement')
+def get_next_node(tree, parent_index, cmd, dds): # todo: move
+    parent = tree.nodes[parent_index]
+    path = list(parent.path) + [cmd]
+    next_action = dds.actions[cmd]
+    y_new = next_action.predict(parent.y)
+    return Node(y=y_new, 
+                path=path,
+                parent=parent_index,
+                children=[])
+
+class GraphSearchBreadth(GraphSearchQueue):
+    def get_next_index(self, tree, open_nodes):
+        return open_nodes[0]
+    

@@ -1,13 +1,11 @@
 from ..graph import Node
 import copy
-from diffeoplan.library.algo.graphsearch import GraphSearch
 import numpy as np
 import pdb
+from diffeoplan.library.algo.graphsearch import GenericGraphPlanner
 
-class InformedSearch(GraphSearch):
-    """ 
-        This is an algorithm that returns the best plan
-        after trying all possible plans of exact length <nsteps> 
+class InformedSearch(GenericGraphPlanner):
+    """  TODO: add in docs
 
     """
     def get_next_node(self, tree): 
@@ -24,11 +22,10 @@ class InformedSearch(GraphSearch):
 #        return self.active_node
     
     def get_next_cmd(self, node):
-        pdb.set_trace()
         next_cmd = node.command_stack[len(node.child_nodes)]
         return next_cmd
     
-    def get_new_node(self, tree):
+    def expand_start_tree(self, tree):       
         dds = self.get_dds()
         ncmd = len(dds.actions)
         
@@ -37,7 +34,6 @@ class InformedSearch(GraphSearch):
         
         min_dist = np.zeros(ncmd)
         node_new = [0] * ncmd 
-#        pdb.set_trace()
         for i in range(ncmd):
             
             y_new = dds.actions[i].predict(node.y)

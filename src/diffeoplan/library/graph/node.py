@@ -1,15 +1,18 @@
+from diffeoplan.library.images.uncertain_image import UncertainImage
 
-
+from contracts import contract
 
 class Node():
-    def __init__(self, y, path, children=None):
+    
+    @contract(y=UncertainImage, path='list(int)',
+              parent='int', children='list(int)')
+    def __init__(self, y, path, parent, children):
         self.y = y
         self.path = path
-        self.alt_paths = [[]]
-        self.parent = None
-        if children is None:
-            children = []
+        self.parent = parent # index of the parent
         self.child_nodes = children
+
+        self.alt_paths = [[]]
 
     def __repr__(self):
         return "Node(path=%s, alt_paths=%s)" % (self.path, self.alt_paths)

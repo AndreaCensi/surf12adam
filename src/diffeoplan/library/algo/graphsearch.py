@@ -3,40 +3,38 @@ from .. import UncertainImage
 from ..graph import Node, TreeConnector
 from diffeoplan.configuration import get_current_config
 from diffeoplan.library.graph.graph import Graph
-from . import logger
-#import pdb
+
+import numpy as np
  
-class GraphSearch(DiffeoPlanningAlgo):
+ 
+class GenericGraphPlanner(DiffeoPlanningAlgo):
     """ 
         This is an algorithm that returns the best plan
         after trying all possible plans of exact length <nsteps> 
+        
+        Pieces:
+        - metric
+        - expand_start_tree
+        - expand_goal_tree
+        
 
     """
     
-    @contract(nsteps='int,>=1')
-    def __init__(self, nsteps, thresh, metric, directions=1, max_ittr=1000):
+    def __init__(self,  thresh, metric, max_ittr=1000):
         DiffeoPlanningAlgo.__init__(self)
-        self.thresh = thresh
-        self.nsteps = nsteps
-        self.directions = directions
+        self.thresh = thresh # are two states the same?
         self.max_ittr = max_ittr
-        self.comp_ind = 0 # Dont look for nodes of lower inde than this
+        #self.comp_ind = 0 # Dont look for nodes of lower inde than this
         config = get_current_config()
         self.metric = config.distances.instance(metric)
         
     @contract(y0=UncertainImage, y1=UncertainImage, returns=PlanningResult)
-    def plan(self, y0, y1): #@UnusedVariable
-        # print('Engering graphsearch plan()')
-        dds = self.get_dds()
-        
-        ncmd = len(dds.actions)
+    def plan(self, y0, y1):
         
         start_node = Node(y=y0, path=[])
-        start_node.command_stack = range(ncmd)
         start_tree = Graph(start_node, self.metric, self.thresh)
         
         goal_node = Node(y=y1, path=[])
-        goal_node.command_stack = range(ncmd)
         goal_tree = Graph(goal_node, self.metric, self.thresh)
         
         connector = TreeConnector(start_tree, goal_tree, self.thresh)
@@ -52,20 +50,25 @@ class GraphSearch(DiffeoPlanningAlgo):
                 
         self.info('GraphSearch starting')
         while True:
-            new_start_node = self.get_new_node(start_tree)
+            new_start_node = self.expand_start_tree(start_tree)
             self.info('Chosen new_start_node = %s' % new_start_node)
-            if len(new_start_node.path) <= self.nsteps:
-                start_tree.add_node(new_start_node)
-            else:
+            
+            if new_start_node is None:
+                # We don't expand anymore, so we failed 
                 self.info('Breaking and failing.')
                 break
             
-            if self.directions == 2:
-
-                new_goal_node = self.get_new_node(goal_tree, 'self.diffeo_inv.apply')
+            if self.should_add_node(start_tree, new_start_node.y):
+                start_tree.add_node(new_start_node)
+            
+            new_goal_node = self.expand_goal_tree(goal_tree)
+            if new_goal_node is not None:
                 self.info('Goal node is %s.' % new_goal_node)
-                if len(new_goal_node.path) <= self.nsteps:
+            
+                if self.should_add_node(goal_tree, new_goal_node.y):
                     goal_tree.add_node(new_goal_node)
+
+            #if len(new_goal_node.path) <= self.nsteps:
 #            pdb.set_trace()
 
             nplans = connector.connect_update()
@@ -79,7 +82,13 @@ class GraphSearch(DiffeoPlanningAlgo):
         return PlanningResult(False, None, 'GraphSearch failed',
                               extra=make_extra())
         
-     
+    
+    def should_add_node(self, tree, y):
+        # TODO later if needed: keep track of alternative paths
+        distances = tree.get_distances(y)
+        someone_too_close = np.any(distances < self.thresh) 
+        return not someone_too_close
+    
     @staticmethod
     def is_unique(path, tree):
         for p in tree.blocked:
@@ -88,9 +97,20 @@ class GraphSearch(DiffeoPlanningAlgo):
                 return False
         return True
     
-    def get_new_node(self): # XXX: with tree or without?
+    
+    def expand_start_tree(self, tree):
+        """ Can return a Node or None if there is nothing 
+            else to expand (according to some internal condition)
+        """
         raise ValueError('not implemented')
         
+    def expand_goal_tree(self, tree): 
+        """ Can return a Node or None if there is nothing 
+            else to expand (according to some internal condition)
+        """
+        return None    
+        #raise ValueError('not implemented')
+    
 
     
     
