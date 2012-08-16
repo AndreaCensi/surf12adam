@@ -1,10 +1,9 @@
 from ..graph import Node
 import copy
 import numpy as np
-import pdb
-from diffeoplan.library.algo.graphsearch import GenericGraphPlanner
+from diffeoplan.library.algo.generic_graph_planner import GraphSearchQueue
 
-class InformedSearch(GenericGraphPlanner):
+class InformedSearch(GraphSearchQueue):
     """  TODO: add in docs
 
     """
@@ -24,7 +23,10 @@ class InformedSearch(GenericGraphPlanner):
     def get_next_cmd(self, node):
         next_cmd = node.command_stack[len(node.child_nodes)]
         return next_cmd
-    
+    def get_next_index(self, tree, open_nodes):
+#        tree.get_nodes_distance(i,j)
+        pass
+        
     def expand_start_tree(self, tree):       
         dds = self.get_dds()
         ncmd = len(dds.actions)

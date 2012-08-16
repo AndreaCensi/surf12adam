@@ -45,6 +45,11 @@ class TreeConnector():
         npaths = np.sum((self.connections == 1).astype(np.int)) 
         return npaths
     
+    def get_closest(self):
+        self.connect_update()
+        min_list = np.nonzero(self.nonnections == np.min(self.connections))
+        return min_list[0][0], min_list[1][0]
+    
     def get_connection(self):
         npaths = np.sum((self.connections == 1).astype(np.int)) 
         if npaths > 0: 

@@ -11,6 +11,7 @@ class Graph():
         self.blocked = []
         self.child_nodes = []
         
+        self.open_nodes = []
         self.cached_distance = {} # (i,j) -> D_ij
         
         

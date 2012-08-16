@@ -32,11 +32,11 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
     def plan(self, y0, y1):
         
         start_node = Node(y=y0, path=[])
-        start_tree = Graph(start_node, self.metric, self.thresh)
+        start_tree = self.init_start_tree(start_node, self.metric, self.thresh)
         
         goal_node = Node(y=y1, path=[])
-        goal_tree = Graph(goal_node, self.metric, self.thresh)
-        
+        goal_tree = self.init_goal_tree(goal_node, self.metric, self.thresh)
+                
         connector = TreeConnector(start_tree, goal_tree, self.thresh)
 
         def make_extra():
@@ -81,7 +81,20 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         self.info('Planning failed.')
         return PlanningResult(False, None, 'GraphSearch failed',
                               extra=make_extra())
-        
+    def init_start_tree(self, node, metric, thresh):
+        """
+        Start tree, by default first node open, may be override by subclass.  
+        """
+        start_tree = Graph(node, metric, thresh)
+        start_tree.open_nodes = [0]
+        return start_tree
+    
+    def init_goal_tree(self, node, metric, thresh):
+        """
+        Goal tree, by default no open nodes, may be override by subclass.
+        """
+        goal_tree = Graph(node, metric, thresh)
+        return goal_tree
     
     def should_add_node(self, tree, y):
         # TODO later if needed: keep track of alternative paths
@@ -111,7 +124,72 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         return None    
         #raise ValueError('not implemented')
     
+    
+class GraphSearchQueue(GenericGraphPlanner):
+    """  
+    GenericGraphPlanner using a queue of open nodes for expansion.
+    """
+    
+    def __init__(self,  thresh, metric, max_ittr, nsteps):
+        GenericGraphPlanner.__init__(self, thresh, metric, max_ittr)
+        self.start_open = None
+        self.nsteps = nsteps
+    
+    def get_new_node(self, tree):
+#        
+#        # First time: I put the initial one
+#        if tree.open_nodes is None:
+#            tree.open_nodes = [0]
+        assert(tree.open_nodes != None)
+        if len(tree.open_nodes) == 0:
+            return None
+        
+        toexpand = self.get_next_index(tree, tree.open_nodes) 
+        
+        dds = self.get_dds()
+        all_actions = range(len(dds.actions))
+        available = tree.actions_available_for_node(toexpand, all_actions)
+        assert len(available) >= 1
+        
+        next_cmd = self.get_next_cmd(tree, toexpand, available)
+                 
+        next_node = get_next_node(tree, toexpand, next_cmd, 
+                                    dds=self.get_dds())
+        
+        # put the new one
+        next_index = len(tree.nodes) # xxx don't like
+        
+        if len(self.path) < self.nsteps:
+            self.start_open.append(next_index)
+        
+        if len(available) == 1:
+            # this node is now closed
+            self.start_open.remove(toexpand)
+        
+        return next_node
 
+    def get_next_cmd(self, tree, node_index, available):
+        return available[0]
+
+
+    def expand_start_tree(self, start_tree):
+        return self.get_new_node(start_tree)
+    
+    def expand_goal_tree(self, goal_tree):
+        return self.get_new_node(goal_tree)
+
+    def get_next_index(self, tree, open_nodes):
+        raise ValueError('to implement')
+    
+def get_next_node(tree, parent_index, cmd, dds): # todo: move
+    parent = tree.nodes[parent_index]
+    path = list(parent.path) + [cmd]
+    next_action = dds.actions[cmd]
+    y_new = next_action.predict(parent.y)
+    return Node(y=y_new, 
+                path=path,
+                parent=parent_index,
+                children=[])
     
     
         
