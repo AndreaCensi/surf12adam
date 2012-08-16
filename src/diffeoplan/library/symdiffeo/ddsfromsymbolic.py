@@ -13,7 +13,7 @@ def DDSFromSymbolic(resolution, actions, topology=None):
                 resolution)
     
     diffeoactions = []
-    for i, action in enumerate(actions):
+    for _, action in enumerate(actions):
         
         id_diffeo = action['diffeo']
         original_cmd = np.array(action['original_cmd'])

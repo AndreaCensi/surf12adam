@@ -1,8 +1,8 @@
 import os
 from . import logger
-from diffeoplan.utils.script_utils import UserError
-from bootstrapping_olympics.utils.wildcards import expand_string
-from contracts import contract
+#from diffeoplan.utils.script_utils import UserError
+#from bootstrapping_olympics.utils.wildcards import expand_string
+#from contracts import contract
 
 class Storage:
     commands = {}

@@ -2,7 +2,6 @@ import numpy as np
 
 from diffeoplan.library.graph.tree import extend_array
 from numpy.core.numeric import inf
-import pdb
 
 class TreeConnector():
     

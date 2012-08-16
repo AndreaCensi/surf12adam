@@ -15,7 +15,7 @@ class DistanceNorm():
         pdb.set_trace()
         var = (y0.scalar_uncertainty * y0.scalar_uncertainty).flatten()
         var_flat = []
-        for i in range(2):
+        for _ in range(2):
             var_flat = np.concatenate(var_flat,var)
         return float(np.linalg.norm(diff, self.order)) / diff.size
 

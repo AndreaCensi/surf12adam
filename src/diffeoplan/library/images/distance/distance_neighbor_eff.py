@@ -1,7 +1,6 @@
 from . import np, contract
 from boot_agents.diffeo import Flattening, cmap, coords_iterate
 from geometry.utils.numpy_backport import assert_allclose
-import pdb
 
 
 class FlatStructure():
@@ -24,9 +23,9 @@ class FlatStructure():
         area_shape = cmg.shape[0], cmg.shape[1]
 
         H, W = shape
-        h, w = area_shape
+#        h, w = area_shape
         N = H * W
-        A = h * w 
+#        A = h * w 
         
         neighbor_coords = [None] * N
         self.neighbor_indices_flat = [None] * N

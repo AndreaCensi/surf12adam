@@ -1,7 +1,6 @@
 from . import logger
 from ..diffeo_learner.ros_conversions import imgmsg_to_pil, pil_to_imgmsg
 import rosbag
-import pdb
 #from PIL import Image, ImageOps #@UnresolvedImport
 
 
