@@ -3,6 +3,7 @@ from optparse import OptionParser
 from diffeoplan.utils.script_utils import UserError, wrap_script_entry_point
 import os
 from conf_tools.exceptions import ConfToolsException #@UnresolvedImport
+import pdb
 
 
 def preprocessor(args):
@@ -15,7 +16,7 @@ def preprocessor(args):
     parser.add_option("-p", "--namefix", default='',
                       help='Additional string for output filename')
     parser.add_option("-s", "--size", default='[160,120]', help="Image size WxH")
-    parser.add_option("-z", "--zoom", default=True, help="Use zoom")
+    parser.add_option("-z", "--zoom", default='True', help="Use zoom")
 #    parser.add_option("-zc", "--zoom_center", default=[0,0], help="Not Impl: Zoom center offset from mid image")
 
 
@@ -55,11 +56,14 @@ def preprocessor(args):
     logger.info('Writing to:   %s' % output)    
     output_size = eval(options.size)
     
+#    pdb.set_trace()
     zoom = eval(options.zoom)
     
     pproc = PreProcessor(bag, output, output_size, use_zoom=zoom)
     pproc.process_bag()
     pproc.finalize()
+    
+    pproc.validate_bag(output)
 
 
 def preprocessor_main():
