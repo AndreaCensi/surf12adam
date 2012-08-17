@@ -31,10 +31,10 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
     @contract(y0=UncertainImage, y1=UncertainImage, returns=PlanningResult)
     def plan(self, y0, y1):
         
-        start_node = Node(y=y0, path=[])
+        start_node = Node(y=y0, path=[], parent=[], children=[])
         start_tree = self.init_start_tree(start_node, self.metric, self.thresh)
         
-        goal_node = Node(y=y1, path=[])
+        goal_node = Node(y=y1, path=[], parent=[], children=[])
         goal_tree = self.init_goal_tree(goal_node, self.metric, self.thresh)
                 
         connector = TreeConnector(start_tree, goal_tree, self.thresh)
@@ -159,12 +159,12 @@ class GraphSearchQueue(GenericGraphPlanner):
         # put the new one
         next_index = len(tree.nodes) # xxx don't like
         
-        if len(self.path) < self.nsteps:
-            self.start_open.append(next_index)
+        if len(next_node.path) < self.nsteps:
+            tree.open_nodes.append(next_index)
         
         if len(available) == 1:
             # this node is now closed
-            self.start_open.remove(toexpand)
+            tree.open_nodes.remove(toexpand)
         
         return next_node
 

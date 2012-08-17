@@ -89,6 +89,15 @@
     nsteps: 3
     metric: neigh1eff    
     
+- id: expansive_${n}_r${r}
+  desc: Expansive Planner Algorithm; max ${n} steps.
+  code:
+  - diffeoplan.library.RandomizedExpansion
+  - max_ittr: 1000
+    thresh: 0.1
+    region: "${r}"
+    nsteps: "${n}"
+    metric: neigh1eff
 
 - id: "graphsearch_deep_${n}"
   desc: "Graph search; deep; ${n} steps."
@@ -97,3 +106,14 @@
   - nsteps: "${n}"
     thresh: 0.1
     metric: neigh1eff
+    max_ittr: "${n}*${n}"
+
+- id: "graphsearch_breadth_${n}"
+  desc: "Graph search; breadth; ${n} steps."
+  code:
+  - diffeoplan.library.GraphSearchBreadth
+  - nsteps: "${n}"
+    thresh: 0.1
+    metric: neigh1eff
+    max_ittr: "${n}*${n}"
+    

@@ -7,12 +7,13 @@ class TreeConnector():
     
     def __init__(self, T1, T2, tresh):
         self.tresh = tresh
-        self.connections = -np.ones((T1.size, T2.size)) 
-        self.distances = inf * np.ones((T1.size, T2.size)).astype(np.float) 
+#        self.connections = -np.ones((len(T1.nodes), len(T2.nodes))) 
+#        self.distances = inf * np.ones((len(T1.nodes), len(T2.nodes))).astype(np.float) 
         self.T1 = T1
         self.T2 = T2
         self.T1.connector = self
         self.T2.connector = self
+        self.connect_reset()
         
     def connection(self, n1, n2):
 #        pdb.set_trace()
@@ -24,13 +25,13 @@ class TreeConnector():
             return 0, dist
     
     def connect_reset(self):
-        self.connections = -np.ones((self.T1.size, self.T2.size)) 
-        self.distances = inf * np.ones((self.T1.size, self.T2.size)).astype(np.float) 
+        self.connections = -np.ones((len(self.T1.nodes), len(self.T2.nodes))) 
+        self.distances = inf * np.ones((len(self.T1.nodes), len(self.T2.nodes))).astype(np.float) 
         
         
     def connect_update(self):
-        self.connections = extend_array(self.connections, (self.T1.size, self.T2.size)) 
-        self.distances = extend_array(self.distances, (self.T1.size, self.T2.size)) 
+        self.connections = extend_array(self.connections, (len(self.T1.nodes), len(self.T2.nodes))) 
+        self.distances = extend_array(self.distances, (len(self.T1.nodes), len(self.T2.nodes))) 
         undef = np.array(np.nonzero((self.connections == -1).astype(np.int))) 
         for i in range(undef.shape[1]):
             n1 = undef[0, i] 

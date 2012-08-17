@@ -15,4 +15,4 @@ class Node():
         self.alt_paths = [[]]
 
     def __repr__(self):
-        return "Node(path=%s, alt_paths=%s)" % (self.path, self.alt_paths)
+        return "Node(path=%s, parent=%s, children=%s)" % (self.path, self.parent, self.child_nodes)
