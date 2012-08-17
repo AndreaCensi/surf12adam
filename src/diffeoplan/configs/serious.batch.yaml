@@ -27,6 +27,8 @@
 
   algorithms:
   - graphsearch_deep_100
+  - graphsearch_breadth_100
+  - expansive_100_r5
   testcases:
   - tc_dtx2_lena_d10_*
 
@@ -57,8 +59,10 @@
 
   algorithms:
   - graphsearch_deep_100
+  - graphsearch_breadth_100
+  - expansive_100_r5
   testcases:
-  - tc_dtx1_lena_d*_*
+  - tc_dtx1_lena_d10_*
 
 
 - id: dcam1_d3

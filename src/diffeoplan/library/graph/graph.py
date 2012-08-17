@@ -5,7 +5,6 @@ class Graph():
     def __init__(self, root_node, metric, match_thresh):
         self.nodes = [root_node]
         self.distances = np.zeros((1, 1))
-        self.size = 1
         self.metric = metric
         self.match_thresh = match_thresh
         self.blocked = []
@@ -53,3 +52,5 @@ class Graph():
             self.cached_distance[(j, i)] = d
         return self.cached_distance[(i, j)] 
 
+    def get_closest(self, tree):
+        return None

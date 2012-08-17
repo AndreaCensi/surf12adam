@@ -14,8 +14,8 @@ class RandomizedExpansion(GraphSearchQueue):
         
     def get_next_index(self, tree, open_nodes):
         """ Choose one element of open """
-        number_of_neighbors = [self.get_number_of_neighbors(tree, i)
-                               for i in open_nodes]
+        number_of_neighbors = np.array([self.get_number_of_neighbors(tree, i)
+                               for i in open_nodes])
         assert np.all(number_of_neighbors >= 1)
         pmf = 1.0 / number_of_neighbors
         
@@ -35,8 +35,11 @@ class RandomizedExpansion(GraphSearchQueue):
         return num
 
     def get_next_cmd(self, tree, node_index, available):
-        choice = np.random.randint(0, len(available) - 1)
-        return available[choice]
+        if len(available)==1:
+            return 0
+        else:
+            choice = np.random.randint(0, len(available) - 1)
+            return available[choice]
         
 
 def random_pmf(pmf):
