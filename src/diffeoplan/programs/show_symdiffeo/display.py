@@ -95,6 +95,7 @@ def symdiffeo_display(report, template_rgb, diffeo, resolution): #@UnusedVariabl
         im = template_rgb
         var = np.ones((im.shape[0], im.shape[1]))
         
+        # XXX: use global code
         data = [(im, var)]
         for it in range(iterations):
             im, var = D2d.apply(im, var)
