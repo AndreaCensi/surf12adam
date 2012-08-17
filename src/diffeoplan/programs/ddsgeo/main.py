@@ -1,7 +1,7 @@
 from .. import declare_command, write_report_files
 from reprep import Report
 import os
-from diffeoplan.programs.ddsgeo.meat import compute_geometry
+from diffeoplan.library.discdds import DiffeoStructure
 
 
 @declare_command('show-discdds-geo',
@@ -24,11 +24,13 @@ def ddsgeo(config, parser):
         dds = config.discdds.instance(id_dds) 
         report = Report(id_dds)
         
-        compute_geometry(dds, report)    
+        
+        show_diffeo_structure(dds, report)    
         
         write_report_files(report, basename=os.path.join(outdir, id_dds))    
 
 
-
-
-
+def show_diffeo_structure(dds, report):
+    ds = DiffeoStructure(dds)
+    ds.display(report.section('distances'))
+         
