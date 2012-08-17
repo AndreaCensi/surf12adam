@@ -1,7 +1,8 @@
 import numpy as np
-from boot_agents.misc_utils.tensors_display import iterate_indices
 
 def construct_matrix(shape, function):
+    from boot_agents.misc_utils.tensors_display import iterate_indices
+
     if len(shape) != 2:
         raise ValueError()
     D = np.zeros(shape) 

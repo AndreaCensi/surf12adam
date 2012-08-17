@@ -1,6 +1,7 @@
 from . import logger, make_logcases
-from .. import UserError, declare_command
+from .. import  declare_command
 import os
+from diffeoplan.utils.script_utils import UserError
 
 
 @declare_command('logcases',

@@ -222,19 +222,29 @@ class DiffeoStructure():
         report.text('cplans', s)
         
         
+        def plot_plan_points(pylab, plans):
+            # points by rows
+            points = np.array(map(self.plan2point, plans))
+            print points.shape
+            ndim = points.shape[1]
+            if ndim == 1:
+                pylab.plot(0 * points, points, 'rx')
+            if ndim == 2:
+                x = points[:, 0]
+                y = points[:, 1]
+                pylab.plot(x, y, 'rx')
+            if ndim == 3:
+                pass
+
         f = report.figure()
         caption = 'Points reached by the %d plans of %d steps' % (len(plans), nsteps)
         with f.plot('plans_reached', caption=caption) as pylab:
-            for plan in plans:
-                p = self.plan2point(plan)
-                pylab.plot(p[0], p[1], 'rx')
+            plot_plan_points(pylab, plans)
             pylab.axis('equal')
             
         caption = 'Points reached by %d canonical plans' % len(cplans)
         with f.plot('cplans_reached', caption=caption) as pylab:
-            for plan in cplans:
-                p = self.plan2point(plan)
-                pylab.plot(p[0], p[1], 'gx')
+            plot_plan_points(pylab, cplans) 
             pylab.axis('equal')
         
     def plan2desc(self, plan):
