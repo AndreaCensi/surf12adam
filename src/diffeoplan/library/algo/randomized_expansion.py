@@ -7,11 +7,10 @@ class RandomizedExpansion(GraphSearchQueue):
     Chooses a node to expand according to a bias-function
     """
 
-    def __init__(self,  thresh, metric, max_ittr, nsteps, 
-                   region):
-        GraphSearchQueue.__init__(self,  thresh, metric, max_ittr, nsteps)
+    def __init__(self, thresh, metric, max_ittr, nsteps,
+                       region):
+        GraphSearchQueue.__init__(self, thresh, metric, max_ittr, nsteps)
         self.region = region
-            
         
     def get_next_index(self, tree, open_nodes):
         """ Choose one element of open """
@@ -35,7 +34,6 @@ class RandomizedExpansion(GraphSearchQueue):
                 num += 1
         return num
 
-
     def get_next_cmd(self, tree, node_index, available):
         choice = np.random.randint(0, len(available) - 1)
         return available[choice]
@@ -43,7 +41,8 @@ class RandomizedExpansion(GraphSearchQueue):
 
 def random_pmf(pmf):
     """
-        returns a random integer from the probability mass function <pmf> given as a vector.    
+        Returns a random integer from the probability mass 
+        function <pmf> given as a vector.    
     """
     total_prob = sum(pmf)
     pmf = np.array(pmf) / total_prob

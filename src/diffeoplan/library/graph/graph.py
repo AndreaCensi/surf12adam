@@ -25,7 +25,6 @@ class Graph():
         self.nodes[node.parent].child_nodes.append(len(self.nodes))
         self.nodes.append(node)
         
-#        
              
     @contract(i='int', all_actions='list(int)', returns='list(int)')
     def actions_available_for_node(self, i, all_actions):
@@ -48,11 +47,9 @@ class Graph():
         return d
     
     def get_nodes_distance(self, i, j):
-        if not (i,j) in self.cached_distance:
-            d = self.get_nodes_distance_slow(i,j)
-            self.cached_distance[(i,j)] =  d
-            self.cached_distance[(j,i)] =  d
-        return self.cached_distance[(i,j)] 
+        if not (i, j) in self.cached_distance:
+            d = self.get_nodes_distance_slow(i, j)
+            self.cached_distance[(i, j)] = d
+            self.cached_distance[(j, i)] = d
+        return self.cached_distance[(i, j)] 
 
-    def get_closest(self, tree):
-        

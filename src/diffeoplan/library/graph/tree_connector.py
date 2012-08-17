@@ -17,7 +17,7 @@ class TreeConnector():
     def connection(self, n1, n2):
 #        pdb.set_trace()
         dist = self.T1.metric.distance(self.T1.nodes[n1].y, self.T2.nodes[n2].y)
-        print('Distance ' + str(dist))
+        print('Distance %s' % dist)
         if dist < self.tresh:
             return 1, dist
         else:
@@ -36,7 +36,7 @@ class TreeConnector():
             n1 = undef[0, i] 
             n2 = undef[1, i] 
             con, dis = self.connection(n1, n2)
-            print('connection '+ str(con) + '    distance: ' + str(dis))
+            print('connection %s distance %s' % (con, dis))
             self.connections[n1, n2] = con
             self.distances[n1, n2] = dis
     

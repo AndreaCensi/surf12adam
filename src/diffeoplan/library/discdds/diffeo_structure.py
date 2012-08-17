@@ -28,101 +28,7 @@ class DiffeoStructure():
         self.same = self.D < self.eps
         self.opposite = self.aD < self.eps
         self.swappable = self.cD < self.eps
-        
-    def display(self, report):
-        report.data('scale', self.scale)
-        report.data('eps', self.eps)
-        self.display_distances(report)
-        self.display_structure(report)
-        self.show_reduction_steps(report)
-        self.show_reduction(report)
-        
-    
-    def display_structure(self, report):
-        f = report.figure(caption='Inferred structure')
-        labels = self.labels
-        f.table('same', self.same, cols=labels, rows=labels)
-        f.table('opposite', self.opposite, cols=labels, rows=labels)
-        f.table('swappable', self.swappable, cols=labels, rows=labels)
-        
-    
-    def display_distances(self, report):
-        f = report.figure()
-        labels = self.labels
-        report.table('distances_table', self.D, cols=labels, rows=labels,
-                     caption='Distance between actions (L2 mixed)')
-        report.table('anti_distances_table', self.aD, cols=labels, rows=labels,
-                     caption='Anti-distance between actions (L2 mixed)')
-        report.table('comm_distances_table', self.cD, cols=labels, rows=labels,
-                     caption='Commutation error (L2 mixed)')
-        
-        caption = 'Distances between actions (black=0, white=max)'
-        report.data('distances', self.D).display('scale', caption=caption).add_to(f)
-        caption = 'Anti-distances between actions (black=0, white=max)'
-        report.data('anti_distances', self.aD).display('scale', caption=caption).add_to(f)
-        caption = 'Comm-distances between actions (black=0, white=max)'
-        report.data('comm_distances', self.cD).display('scale', caption=caption).add_to(f)
-            
-    def plan2desc(self, plan):
-        return ",".join(self.labels[i] for i in plan)
-    
-    def plan2point(self, plan):
-        """ Assuming that we can add the original_cmd... (for debug only) """
-        if not plan: # empty
-            n = self.dds.actions[0].original_cmd.size
-            return np.zeros(n)
-        return np.sum(self.dds.actions[i].original_cmd for i in plan)
-    
-    
-    def show_reduction_steps(self, report):
-        nsteps, nplans, ncplans = self.compute_reduction_steps(max_nsteps=7)
-        report.data('nsteps', nsteps)
-        report.data('nplans', nplans)
-        report.data('ncplans', ncplans)
-        f = report.figure()
-        
-        caption = """
-            Efficient plan generations. 
-            Let L be the length, N the number of commands,
-            and P the number of plans
-            
-            The naive grows exponentially.
-            
-                P_naive ~= N ^ L
-                
-            The reduced grows according to the ambient space.
-            If the topology is \reals^K, then it grows like
-            
-                P_smart ~= L ^ K
-        
-            this is the *volume* of the area.
-            
-            Usually the number of commands is N = 2*K
-            
-            So we have:
-              
-                N^L     vs   L^(N/2)
-            
-            The logarithm is
-            
-                log(P_naive) = log(N) * L     
-                
-                log(P_smart) = N * log(L) 
-            
-            So fixing N and plotting as a function of L and in logarithmic
-            coordinates, we have that the first plot should be a line,
-            and the second one a logarithm.
-            
-                
-        """
-        report.text('explanation', caption)
-        with f.plot('reduction') as pylab:
-            pylab.semilogy(nsteps, nplans, label='naive')
-            pylab.semilogy(nsteps, ncplans, label='reduced')
-            pylab.legend()
-            pylab.xlabel('plan length (L)')
-            pylab.ylabel('number of plans (P)')
-        
+       
     @contract(returns='tuple(list[M], list[M], list[M])')
     def compute_reduction_steps(self, max_nsteps=5):
         K = len(self.dds.actions)
@@ -139,36 +45,6 @@ class DiffeoStructure():
             ncplans.append(len(cplans))
         return nsteps, nplans, ncplans
     
-    def show_reduction(self, report, nsteps=4):
-        K = len(self.dds.actions)
-        # all plans of length 4
-        plans = plans_of_max_length(ncmd=K, maxsteps=nsteps)
-        cplans, plan2cplans = self.get_minimal_equiv_set(plans)
-         
-        s = "\n".join('%s -> %s  (sum cmd: %s)' % 
-                      (self.plan2desc(a), self.plan2desc(b),
-                       self.plan2point(a)) #, self.plan2point(b))  
-                      for a, b in plan2cplans.items())
-        report.text('plans', s)
-        s = "\n".join('%s    (sum: %s)' % (self.plan2desc(x), self.plan2point(x))
-                      for x in cplans)
-        report.text('cplans', s)
-        
-        
-        f = report.figure()
-        caption = 'Points reached by the %d plans of %d steps' % (len(plans), nsteps)
-        with f.plot('plans_reached', caption=caption) as pylab:
-            for plan in plans:
-                p = self.plan2point(plan)
-                pylab.plot(p[0], p[1], 'rx')
-            pylab.axis('equal')
-            
-        caption = 'Points reached by %d canonical plans' % len(cplans)
-        with f.plot('cplans_reached', caption=caption) as pylab:
-            for plan in cplans:
-                p = self.plan2point(plan)
-                pylab.plot(p[0], p[1], 'gx')
-            pylab.axis('equal')
         
     @contract(plans='seq(seq(int))')
     def get_minimal_equiv_set(self, plans, ignore_zero_len=True):
@@ -242,3 +118,132 @@ class DiffeoStructure():
                 current.append(new_action)
                 
         return current
+    
+    # Below, just visualization
+    
+    
+    def display(self, report):
+        report.data('scale', self.scale)
+        report.data('eps', self.eps)
+        self.display_distances(report)
+        self.display_structure(report)
+        self.show_reduction_steps(report)
+        self.show_reduction(report)
+        
+    
+    def display_structure(self, report):
+        f = report.figure(caption='Inferred structure')
+        labels = self.labels
+        f.table('same', self.same, cols=labels, rows=labels)
+        f.table('opposite', self.opposite, cols=labels, rows=labels)
+        f.table('swappable', self.swappable, cols=labels, rows=labels)
+        
+    
+    def display_distances(self, report):
+        f = report.figure()
+        labels = self.labels
+        report.table('distances_table', self.D, cols=labels, rows=labels,
+                     caption='Distance between actions (L2 mixed)')
+        report.table('anti_distances_table', self.aD, cols=labels, rows=labels,
+                     caption='Anti-distance between actions (L2 mixed)')
+        report.table('comm_distances_table', self.cD, cols=labels, rows=labels,
+                     caption='Commutation error (L2 mixed)')
+        
+        caption = 'Distances between actions (black=0, white=max)'
+        report.data('distances', self.D).display('scale', caption=caption).add_to(f)
+        caption = 'Anti-distances between actions (black=0, white=max)'
+        report.data('anti_distances', self.aD).display('scale', caption=caption).add_to(f)
+        caption = 'Comm-distances between actions (black=0, white=max)'
+        report.data('comm_distances', self.cD).display('scale', caption=caption).add_to(f)
+            
+    
+    def show_reduction_steps(self, report):
+        nsteps, nplans, ncplans = self.compute_reduction_steps(max_nsteps=7)
+        report.data('nsteps', nsteps)
+        report.data('nplans', nplans)
+        report.data('ncplans', ncplans)
+        f = report.figure()
+        
+        caption = """
+            Efficient plan generations. 
+            Let L be the length, N the number of commands,
+            and P the number of plans
+            
+            The naive grows exponentially.
+            
+                P_naive ~= N ^ L
+                
+            The reduced grows according to the ambient space.
+            If the topology is \reals^K, then it grows like
+            
+                P_smart ~= L ^ K
+        
+            this is the *volume* of the area.
+            
+            Usually the number of commands is N = 2*K
+            
+            So we have:
+              
+                N^L     vs   L^(N/2)
+            
+            The logarithm is
+            
+                log(P_naive) = log(N) * L     
+                
+                log(P_smart) = N * log(L) 
+            
+            So fixing N and plotting as a function of L and in logarithmic
+            coordinates, we have that the first plot should be a line,
+            and the second one a logarithm.
+            
+                
+        """
+        report.text('explanation', caption)
+        with f.plot('reduction') as pylab:
+            pylab.semilogy(nsteps, nplans, label='naive')
+            pylab.semilogy(nsteps, ncplans, label='reduced')
+            pylab.legend()
+            pylab.xlabel('plan length (L)')
+            pylab.ylabel('number of plans (P)')
+            
+    def show_reduction(self, report, nsteps=4):
+        K = len(self.dds.actions)
+        # all plans of length 4
+        plans = plans_of_max_length(ncmd=K, maxsteps=nsteps)
+        cplans, plan2cplans = self.get_minimal_equiv_set(plans)
+         
+        s = "\n".join('%s -> %s  (sum cmd: %s)' % 
+                      (self.plan2desc(a), self.plan2desc(b),
+                       self.plan2point(a)) #, self.plan2point(b))  
+                      for a, b in plan2cplans.items())
+        report.text('plans', s)
+        s = "\n".join('%s    (sum: %s)' % (self.plan2desc(x), self.plan2point(x))
+                      for x in cplans)
+        report.text('cplans', s)
+        
+        
+        f = report.figure()
+        caption = 'Points reached by the %d plans of %d steps' % (len(plans), nsteps)
+        with f.plot('plans_reached', caption=caption) as pylab:
+            for plan in plans:
+                p = self.plan2point(plan)
+                pylab.plot(p[0], p[1], 'rx')
+            pylab.axis('equal')
+            
+        caption = 'Points reached by %d canonical plans' % len(cplans)
+        with f.plot('cplans_reached', caption=caption) as pylab:
+            for plan in cplans:
+                p = self.plan2point(plan)
+                pylab.plot(p[0], p[1], 'gx')
+            pylab.axis('equal')
+        
+    def plan2desc(self, plan):
+        return ",".join(self.labels[i] for i in plan)
+    
+    def plan2point(self, plan):
+        """ Assuming that we can add the original_cmd... (for debug only) """
+        if not plan: # empty
+            n = self.dds.actions[0].original_cmd.size
+            return np.zeros(n)
+        return np.sum(self.dds.actions[i].original_cmd for i in plan)
+    
