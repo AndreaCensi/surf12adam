@@ -174,7 +174,7 @@ class DiffeoStructure():
                 P_naive ~= N ^ L
                 
             The reduced grows according to the ambient space.
-            If the topology is \reals^K, then it grows like
+            If the topology is that of Reals^K, then it grows like
             
                 P_smart ~= L ^ K
         
