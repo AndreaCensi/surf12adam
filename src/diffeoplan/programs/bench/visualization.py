@@ -5,7 +5,7 @@ import numpy as np
 import os
 from reprep.graphics.filter_scale import scale
 from contracts import contract
-import reprep
+
      
 def create_visualization_jobs(config, outdir, allruns):
     
@@ -95,7 +95,7 @@ def draw_trees(config, r, tc, discdds, extra):
     with f.plot('start_tree') as pylab:    
         for i, node in enumerate(start_tree.nodes):
             plan = node.path 
-#            point = plan2point(discdds, plan)
+            #  point = plan2point(discdds, plan)
             x, y = plan2path(discdds, plan)
             point = x[-1], y[-1]
             pylab.plot(x, y, 'y-')

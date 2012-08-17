@@ -12,5 +12,6 @@ from .maketestcases import *
 from .bench import *
 from .logcases import *
 from .distances import *
+from .ddsgeo import *
 
 from .main import *
