@@ -111,7 +111,7 @@ def draw_trees(config, r, tc, discdds, extra):
         pylab.axis('equal')
         plot_utils.turn_all_axes_off(pylab)
         plot_utils.y_axis_extra_space(pylab, 0.1)
-        plot_utils.x_axis_extra_space(pylab, 0.1)
+#        plot_utils.x_axis_extra_space(pylab, 0.1)
 
         
 @contract(plan='seq[N](int)', returns='tuple(array[N+1],array[N+1])')

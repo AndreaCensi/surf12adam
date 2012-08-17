@@ -11,27 +11,38 @@ class PreProcessor():
     state_cam_moving = 2        # State for when camera is moving
     state_takeY1 = 3            # Waiting for last image
     
-    def __init__(self, infile, outfile, output_size, nc=10):
+    def __init__(self, infile, outfile, output_size, nc=10, use_zoom=True):
         self.nc = nc # Number of history images to store in array
         self.last_container = [0] * nc
         self.output_size = output_size
         self.Y_last = 0
         
+        # Decide if zoom should be simulated
+        self.use_zoom = use_zoom
+        if use_zoom:
+            self.zoom_image = zoom_image_center
+        else:
+            self.zoom_image = no_zoom
+        
         # Keep track of the actual zoom for the last command and the current zoom
         self.zoom_last = 250
         self.zoom = 100
+        
+        self.name = infile
         
         self.bag = rosbag.Bag(infile)
         self.out_bag = rosbag.Bag(outfile, 'w')
         
         # Define some variables
-        self.next_state = -1
+#        self.next_state = -1
         self.state_capture = 0
         self.diff_treshold = self.find_dt_threshold()
 
         self.move_waits = 0
         self.move_timeout = 9
-        self.move_time_timeout = 0.5
+        self.move_time_timeout = 0.8
+        
+        self.t0 = None
         
     def finalize(self):
         self.bag.close()
@@ -42,7 +53,9 @@ class PreProcessor():
         topics = ['/usb_cam/image_raw', '/logitech_cam/camera_executed']
         for topic, msg, t in self.bag.read_messages(topics=topics):
             if topic == '/logitech_cam/camera_executed':
-                next_state = self.command_executed(msg, t)
+#                pdb.set_trace()
+                if (int(msg.data[2]) == 0) or self.use_zoom:
+                    next_state = self.command_executed(msg, t)
                 
             if topic == '/usb_cam/image_raw':
                 next_state = self.cam_image_read(msg, t)
@@ -89,10 +102,15 @@ class PreProcessor():
         
     def command_executed(self, msg, t):
         if self.last_container[self.nc - 1] != 0:
+            if self.state_capture != PreProcessor.state_takeY0:
+#                pdb.set_trace()
+                logger.warning('At t = %r , take Y0 outside state' % str(t.to_time))
+                logger.warning('cmd = %r ' % str(msg.data))
+                
             logger.debug('Camera Instruction Read: (%s)' % str(msg.data)) 
             logger.debug('Writing Y0 and U0')
             logger.debug('Time = %s' % t.to_time())
-            write_img = self.zoom_image(self.last_container[5], self.zoom_last)
+            write_img = self.zoom_image(self.last_container[5], self.zoom_last, self.output_size)
 #            write_img = resize_image(zoom_image(self.last_container[5], self.zoom_last), self.output_size)
             self.out_bag.write('Y0', write_img, t)
             self.out_bag.write('U0', msg, t)
@@ -109,7 +127,14 @@ class PreProcessor():
             return next_state
             
     def cam_image_read(self, msg, t):
-        logger.debug('cam_image_read()')
+#        pdb.set_trace()
+        logger.debug('%s : cam_image_read()' % self.name)
+        logger.debug('At time: %s' % str(t))
+                    
+        if self.state_capture != PreProcessor.state_takeY0:
+            if (t.to_time() - self.t0.to_time() > self.move_time_timeout):
+                self.state_capture = PreProcessor.state_takeY1
+        
         next_state = self.state_capture
         if self.state_capture == PreProcessor.state_wait_for_move:
             diff = compare_images(self.Y_last, msg)
@@ -119,9 +144,9 @@ class PreProcessor():
                 next_state = PreProcessor.state_cam_moving
             self.move_waits += 1
 
-            if t.to_time() - self.t0.to_time() > self.move_time_timeout:
-                logger.debug('Proceding to state_take_Y1, timeout in state_wait_for_move')
-                next_state = PreProcessor.state_takeY1
+#            if t.to_time() - self.t0.to_time() > self.move_time_timeout:
+#                logger.debug('Proceding to state_take_Y1, timeout in state_wait_for_move')
+#                next_state = PreProcessor.state_takeY1
                 
         if self.state_capture == PreProcessor.state_cam_moving:
             diff = compare_images(self.Y_last, msg)
@@ -133,14 +158,14 @@ class PreProcessor():
                 next_state = PreProcessor.state_takeY1
             self.move_waits += 1
 
-            if t.to_time() - self.t0.to_time() > self.move_time_timeout:
-                logger.debug('Proceding to state_take_Y1, timeout in state_cam_moving')
-                next_state = PreProcessor.state_takeY1
+#            if t.to_time() - self.t0.to_time() > self.move_time_timeout:
+#                logger.debug('Proceding to state_take_Y1, timeout in state_cam_moving')
+#                next_state = PreProcessor.state_takeY1
                 
         if self.state_capture == PreProcessor.state_takeY1:
             logger.debug('Writing Y1')
-            write_img = self.zoom_image(msg, self.zoom)
-            self.out_bag.write('Y1', write_img, self. t0)
+            write_img = self.zoom_image(msg, self.zoom, self.output_size)
+            self.out_bag.write('Y1', write_img, self.t0)
             self.i += 1
             
             next_state = PreProcessor.state_takeY0
@@ -152,19 +177,24 @@ class PreProcessor():
         
         return next_state
     
-    def zoom_image(self, image, zoom):
-        """ Zoom an image with zoom center. """
-        pim, _, (h, w, _) = imgmsg_to_pil(image)
-        z = float(zoom)
-        z0 = 100.0 # original size zoom
+def no_zoom(image, zoom, output_size):
+    pim, _, _ = imgmsg_to_pil(image)
+    pim = pim.resize(output_size)    
+    return pil_to_imgmsg(pim)
 
-        x0 = int(w / 2 * (1.0 - z0 / z)) 
-        y0 = int(h / 2 * (1.0 - z0 / z)) 
-        dx = int(w * z0 / z) 
-        dy = int(h * z0 / z) 
-        pim_crop = pim.crop((x0, y0, dx, dy))
-        pim_out = pim_crop.resize(self.output_size)    
-        return pil_to_imgmsg(pim_out)
+def zoom_image_center(image, zoom, output_size):
+    """ Zoom an image with zoom center. """
+    pim, _, (h, w, _) = imgmsg_to_pil(image)
+    z = float(zoom)
+    z0 = 100.0 # original size zoom
+
+    x0 = int(w / 2 * (1.0 - z0 / z)) 
+    y0 = int(h / 2 * (1.0 - z0 / z)) 
+    dx = int(w / 2 * (1.0 + z0 / z)) 
+    dy = int(h / 2 * (1.0 + z0 / z)) 
+    pim_crop = pim.crop((x0, y0, dx, dy))
+    pim_out = pim_crop.resize(output_size)    
+    return pil_to_imgmsg(pim_out)
 
 
 def compare_images(image1, image2, step=100):

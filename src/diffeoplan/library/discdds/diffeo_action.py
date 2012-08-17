@@ -34,12 +34,13 @@ class DiffeoAction():
             return [self.original_cmd]
         
     @contract(y0=UncertainImage, returns=UncertainImage)
-    def predict(self, y0):
+    def predict(self, y0, apply_function='self.diffeo.apply'):
         """ 
             Returns the prediction of applying this action to the 
             given input y0. 
         """
-        y1, var1 = self.diffeo.apply(y0.get_values(),
+        apply_function = eval(apply_function)
+        y1, var1 = apply_function(y0.get_values(),
                                      y0.scalar_uncertainty)
         return UncertainImage(y1, var1) 
         

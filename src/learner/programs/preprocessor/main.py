@@ -2,11 +2,11 @@ from . import PreProcessor, logger
 from optparse import OptionParser
 from diffeoplan.utils.script_utils import UserError, wrap_script_entry_point
 import os
-from conf_tools.exceptions import ConfToolsException
+from conf_tools.exceptions import ConfToolsException #@UnresolvedImport
 
 
 def preprocessor(args):
-    usage = "usage: %prog -n name -i inputpath [-o outputdir] -s [W,H] -p string"
+    usage = "usage: %prog -i inputpath [-o outputdir] -s [W,H] -p string"
     parser = OptionParser(usage=usage, version="%prog 1.0")
     parser.add_option("-i", "--input",
                       help="Path to input file (must be *.raw.bag)")
@@ -15,6 +15,7 @@ def preprocessor(args):
     parser.add_option("-p", "--namefix", default='',
                       help='Additional string for output filename')
     parser.add_option("-s", "--size", default='[160,120]', help="Image size WxH")
+    parser.add_option("-z", "--zoom", default=True, help="Use zoom")
 #    parser.add_option("-zc", "--zoom_center", default=[0,0], help="Not Impl: Zoom center offset from mid image")
 
 
@@ -54,7 +55,9 @@ def preprocessor(args):
     logger.info('Writing to:   %s' % output)    
     output_size = eval(options.size)
     
-    pproc = PreProcessor(bag, output, output_size)
+    zoom = eval(options.zoom)
+    
+    pproc = PreProcessor(bag, output, output_size, use_zoom=zoom)
     pproc.process_bag()
     pproc.finalize()
 

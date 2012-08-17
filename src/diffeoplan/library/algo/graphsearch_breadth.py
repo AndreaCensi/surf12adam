@@ -1,48 +1,23 @@
-from ..graph import Node
-import copy
-from diffeoplan.library.algo.graphsearch import GraphSearch
+from diffeoplan.library.graph.graph import Graph
+from diffeoplan.library.algo.generic_graph_planner import GraphSearchQueue
 
-class GraphSearchBreadth(GraphSearch):
-    """ 
-        This is an algorithm that returns the best plan
-        after trying all possible plans of exact length <nsteps> 
+class GraphSearchBreadth(GraphSearchQueue):
+    def get_next_index(self, tree, open_nodes):
+        return open_nodes[0]
+    
+class GraphSearchBreadth2Dir(GraphSearchQueue):
+    '''
+    GraphSearch with expansion in 2 directions.
+    '''
+    
+    def get_next_index(self, tree, open_nodes):
+        return open_nodes[0]
 
-    """
-    def get_next_node(self, tree): 
-        # Search for node with unevaluated command
-        for i in range(self.comp_ind, len(tree.nodes)):
-            if len(tree.nodes[i].command_stack) > len(tree.nodes[i].child_nodes):
-                return i
-            else:
-                # don't look for nodes with lower index than this
-                self.comp_ind = min(i, self.comp_ind) 
-        
-        return None # Algorithm complete
-    
-    def get_next_cmd(self, node):
-        next_cmd = node.command_stack[len(node.child_nodes)]
-        return next_cmd
-    
-    def get_new_node(self, tree):
-        dds = self.get_dds()
-        ncmd = len(dds.actions)
-        
-        # Node index to expand
-        next_node = self.get_next_node(tree)
-        if next_node == None:
-            return None
-        node = tree.nodes[next_node]
-        path = copy.deepcopy(node.path)
-        next_cmd = self.get_next_cmd(node)
-        next_action = dds.actions[next_cmd]
-        y_new = next_action.predict(node.y)
-        path.append(next_cmd)
-        node_new = Node(y_new, path)
-        
-        # Set data for node
-        node_new.parent = next_node
-        node_new.command_stack = range(ncmd)
-        node_new.child_nodes = []
-                
-        return node_new
-        
+    def init_goal_tree(self, node, metric, thresh):
+        """
+        Override init_goal_tree in GenericGraphPlanner to 
+        have one open node for expansion.
+        """
+        goal_tree = Graph(node, metric, thresh)
+        goal_tree.open_nodes = [0]
+        return goal_tree

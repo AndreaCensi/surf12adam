@@ -45,3 +45,4 @@ pip-log.txt
 .noseids
 out
 .compmake_history.txt
+.settings

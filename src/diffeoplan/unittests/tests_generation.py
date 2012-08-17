@@ -1,5 +1,5 @@
 
-from .. import DiffeoplanConfig
+from .. import DiffeoplanConfig #@UnresolvedImport
 
 from bootstrapping_olympics.unittests.utils import fancy_test_decorator
 

@@ -49,7 +49,7 @@ class UncertainImage():
         # we want to have float images fields
         y = np.array(Image.fromarray(self.get_values().astype('uint8')).resize(size))
         if self.scalar_uncertainty is not None:
-            var = np.array(Image.fromarray(self.scalar_uncertainty, 'L').resize(size))
+            var = np.array(Image.fromarray(np.array(self.scalar_uncertainty*255).astype(np.uint8), 'L').resize(size)).astype(np.float)/255
         else:
             var = None
         return UncertainImage(y, var)

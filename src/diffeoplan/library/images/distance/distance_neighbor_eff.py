@@ -23,9 +23,9 @@ class FlatStructure():
         area_shape = cmg.shape[0], cmg.shape[1]
 
         H, W = shape
-        h, w = area_shape
+#        h, w = area_shape
         N = H * W
-        A = h * w 
+#        A = h * w 
         
         neighbor_coords = [None] * N
         self.neighbor_indices_flat = [None] * N
