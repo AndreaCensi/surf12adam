@@ -1,6 +1,6 @@
 from . import contract, np
 from PIL import Image #@UnresolvedImport
-from boot_agents.diffeo.diffeo_estimator import scalaruncertainty2rgb
+from boot_agents.diffeo import scalaruncertainty2rgb
 
 class UncertainImage():
     
@@ -43,13 +43,12 @@ class UncertainImage():
         diff = (y0.get_values() - y1.get_values()).flatten()
         return float(np.linalg.norm(diff, 1)) #/ y0.size
 
-
     def resize(self, size):
         # FIXME: this assumes that the image is a uint8 with 3 channels
         # we want to have float images fields
         y = np.array(Image.fromarray(self.get_values().astype('uint8')).resize(size))
         if self.scalar_uncertainty is not None:
-            var = np.array(Image.fromarray(np.array(self.scalar_uncertainty*255).astype(np.uint8), 'L').resize(size)).astype(np.float)/255
+            var = np.array(Image.fromarray(np.array(self.scalar_uncertainty * 255).astype(np.uint8), 'L').resize(size)).astype(np.float) / 255
         else:
             var = None
         return UncertainImage(y, var)
@@ -60,7 +59,6 @@ class UncertainImage():
         # TODO: make it work with "float" data
         rgb = self.get_values().astype('uint8')        
         return rgb 
-
 
     @contract(returns='array[HxWx3](uint8)')
     def get_rgb_uncertain(self):

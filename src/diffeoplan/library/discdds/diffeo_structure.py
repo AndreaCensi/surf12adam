@@ -1,7 +1,9 @@
-import numpy as np
-from contracts import contract
-from diffeoplan.library.discdds.plan_utils import plans_of_max_length
+from . import DiffeoAction, np, contract, plans_of_max_length
+from boot_agents.diffeo import (diffeo_to_rgb_angle, diffeo_to_rgb_norm,
+    scalaruncertainty2rgb)
+from boot_agents.misc_utils import iterate_indices
 from collections import deque
+
 
 class DiffeoStructure():
     """ 
@@ -10,25 +12,53 @@ class DiffeoStructure():
     """
     def __init__(self, dds, tolerance=0.2):
         self.dds = dds
+        # This is our tolerance for comparisons
         self.tolerance = tolerance
+        # Names of actions
         self.labels = [a.label for a in self.dds.actions]
         
         self.compute_distances()
+        self.decide_properties(use_weighted=True)
         
     def compute_distances(self):
-        self.D = self.dds.get_actions_distance_L2_mixed_matrix()
-        self.aD = self.dds.get_actions_anti_distance_L2_mixed_matrix()
-        self.cD = self.dds.get_actions_comm_distance_L2_mixed_matrix()
-        
+        self.D = self.dds.actions_distance_L2()
+        self.aD = self.dds.actions_anti_distance_L2()
+        self.cD = self.dds.actions_comm_distance_L2()
         # This is the minimum size of a command
         self.scale = np.min(self.aD.diagonal()) / 2.0
-        # This is our tolerance for comparisons
-        self.eps = self.scale * self.tolerance
+
+        # we use it to normalize the distances
+        self.D_n = self.D / self.scale 
+        self.aD_n = self.aD / self.scale
+        self.cD_n = self.cD / self.scale
+
+        # weighted versions
+        self.Dw = self.dds.actions_distance_L2_infow()
+        self.aDw = self.dds.actions_anti_distance_L2_infow()
+        self.cDw = self.dds.actions_comm_distance_L2_infow()
         
-        self.same = self.D < self.eps
-        self.opposite = self.aD < self.eps
-        self.swappable = self.cD < self.eps
+        self.scalew = np.min(self.aDw.diagonal()) / 2.0
+        
+        self.Dw_n = self.Dw / self.scalew 
+        self.aDw_n = self.aDw / self.scalew
+        self.cDw_n = self.cDw / self.scalew
+        
+        self.samew = self.Dw_n < self.tolerance
+        self.oppositew = self.aDw_n < self.tolerance
+        self.swappablew = self.cDw_n < self.tolerance
        
+    def decide_properties(self, use_weighted):
+        if use_weighted:
+            self.same = self.D_n < self.tolerance
+            self.opposite = self.aD_n < self.tolerance
+            self.swappable = self.cD_n < self.tolerance
+        else:
+            self.same = self.Dw_n < self.tolerance
+            self.opposite = self.aDw_n < self.tolerance
+            self.swappable = self.cDw_n < self.tolerance
+       
+
+        
     @contract(returns='tuple(list[M], list[M], list[M])')
     def compute_reduction_steps(self, max_nsteps=5):
         K = len(self.dds.actions)
@@ -45,7 +75,6 @@ class DiffeoStructure():
             ncplans.append(len(cplans))
         return nsteps, nplans, ncplans
     
-        
     @contract(plans='seq(seq(int))')
     def get_minimal_equiv_set(self, plans, ignore_zero_len=True):
         """ 
@@ -124,12 +153,13 @@ class DiffeoStructure():
     
     def display(self, report):
         report.data('scale', self.scale)
-        report.data('eps', self.eps)
+        report.data('tolerance', self.tolerance)
+
         self.display_distances(report)
         self.display_structure(report)
-        self.show_reduction_steps(report)
+        self.show_reduction_steps(report, max_nsteps=4)
         self.show_reduction(report)
-        
+        self.show_compositions(report)
     
     def display_structure(self, report):
         f = report.figure(caption='Inferred structure')
@@ -140,25 +170,30 @@ class DiffeoStructure():
         
     
     def display_distances(self, report):
-        f = report.figure()
-        labels = self.labels
-        report.table('distances_table', self.D, cols=labels, rows=labels,
-                     caption='Distance between actions (L2 mixed)')
-        report.table('anti_distances_table', self.aD, cols=labels, rows=labels,
-                     caption='Anti-distance between actions (L2 mixed)')
-        report.table('comm_distances_table', self.cD, cols=labels, rows=labels,
-                     caption='Commutation error (L2 mixed)')
-        
-        caption = 'Distances between actions (black=0, white=max)'
-        report.data('distances', self.D).display('scale', caption=caption).add_to(f)
-        caption = 'Anti-distances between actions (black=0, white=max)'
-        report.data('anti_distances', self.aD).display('scale', caption=caption).add_to(f)
-        caption = 'Comm-distances between actions (black=0, white=max)'
-        report.data('comm_distances', self.cD).display('scale', caption=caption).add_to(f)
+        f = report.figure(cols=3)
+
+        def table(n, x, caption):
+            data = report.data(n, x)
+            report.table(n + '_table', x, rows=self.labels, cols=self.labels)
+            data.display('scale', caption=caption).add_to(f)
             
+        table('D', self.D, 'Distance between actions (L2 mixed)')
+        table('aD', self.aD, 'Anti-distance between actions (L2 mixed)')
+        table('cD', self.cD, 'Commutation error (L2 mixed)')
+        table('D_n', self.D_n, 'Normalized distance between actions (L2 mixed)')
+        table('aD_n', self.aD_n, 'Normalized Anti-distance between actions (L2 mixed)')
+        table('cD_n', self.cD_n, 'Normalized Commutation error (L2 mixed)')
+        
+        table('Dw', self.Dw, 'Distance between actions (L2 mixed)')
+        table('aDw', self.aDw, 'Anti-distance between actions (L2 mixed)')
+        table('cDw', self.cDw, 'Commutation error (L2 mixed)')
+        table('Dw_n', self.Dw_n, 'Normalized distance between actions (L2 mixed)')
+        table('aDw_n', self.aDw_n, 'Normalized Anti-distance between actions (L2 mixed)')
+        table('cDw_n', self.cDw_n, 'Normalized Commutation error (L2 mixed)')
+         
     
-    def show_reduction_steps(self, report):
-        nsteps, nplans, ncplans = self.compute_reduction_steps(max_nsteps=7)
+    def show_reduction_steps(self, report, max_nsteps):
+        nsteps, nplans, ncplans = self.compute_reduction_steps(max_nsteps)
         report.data('nsteps', nsteps)
         report.data('nplans', nplans)
         report.data('ncplans', ncplans)
@@ -200,12 +235,33 @@ class DiffeoStructure():
         """
         report.text('explanation', caption)
         with f.plot('reduction') as pylab:
-            pylab.semilogy(nsteps, nplans, label='naive')
-            pylab.semilogy(nsteps, ncplans, label='reduced')
+            pylab.semilogy(nsteps, nplans, 's-', label='naive')
+            pylab.semilogy(nsteps, ncplans, 's-', label='reduced')
             pylab.legend()
             pylab.xlabel('plan length (L)')
             pylab.ylabel('number of plans (P)')
+    
+    def show_compositions(self, report, nsteps=4):
+        #f_ba = report.figure()
+        n = len(self.dds.actions)
+        f_ab_norm = report.figure(cols=n, caption='Norm of AB')
+        f_ab_phase = report.figure(cols=n, caption='Phase of AB')
+        f_ab_info = report.figure(cols=n, caption='Certainty of AB')
+        for a, b in iterate_indices((n, n)):
+            A = self.dds.actions[a]
+            B = self.dds.actions[b]
+            AB = DiffeoAction.compose(A, B)
+            norm_rgb = diffeo_to_rgb_norm(AB.diffeo.d)
+            phase_rgb = diffeo_to_rgb_angle(AB.diffeo.d)
+            info_rgb = scalaruncertainty2rgb(AB.diffeo.variance)
+
+            label = '%s-%s' % (A.label, B.label)
+            caption = '%s, %s' % (A.label, B.label)
+            f_ab_norm.data_rgb('%s_norm' % label, norm_rgb, caption=caption)
+            f_ab_phase.data_rgb('%s_phase' % label, phase_rgb, caption=caption)
+            f_ab_info.data_rgb('%s_info' % label, info_rgb, caption=caption)
             
+
     def show_reduction(self, report, nsteps=4):
         K = len(self.dds.actions)
         # all plans of length 4
