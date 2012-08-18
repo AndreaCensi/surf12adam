@@ -97,29 +97,29 @@ class DiffeoSystem():
             action.display(report=sec, image=image)
             
     @contract(returns='array[NxN](>=0)')
-    def get_actions_distance_L2_mixed_matrix(self):
+    def actions_distance(self, distance):
         def entries(i, j):
             a1 = self.actions[i]
             a2 = self.actions[j]
-            return DiffeoAction.distance_L2_mixed(a1, a2)
+            return distance(a1, a2)
         K = len(self.actions)
         return construct_matrix((K, K), entries)
         
-    @contract(returns='array[NxN](>=0)')
-    def get_actions_anti_distance_L2_mixed_matrix(self):
-        def entries(i, j):
-            a1 = self.actions[i]
-            a2 = self.actions[j]
-            return DiffeoAction.anti_distance_L2_mixed(a1, a2)
-        K = len(self.actions)
-        return construct_matrix((K, K), entries)
+    def actions_distance_L2(self):
+        return self.actions_distance(DiffeoAction.distance_L2)
     
-    @contract(returns='array[NxN](>=0)')
-    def get_actions_comm_distance_L2_mixed_matrix(self):
-        def entries(i, j):
-            a1 = self.actions[i]
-            a2 = self.actions[j]
-            return DiffeoAction.comm_distance_L2_mixed(a1, a2)
-        K = len(self.actions)
-        return construct_matrix((K, K), entries)
+    def actions_distance_L2_infow(self):
+        return self.actions_distance(DiffeoAction.distance_L2_infow)
+    
+    def actions_anti_distance_L2(self):
+        return self.actions_distance(DiffeoAction.anti_distance_L2)
+
+    def actions_anti_distance_L2_infow(self):
+        return self.actions_distance(DiffeoAction.anti_distance_L2_infow)
         
+    def actions_comm_distance_L2(self):
+        return self.actions_distance(DiffeoAction.comm_distance_L2)
+        
+    def actions_comm_distance_L2_infow(self):
+        return self.actions_distance(DiffeoAction.comm_distance_L2_infow)
+    
