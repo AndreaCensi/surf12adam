@@ -1,4 +1,4 @@
-
+from . import logger
 class CameraTracker:
     
     def __init__(self, threshold, distance):
@@ -15,19 +15,20 @@ class CameraTracker:
         else:
             # we have some image to compare
             diff = self.distance(image, self.last)
+            logger.debug(diff)
             stopped = diff < self.threshold 
             if stopped:
                 # this is a stopped image, so we remember it
                 self.last_stopped = image
                 self.last_stopped_t = t
-            self.last_was_moving = not stopped
+            self.last_stopped = stopped
         self.last = image
         self.last_t = t
         
-    def was_moving(self):
+    def was_stopped(self):
         """ Return true if the last image was moving. """
         assert self.last is not None
-        return self.last_was_moving
+        return self.last_stopped
     
     def has_last_stopped(self):
         return self.last_stopped is not None

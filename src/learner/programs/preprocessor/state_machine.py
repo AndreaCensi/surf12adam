@@ -22,19 +22,23 @@ class StateMachine:
         self.queue = [] 
         
     def dispatch(self, event, event_parameter):
+        logger.info(self.state)
         handler = self.state2handler[self.state]
         next_state = handler(event, event_parameter)
         if next_state is None:
             next_state = self.state
         assert next_state in self.state2handler
+        self.state = next_state
         
     def received_stopped_image(self, t, image):
+#        logger.debug('def received_stopped_image(self, t, image):')
         self.dispatch(EVENT_STOPPED, (t, image))
     
     def received_moving_image(self, t, image):
         self.dispatch(EVENT_MOVING, (t, image))
     
     def received_command(self, t, command):
+        logger.debug(command)
         self.dispatch(EVENT_CMD, (t, command))
     
     
@@ -44,7 +48,7 @@ class StateMachine:
             self.y0 = (t, image)
             return STATE_WAIT_CMD
         elif event == EVENT_MOVING:
-            return  
+            return
         elif event == EVENT_CMD:
             return
         else:
@@ -68,6 +72,7 @@ class StateMachine:
         if event == EVENT_STOPPED:
             return
         elif event == EVENT_MOVING:
+            logger.debug('handle_wait_for_moving -> STATE_WAIT_FOR_STOP')
             return STATE_WAIT_FOR_STOP 
         elif event == EVENT_CMD:
             msg = ('Warning: obtained a second command while waiting for the first moving '
@@ -78,6 +83,7 @@ class StateMachine:
             assert False
             
     def handle_wait_for_stop(self, event, params):
+        logger.debug('handle_wait_for_stop')
         if event == EVENT_STOPPED:
             # Time to write stuff
             t, image = params
@@ -106,6 +112,7 @@ class StateMachine:
         #    msg = 'Due to strange raw capture pipeline, the camera was already moving'
         
         # do some checks
+        logger.debug('append to queue')
         self.queue.append((Y0, U, Y1))
         
     def get_queue(self):

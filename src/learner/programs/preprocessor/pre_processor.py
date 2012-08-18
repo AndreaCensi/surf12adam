@@ -16,19 +16,20 @@ def preprocess(infile, outfile, output_size,
     
     distance = image_distance_L1
     
-    diff_treshold = find_dt_threshold(infile,
+    diff_threshold = find_dt_threshold(infile,
                                            topic_image_raw, distance=distance,
                                            ignore_first=100, max_images=300)
+    
     
     zoomer = Zoomer(use_zoom=use_zoom,
                     min_zoom=min_zoom,
                     max_zoom=max_zoom,
                     output_size=output_size)
-    
+
     data_stream = read_processed_data(infile, zoomer)
     tuples_stream = read_Y0UY1_tuples(data_stream,
                                       image_distance=distance,
-                                      threshold=diff_treshold)
+                                      threshold=diff_threshold)
     
     out_bag = rosbag.Bag(outfile, 'w')
     for Y0, U, Y1 in tuples_stream:
