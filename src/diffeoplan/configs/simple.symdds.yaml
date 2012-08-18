@@ -78,6 +78,26 @@
 
     topology: plane
 
+
+- id: dptcam1
+  desc: |
+    Camera (pan: torus, tilt: plane)
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: 64
+    actions: 
+    - original_cmd: [1, 0] 
+      diffeo: tx1
+    - original_cmd: [-1, 0] 
+      diffeo: Itx1
+    - original_cmd: [0, 1] 
+      diffeo: py1
+    - original_cmd: [0, -1] 
+      diffeo: Ipy1
+
+    topology: plane
+
+
 - id: dcamz1
   desc: |
     Camera with zoom

@@ -13,7 +13,6 @@ class Graph():
         self.open_nodes = []
         self.cached_distance = {} # (i,j) -> D_ij
         
-        
     def get_distances(self, y):
         """ Returns a list of distances from this image to all nodes """
         return [self.metric.distance(y, n.y) for n in self.nodes]
@@ -23,7 +22,6 @@ class Graph():
         # Add child-parent index references
         self.nodes[node.parent].child_nodes.append(len(self.nodes))
         self.nodes.append(node)
-        
              
     @contract(i='int', all_actions='list(int)', returns='list(int)')
     def actions_available_for_node(self, i, all_actions):
@@ -37,7 +35,6 @@ class Graph():
         # Find the elements of all_actions not in actions
         available = list(set(all_actions) - set(actions))
         return available
-    
     
     def get_nodes_distance_slow(self, i, j):
         ni = self.nodes[i]

@@ -24,6 +24,13 @@ class DiffeoAction():
         self.diffeo_inv = diffeo_inv
         self.original_cmd = original_cmd
     
+    def get_diffeo2d_forward(self):
+        return self.diffeo
+    
+    def get_diffeo2d_backward(self):
+        return self.diffeo_inv
+    
+    
     @contract(returns='list[>=1](array)')
     def get_original_cmds(self):
         """ Returns the commands as a list """
@@ -57,6 +64,8 @@ class DiffeoAction():
         
     @staticmethod
     def compose(a1, a2):
+        assert isinstance(a1, DiffeoAction)
+        assert isinstance(a2, DiffeoAction)
         label = '%s+%s' % (a1.label, a2.label)
         diffeo = Diffeomorphism2D.compose(a1.diffeo, a2.diffeo)
         # note the order is inverted
