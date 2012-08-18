@@ -1,9 +1,9 @@
-from . import PreProcessor, logger
+from . import  logger
 from optparse import OptionParser
 from diffeoplan.utils.script_utils import UserError, wrap_script_entry_point
 import os
 from conf_tools.exceptions import ConfToolsException #@UnresolvedImport
-import pdb
+from learner.programs.preprocessor.pre_processor import preprocess
 
 
 def preprocessor(args):
@@ -56,14 +56,13 @@ def preprocessor(args):
     logger.info('Writing to:   %s' % output)    
     output_size = eval(options.size)
     
-#    pdb.set_trace()
     zoom = eval(options.zoom)
     
-    pproc = PreProcessor(bag, output, output_size, use_zoom=zoom)
-    pproc.process_bag()
-    pproc.finalize()
+    preprocess(bag, output, output_size,
+                use_zoom=zoom,
+                min_zoom=100, max_zoom=500)
     
-    pproc.validate_bag(output)
+    # pproc.validate_bag(output)
 
 
 def preprocessor_main():
