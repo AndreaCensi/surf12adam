@@ -7,10 +7,10 @@ from .state_machine import StateMachine
 def read_processed_data(bagfile, zoomer):
     """ yields topic, data, t but data already a numpy array """
     bag = rosbag.Bag(bagfile)
-
+    i = 0
     topics = [topic_image_raw, topic_camera_executed ]
     for topic, msg, t in bag.read_messages(topics=topics):
-
+        i += 1
         if topic == topic_camera_executed:
             zoomer.received_command(t, msg)
 

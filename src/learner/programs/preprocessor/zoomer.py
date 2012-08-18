@@ -37,7 +37,7 @@ class Zoomer:
         command = msg.data
         _, _, zoom = command
 
-        factor = 1
+        factor = 5
         next_zoom = self.current_zoom + zoom * factor 
         self.current_zoom = np.clip(next_zoom, self.min_zoom, self.max_zoom)
 
