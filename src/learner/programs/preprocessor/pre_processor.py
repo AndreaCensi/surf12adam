@@ -1,216 +1,107 @@
 from . import logger
-from ..diffeo_learner.ros_conversions import imgmsg_to_pil, pil_to_imgmsg
+from learner.programs.preprocessor import topic_image_raw
+from learner.programs.preprocessor.bag_processing import (read_processed_data,
+    read_Y0UY1_tuples)
+from learner.programs.preprocessor.find_threshold import find_dt_threshold
+from learner.programs.preprocessor.utils import image_distance_L1
+from learner.programs.preprocessor.zoomer import Zoomer
 import rosbag
-#from PIL import Image, ImageOps #@UnresolvedImport
 
 
-class PreProcessor():
-    # Define state integers for image capturing states
-    state_takeY0 = 0            # Waiting for first image
-    state_wait_for_move = 1        # Wait for camera to start moving
-    state_cam_moving = 2        # State for when camera is moving
-    state_takeY1 = 3            # Waiting for last image
+
+def preprocess(infile, outfile, output_size,
+                use_zoom=True,
+                min_zoom=100, max_zoom=500):
+    logger.info('Preprocessing file %r' % infile)
     
-    def __init__(self, infile, outfile, output_size, nc=10, use_zoom=True):
-        self.nc = nc # Number of history images to store in array
-        self.last_container = [0] * nc
-        self.output_size = output_size
-        self.Y_last = 0
-        
-        # Decide if zoom should be simulated
-        self.use_zoom = use_zoom
-        if use_zoom:
-            self.zoom_image = zoom_image_center
-        else:
-            self.zoom_image = no_zoom
-        
-        # Keep track of the actual zoom for the last command and the current zoom
-        self.zoom_last = 250
-        self.zoom = 100
-        
-        self.name = infile
-        
-        self.bag = rosbag.Bag(infile)
-        self.out_bag = rosbag.Bag(outfile, 'w')
-        
-        # Define some variables
-#        self.next_state = -1
-        self.state_capture = 0
-        self.diff_treshold = self.find_dt_threshold()
-
-        self.move_waits = 0
-        self.move_timeout = 9
-        self.move_time_timeout = 0.8
-        
-        self.t0 = None
-        
-    def finalize(self):
-        self.bag.close()
-        self.out_bag.close()
-        
-    def process_bag(self):
-        self.i = 0
-        topics = ['/usb_cam/image_raw', '/logitech_cam/camera_executed']
-        for topic, msg, t in self.bag.read_messages(topics=topics):
-            if topic == '/logitech_cam/camera_executed':
-#                pdb.set_trace()
-                if (int(msg.data[2]) == 0) or self.use_zoom:
-                    next_state = self.command_executed(msg, t)
-                
-            if topic == '/usb_cam/image_raw':
-                next_state = self.cam_image_read(msg, t)
-                
-            self.state_capture = next_state
-
-    def find_dt_threshold(self):
-        '''
-        Finds the value of dy/dt for when the robot is probably moving
-        :param infile:    File to read data from
-        '''
-        logger.info('Calibrating diff_threshold for camera motion...')
-        diffsum = 0
-        numframes = 0
-        ic = 0
-
-        for _, msg, _ in self.bag.read_messages('/usb_cam/image_raw'):
-            if ic > 300:
-                break
-            if ic < 100:
-                diffsum = 0
-            else:
-                if self.Y_last != 0:
-                    diff = compare_images(self.Y_last, msg)
-                    diffsum += diff
-                    numframes += 1
-            self.Y_last = msg #@UnusedVariable
-            ic += 1 
-            
-        diff_threshold = diffsum / numframes * 2
-        logger.info('diff_threshold = %g ' % diff_threshold)
-        return diff_threshold
-
-    def add_container(self, Y_new):
-        """
-            Store the last nc images.
-            To enable use of a image in the past when writing 
-            Y0 since some motions may be to fast for capturing 
-            the image after the command is executed.
-        """ 
-        for i in range(self.nc - 1):
-            self.last_container[self.nc - i - 1] = self.last_container[self.nc - i - 2]
-        self.last_container[0] = Y_new
-        
-    def command_executed(self, msg, t):
-        if self.last_container[self.nc - 1] != 0:
-            if self.state_capture != PreProcessor.state_takeY0:
-#                pdb.set_trace()
-                logger.warning('At t = %r , take Y0 outside state' % str(t.to_time))
-                logger.warning('cmd = %r ' % str(msg.data))
-                
-            logger.debug('Camera Instruction Read: (%s)' % str(msg.data)) 
-            logger.debug('Writing Y0 and U0')
-            logger.debug('Time = %s' % t.to_time())
-            write_img = self.zoom_image(self.last_container[5], self.zoom_last, self.output_size)
-#            write_img = resize_image(zoom_image(self.last_container[5], self.zoom_last), self.output_size)
-            self.out_bag.write('Y0', write_img, t)
-            self.out_bag.write('U0', msg, t)
-            
-            # self.t0 is the time when the last command was executed/posted
-            self.t0 = t
-            
-            if self.zoom_last + msg.data[2] >= 100:
-                if self.zoom_last + msg.data[2] <= 500:
-                    self.zoom = self.zoom_last + msg.data[2]
-            next_state = PreProcessor.state_wait_for_move
-            self.move_waits = 0
-            
-            return next_state
-            
-    def cam_image_read(self, msg, t):
-#        pdb.set_trace()
-        logger.debug('%s : cam_image_read()' % self.name)
-        logger.debug('At time: %s' % str(t))
-                    
-        if self.state_capture != PreProcessor.state_takeY0:
-            if (t.to_time() - self.t0.to_time() > self.move_time_timeout):
-                self.state_capture = PreProcessor.state_takeY1
-        
-        next_state = self.state_capture
-        if self.state_capture == PreProcessor.state_wait_for_move:
-            diff = compare_images(self.Y_last, msg)
-            logger.debug('Waiting for move state, diff = %g' % diff)
-            if diff > self.diff_treshold:
-                logger.debug('Camera detected to be moving')
-                next_state = PreProcessor.state_cam_moving
-            self.move_waits += 1
-
-#            if t.to_time() - self.t0.to_time() > self.move_time_timeout:
-#                logger.debug('Proceding to state_take_Y1, timeout in state_wait_for_move')
-#                next_state = PreProcessor.state_takeY1
-                
-        if self.state_capture == PreProcessor.state_cam_moving:
-            diff = compare_images(self.Y_last, msg)
-            logger.debug('Camera Moving State, diff = %s' % diff)
-            if diff < self.diff_treshold:
-                logger.debug('camera has stopped')
-                interval = t.to_time() - self.t0.to_time()
-                logger.debug('Motion took : %.3fs.' % interval)
-                next_state = PreProcessor.state_takeY1
-            self.move_waits += 1
-
-#            if t.to_time() - self.t0.to_time() > self.move_time_timeout:
-#                logger.debug('Proceding to state_take_Y1, timeout in state_cam_moving')
-#                next_state = PreProcessor.state_takeY1
-                
-        if self.state_capture == PreProcessor.state_takeY1:
-            logger.debug('Writing Y1')
-            write_img = self.zoom_image(msg, self.zoom, self.output_size)
-            self.out_bag.write('Y1', write_img, self.t0)
-            self.i += 1
-            
-            next_state = PreProcessor.state_takeY0
-        
-        self.add_container(msg)
-
-        self.Y_last = msg    # update last read image
-        self.zoom_last = self.zoom
-        
-        return next_state
+    distance = image_distance_L1
     
-def no_zoom(image, zoom, output_size):
-    pim, _, _ = imgmsg_to_pil(image)
-    pim = pim.resize(output_size)    
-    return pil_to_imgmsg(pim)
+    diff_treshold = find_dt_threshold(infile,
+                                           topic_image_raw, distance=distance,
+                                           ignore_first=100, max_images=300)
+    
+    zoomer = Zoomer(use_zoom=use_zoom,
+                    min_zoom=min_zoom,
+                    max_zoom=max_zoom,
+                    output_size=output_size)
+    
+    data_stream = read_processed_data(infile, zoomer)
+    tuples_stream = read_Y0UY1_tuples(data_stream,
+                                      image_distance=distance,
+                                      threshold=diff_treshold)
+    
+    out_bag = rosbag.Bag(outfile, 'w')
+    for Y0, U, Y1 in tuples_stream:
+        write_stuff(out_bag, Y0, U, Y1)
+    out_bag.close()
 
-def zoom_image_center(image, zoom, output_size):
-    """ Zoom an image with zoom center. """
-    pim, _, (h, w, _) = imgmsg_to_pil(image)
-    z = float(zoom)
-    z0 = 100.0 # original size zoom
-
-    x0 = int(w / 2 * (1.0 - z0 / z)) 
-    y0 = int(h / 2 * (1.0 - z0 / z)) 
-    dx = int(w / 2 * (1.0 + z0 / z)) 
-    dy = int(h / 2 * (1.0 + z0 / z)) 
-    pim_crop = pim.crop((x0, y0, dx, dy))
-    pim_out = pim_crop.resize(output_size)    
-    return pil_to_imgmsg(pim_out)
-
-
-def compare_images(image1, image2, step=100):
-    """
-     Compares two images (/sensor_msgs/Image) and estimates first norm 
-     of the difference between the pixel values by calculating the 
-     average difference for the set of each <step>'th pixel.
-     
-     Output
-         Average pixel value difference
-    """
-    normdiff = 0.
-    n = len(image1.data)
-    for i in range(0, n - 1, step):
-        a = int(image1.data[i].encode('hex'), 16) 
-        b = int(image2.data[i].encode('hex'), 16)
-        normdiff += abs(a - b)    
-    return normdiff / n / step 
-
+      
+def write_stuff(bag, Y0, U, Y1):
+    # write to the bag
+    logger.info('Writing tuple')
+    pass
+        
+                
+#          
+#    def validate_bag(self, outfile): 
+#        bag = rosbag.Bag(outfile)
+#        ver_bag = rosbag.Bag('verify.bag', 'w')
+#        topics = ['Y0', 'U0', 'Y1']
+#        last_topic = 'Y1'
+#        seq_error = False
+#        for topic, msg, t in bag.read_messages(topics=topics):
+#            if topic == 'Y0':
+#                if last_topic == 'Y1':
+#                    pass
+#                else:
+#                    logger.info('Wrong sequence')
+#                    seq_error = True
+#
+#            if topic == 'U0':
+#                if last_topic == 'Y0':
+#                    pass
+#                else:
+#                    logger.info('Wrong sequence')
+#                    seq_error = True
+#            
+#            if seq_error:
+#                ver_bag.write(topic, msg, t)
+#                        
+#            if topic == 'Y1':
+#                seq_error = False
+#
+#            last_topic = topic
+#            
+#        ver_bag.close()
+                
+#                
+#    
+#def find_Y0(img_container, diff_threshold):
+#    '''
+#    Return the image before the camera started to move
+#    :param img_container:
+#    :param diff_threshold:
+#    '''
+#    n = len(img_container)
+#    state = 0
+#    for i in range(n - 1):
+#        diff = compare_images(img_container[i], img_container[i + 1])
+#        if (diff > diff_threshold) and (i < 5):
+#            # Cam moving, search for stop
+#            state = 1
+#        
+#        if (i >= 5) and (state == 0):
+#            return img_container[0]
+#        
+#        if state == 1:
+#            # Search for stop in motion (backwards in time)
+#            if diff < diff_threshold:
+#                logger.info('stopped at index %g ' % i)
+#                if compare_images(img_container[i + 1], img_container[i + 2]) < diff_threshold:
+#                    # camera was stopped as well
+#                    return img_container[i + 2]
+#                else:
+#                    # Camera was stopped now but not on next one, return this image
+#                    return img_container[i + 1]
+#    # nothing found, return most recent image
+#    return img_container[0]
