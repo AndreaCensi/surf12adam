@@ -15,7 +15,7 @@ class CameraTracker:
         else:
             # we have some image to compare
             diff = self.distance(image, self.last)
-            logger.debug(diff)
+
             stopped = diff < self.threshold 
             if stopped:
                 # this is a stopped image, so we remember it

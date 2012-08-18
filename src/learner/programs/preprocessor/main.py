@@ -54,7 +54,7 @@ def preprocessor(args):
 
     logger.info('Reading from: %s' % bag)
     logger.info('Writing to:   %s' % output)    
-    output_size = eval(options.size)
+    output_size = tuple(eval(options.size))
     
     zoom = eval(options.zoom)
     

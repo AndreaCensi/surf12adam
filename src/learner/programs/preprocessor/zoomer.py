@@ -1,4 +1,4 @@
-from contracts import contract
+from contracts import contract, logger
 from learner.programs.diffeo_learner.bag_reader import get_image_array
 import numpy as np
 from PIL import Image #@UnresolvedImport
@@ -24,27 +24,28 @@ class Zoomer:
         # first thing, convert to numpy
         image = get_image_array(imgmsg)
         if self.use_zoom:
+            processed = zoom_image_center(image, self.current_zoom, self.output_size)
+        else:
             processed = resize(image,
                                height=self.output_size[1],
                                width=self.output_size[0])
-        else:
-            processed = zoom_image_center(image, self.current_zoom, self.output_size)
         
         self.queue_image.append((t, processed))
     
     def received_command(self, t, msg):
-        # msg is already a tuple
-        command = msg
+        
+        command = msg.data
         _, _, zoom = command
 
-        factor = 10
+        factor = 1
         next_zoom = self.current_zoom + zoom * factor 
         self.current_zoom = np.clip(next_zoom, self.min_zoom, self.max_zoom)
+
         if next_zoom != self.current_zoom:
             # We are clipping the zoom, so we ignore it
             pass # ..
         else:
-            self.queue_command.append((t, command)) 
+            self.queue_command.append((t, msg))
 
     def get_image_queue(self):
         old = self.queue_image 
@@ -58,8 +59,8 @@ class Zoomer:
 
                 
 
-@contract(image='array[HxWx3]', zoom='>=100', output_size='tuple(M,N)',
-          returns='array[MxNx3]')
+@contract(image='array[HxWx3]', output_size='tuple(M,N)', zoom='>=100',
+          returns='array[NxMx3]')
 def zoom_image_center(image, zoom, output_size):
     """ Zoom an image with zoom center. """
     H, W, _ = image.shape
@@ -68,7 +69,7 @@ def zoom_image_center(image, zoom, output_size):
     z = float(zoom)
     z0 = 100.0 # original size zoom
     r = z0 / z
-    assert r >= 1
+    assert r <= 1
     
     x0 = int(W / 2.0 * (1.0 - r)) 
     y0 = int(H / 2.0 * (1.0 - r)) 
@@ -77,10 +78,9 @@ def zoom_image_center(image, zoom, output_size):
     cropped = pim.crop((x0, y0, x1, y1))
     
     W1, H1 = cropped.size
-    
+        
     assert W1 == (x1 - x0)
     assert H1 == (y1 - y0)
-    
     pim_out = cropped.resize(output_size)    
 
     assert pim_out.size == output_size
@@ -92,7 +92,7 @@ def np_from_pil(image):
     return np.asarray(image.convert("RGB"))
 
 def pil_from_np(a):
-    return Image.from_array(a)    
+    return Image.fromarray(a)    
 
 
 
