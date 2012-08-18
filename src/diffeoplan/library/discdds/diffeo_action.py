@@ -2,6 +2,7 @@ from . import contract
 from .. import UncertainImage
 from boot_agents.diffeo import Diffeomorphism2D
 from reprep import Report
+from boot_agents.diffeo.diffeo_basic import diffeo_identity
 
     
 class DiffeoAction():
@@ -23,6 +24,20 @@ class DiffeoAction():
         self.diffeo = diffeo
         self.diffeo_inv = diffeo_inv
         self.original_cmd = original_cmd
+    
+    @staticmethod
+    def identity(label, shape, original_cmd):
+        """ Constructs the identity action of the given shape. """
+        diffeo = Diffeomorphism2D.identity(shape)
+        diffeo_inv = diffeo
+        return DiffeoAction(label, diffeo, diffeo_inv, original_cmd)
+    
+    def get_diffeo2d_forward(self):
+        return self.diffeo
+    
+    def get_diffeo2d_backward(self):
+        return self.diffeo_inv
+    
     
     @contract(returns='list[>=1](array)')
     def get_original_cmds(self):
@@ -57,6 +72,8 @@ class DiffeoAction():
         
     @staticmethod
     def compose(a1, a2):
+        assert isinstance(a1, DiffeoAction)
+        assert isinstance(a2, DiffeoAction)
         label = '%s+%s' % (a1.label, a2.label)
         diffeo = Diffeomorphism2D.compose(a1.diffeo, a2.diffeo)
         # note the order is inverted

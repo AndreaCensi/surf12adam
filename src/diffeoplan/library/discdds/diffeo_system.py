@@ -51,7 +51,17 @@ class DiffeoSystem():
             y1 = action.predict(y1)
         return y1
     
-    @contract(us='list[N](array)', returns='list[N](int)')
+    @contract(plan='seq[>=1](int)', returns=DiffeoAction)
+    def plan2action(self, plan):
+        """ Creates the DiffeoAction for the given composition. """
+        a = self.actions[plan[0]]
+        for i in plan:
+            a_i = self.actions[i]
+            a = DiffeoAction.compose(a, a_i) # XXX: check
+        return a
+    
+    
+    @contract(us='seq[N](array)', returns='list[N](int)')
     def commands_to_indices(self, us):
         """ Given the sequence of commands (e.g. [[0,0,+100], [0,100,0],...]),
             return the corresponding indices. """
@@ -75,7 +85,7 @@ class DiffeoSystem():
                          'other code. I will return the command 0.')
             return 0
     
-    @contract(returns='list[N](array)', plan='list[N](int)')
+    @contract(returns='list[N](array)', plan='seq[N](int,>=0)')
     def indices_to_commands(self, plan):
         """ Converts from indices to the original commands. """
         return [self.actions[x].original_cmd for x in plan]

@@ -23,6 +23,7 @@ class InformedSearch(GraphSearchQueue):
     def get_next_cmd(self, node):
         next_cmd = node.command_stack[len(node.child_nodes)]
         return next_cmd
+    
     def get_next_index(self, tree, open_nodes):
 #        tree.get_nodes_distance(i,j)
         pass

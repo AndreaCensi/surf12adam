@@ -20,7 +20,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
 
     """
     
-    def __init__(self,  thresh, metric, max_ittr=1000):
+    def __init__(self, thresh, metric, max_ittr=1000):
         DiffeoPlanningAlgo.__init__(self)
         self.thresh = thresh # are two states the same?
         self.max_ittr = max_ittr
@@ -81,6 +81,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         self.info('Planning failed.')
         return PlanningResult(False, None, 'GraphSearch failed',
                               extra=make_extra())
+        
     def init_start_tree(self, node, metric, thresh):
         """
         Start tree, by default first node open, may be override by subclass.  
@@ -105,11 +106,9 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
     @staticmethod
     def is_unique(path, tree):
         for p in tree.blocked:
-#            pdb.set_trace()
             if list(p) == list(path):
                 return False
         return True
-    
     
     def expand_start_tree(self, tree):
         """ Can return a Node or None if there is nothing 
@@ -117,12 +116,11 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         """
         raise ValueError('not implemented')
         
-    def expand_goal_tree(self, tree): 
+    def expand_goal_tree(self, tree): #@UnusedVariable
         """ Can return a Node or None if there is nothing 
             else to expand (according to some internal condition)
         """
         return None    
-        #raise ValueError('not implemented')
     
     
 class GraphSearchQueue(GenericGraphPlanner):
@@ -130,7 +128,7 @@ class GraphSearchQueue(GenericGraphPlanner):
     GenericGraphPlanner using a queue of open nodes for expansion.
     """
     
-    def __init__(self,  thresh, metric, max_ittr, nsteps):
+    def __init__(self, thresh, metric, max_ittr, nsteps):
         GenericGraphPlanner.__init__(self, thresh, metric, max_ittr)
         self.start_open = None
         self.nsteps = nsteps
@@ -153,7 +151,7 @@ class GraphSearchQueue(GenericGraphPlanner):
         
         next_cmd = self.get_next_cmd(tree, toexpand, available)
                  
-        next_node = get_next_node(tree, toexpand, next_cmd, 
+        next_node = get_next_node(tree, toexpand, next_cmd,
                                     dds=self.get_dds())
         
         # put the new one
@@ -168,9 +166,8 @@ class GraphSearchQueue(GenericGraphPlanner):
         
         return next_node
 
-    def get_next_cmd(self, tree, node_index, available):
+    def get_next_cmd(self, tree, node_index, available): #@UnusedVariable
         return available[0]
-
 
     def expand_start_tree(self, start_tree):
         return self.get_new_node(start_tree)
@@ -186,7 +183,7 @@ def get_next_node(tree, parent_index, cmd, dds): # todo: move
     path = list(parent.path) + [cmd]
     next_action = dds.actions[cmd]
     y_new = next_action.predict(parent.y)
-    return Node(y=y_new, 
+    return Node(y=y_new,
                 path=path,
                 parent=parent_index,
                 children=[])

@@ -1,6 +1,5 @@
 import numpy as np
 
-from diffeoplan.library.graph.tree import extend_array
 from numpy.core.numeric import inf
 
 class TreeConnector():
@@ -57,8 +56,18 @@ class TreeConnector():
 #            pdb.set_trace() 
             plan_start = self.T1.nodes[paths[0][0]].path 
             plan_goal = self.T2.nodes[paths[1][0]].path
-            plan = list(np.concatenate((plan_start,np.flipud(plan_goal))).astype(np.int)) 
+            plan = list(np.concatenate((plan_start, np.flipud(plan_goal))).astype(np.int)) 
             return plan
         else:
             return None
         
+
+def extend_array(array, size):
+    """
+        Takes a array as input and returns 
+        the array with shape array.shape + extend.
+    """
+    s0, s1 = array.shape
+    new_dist = -np.ones(size)
+    new_dist[:s0, :s1] = array
+    return new_dist
