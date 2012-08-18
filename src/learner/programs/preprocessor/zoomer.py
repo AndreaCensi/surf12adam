@@ -7,7 +7,11 @@ from procgraph_pil.pil_operations import resize
 class Zoomer:
     
     @contract(min_zoom='>=100,x', max_zoom='>=x', use_zoom='bool')
-    def __init__(self, min_zoom, max_zoom, use_zoom):
+    def __init__(self, min_zoom, max_zoom, use_zoom, output_size):
+        self.min_zoom = min_zoom
+        self.max_zoom = max_zoom
+        self.use_zoom = use_zoom
+        self.output_size = output_size
         self.min_zoom = min_zoom
         self.max_zoom = max_zoom
         self.use_zoom = use_zoom
@@ -29,10 +33,12 @@ class Zoomer:
         self.queue_image.append((t, processed))
     
     def received_command(self, t, msg):
-        command = msg.data
+        # msg is already a tuple
+        command = msg
         _, _, zoom = command
 
-        next_zoom = self.current_zoom + zoom 
+        factor = 10
+        next_zoom = self.current_zoom + zoom * factor 
         self.current_zoom = np.clip(next_zoom, self.min_zoom, self.max_zoom)
         if next_zoom != self.current_zoom:
             # We are clipping the zoom, so we ignore it
@@ -52,7 +58,7 @@ class Zoomer:
 
                 
 
-@contract(rgb='array[HxWx3]', zoom='>=100', output_size='tuple(M,N)',
+@contract(image='array[HxWx3]', zoom='>=100', output_size='tuple(M,N)',
           returns='array[MxNx3]')
 def zoom_image_center(image, zoom, output_size):
     """ Zoom an image with zoom center. """
