@@ -4,3 +4,4 @@ from .diffeo_action import *
 from .diffeo_system import *
 from .diffeo_structure import *
 from .redundant_plan_tracker import *
+from .visualization import *

@@ -61,7 +61,7 @@ class DiffeoSystem():
         return a
     
     
-    @contract(us='list[N](array)', returns='list[N](int)')
+    @contract(us='seq[N](array)', returns='list[N](int)')
     def commands_to_indices(self, us):
         """ Given the sequence of commands (e.g. [[0,0,+100], [0,100,0],...]),
             return the corresponding indices. """
@@ -85,7 +85,7 @@ class DiffeoSystem():
                          'other code. I will return the command 0.')
             return 0
     
-    @contract(returns='list[N](array)', plan='list[N](int)')
+    @contract(returns='list[N](array)', plan='seq[N](int,>=0)')
     def indices_to_commands(self, plan):
         """ Converts from indices to the original commands. """
         return [self.actions[x].original_cmd for x in plan]

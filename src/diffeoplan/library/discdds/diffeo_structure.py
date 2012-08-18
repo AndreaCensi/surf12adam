@@ -3,6 +3,7 @@ from boot_agents.diffeo import (diffeo_to_rgb_angle, diffeo_to_rgb_norm,
     scalaruncertainty2rgb)
 from boot_agents.misc_utils import iterate_indices
 from collections import deque
+from diffeoplan.utils import memoize
 
 
 class DiffeoStructure():
@@ -11,7 +12,15 @@ class DiffeoStructure():
         and is able to tell you if a plan has a shorter equivalent.    
     """
     def __init__(self, dds, tolerance=0.2, use_weighted=True):
+        '''
+        
+        :param dds: The DiffeoSystem
+        :param tolerance:
+        :param use_weighted:
+        '''
         self.dds = dds
+
+        
         # This is our tolerance for comparisons
         self.tolerance = tolerance
         # Names of actions
@@ -115,7 +124,7 @@ class DiffeoStructure():
         return cplans, plan2cplan
         
             
-        
+    @memoize
     def get_canonical(self, plan):
         def log(s):
             # print(s)
