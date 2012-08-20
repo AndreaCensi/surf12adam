@@ -34,7 +34,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         
 #        pdb.set_trace()
         start_tree = self.init_start_tree(y0, self.metric, self.thresh)
-        goal_tree = self.init_goal_tree(y1, self.metric, self.thresh)        
+        goal_tree = self.init_goal_tree(y1, self.metric, self.thresh)
         connector = TreeConnector(start_tree, goal_tree, self.thresh)
 
         def make_extra():
@@ -99,6 +99,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
     
     def should_add_node(self, tree, node):
         # TODO later if needed: keep track of alternative paths
+        assert node.__class__ == Node 
         y = node.y
         distances = tree.get_distances(y)
         someone_too_close = np.any(distances < self.thresh) 
@@ -165,6 +166,7 @@ class GraphSearchQueue(GenericGraphPlanner):
             # this node is now closed
             tree.open_nodes.remove(toexpand)
         
+        assert next_node.__class__ == Node
         return next_node
 
     def get_next_cmd(self, tree, node_index, available): #@UnusedVariable

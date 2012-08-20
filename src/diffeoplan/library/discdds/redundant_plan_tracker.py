@@ -31,12 +31,14 @@ class RedundantPlanTracker():
         
     def add_plan(self, plan):
         # get canonical plan
-        cplan = self.diffeo_structure.get_canonical(plan)
+        plan_tuple = tuple(plan)
+        cplan = self.diffeo_structure.get_canonical(plan_tuple)
         self.used_plans.add(cplan)
         
     def is_redundant(self, plan):
         # get canonical plan
-        pdb.set_trace()
-        cplan = self.diffeo_structure.get_canonical(plan)
+        plan_tuple = tuple(plan)
+#        pdb.set_trace()
+        cplan = self.diffeo_structure.get_canonical(plan_tuple)
         return cplan in self.used_plans
         

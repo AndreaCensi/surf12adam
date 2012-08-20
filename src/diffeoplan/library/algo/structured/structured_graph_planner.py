@@ -6,7 +6,7 @@ Created on Aug 20, 2012
 import numpy as np
 from ..generic_graph_planner import GraphSearchQueue
 from diffeoplan.library.discdds.redundant_plan_tracker import RedundantPlanTracker
-import pdb
+from diffeoplan.library.graph.node import Node
 
 class StructuredGraphPlanner(GraphSearchQueue):
     '''
@@ -27,6 +27,7 @@ class StructuredGraphPlanner(GraphSearchQueue):
         :param tree:
         :param node:
         '''
+        assert node.__class__ == Node 
         # TODO later if needed: keep track of alternative paths
         y = node.y
         distances = tree.get_distances(y)

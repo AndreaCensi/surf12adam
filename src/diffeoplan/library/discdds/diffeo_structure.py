@@ -1,8 +1,9 @@
 from . import DiffeoAction, np, contract, plans_of_max_length
-from boot_agents.diffeo import diffeo_to_rgb_angle, diffeo_to_rgb_norm, scalaruncertainty2rgb
+from boot_agents.diffeo import (diffeo_to_rgb_angle, diffeo_to_rgb_norm,
+                                scalaruncertainty2rgb) #@UnresolvedImport
 from boot_agents.misc_utils import iterate_indices
 from collections import deque
-from diffeoplan.utils import memoize #@UnresolvedImport
+from diffeoplan.utils import memoize
 import pdb
 
 
@@ -39,6 +40,7 @@ class DiffeoStructure():
         
         self.compute_distances()
         self.use_weighted = use_weighted 
+        pdb.set_trace()
         
     def compute_distances(self):
         self.D = self.dds.actions_distance_L2()
@@ -167,7 +169,7 @@ class DiffeoStructure():
                 # put it on current
                 current.append(new_action)
                 
-        return current
+        return tuple(current)
     
     # Below, just visualization
     
