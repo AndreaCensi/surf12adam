@@ -1,4 +1,5 @@
 from diffeoplan.library.discdds.diffeo_structure import DiffeoStructure
+import pdb
 
 
 class RedundantPlanTracker():
@@ -35,6 +36,7 @@ class RedundantPlanTracker():
         
     def is_redundant(self, plan):
         # get canonical plan
+        pdb.set_trace()
         cplan = self.diffeo_structure.get_canonical(plan)
         return cplan in self.used_plans
         

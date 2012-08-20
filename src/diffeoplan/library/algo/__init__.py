@@ -8,3 +8,4 @@ from .graphsearch_breadth import *
 from .graphsearch_deep import *
 from .random_plan import *
 from .randomized_expansion import *
+from .generic_graph_planner import *

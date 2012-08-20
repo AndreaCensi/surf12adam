@@ -25,3 +25,25 @@
   - graphsearch_breadth_3
   testcases:
   - tc_dcam1_lena_d10_*
+  
+  
+
+- id: struct_torus1_d10
+  desc: Test stuructured search. 
+  desc_long: |
+    Preparation
+    -----------
+        
+    Prepare test cases using:
+
+        dp gentests -n 10 -l 10 -i lena dtx2
+
+    (this step should be automated)
+
+
+  algorithms:
+  - structured_breadth_20
+  testcases:
+  - tc_dtx2_lena_d10_*
+
+  

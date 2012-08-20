@@ -1,9 +1,9 @@
 from . import DiffeoAction, np, contract, plans_of_max_length
-from boot_agents.diffeo import (diffeo_to_rgb_angle, diffeo_to_rgb_norm,
-    scalaruncertainty2rgb)
+from boot_agents.diffeo import diffeo_to_rgb_angle, diffeo_to_rgb_norm, scalaruncertainty2rgb
 from boot_agents.misc_utils import iterate_indices
 from collections import deque
-from diffeoplan.utils import memoize
+from diffeoplan.utils import memoize #@UnresolvedImport
+import pdb
 
 
 class DiffeoStructure():
