@@ -49,10 +49,8 @@ def diffeo_learner_main():
         i = 0
         for y0, u, y1 in read_bag(bagfile):    
             logger.info('Iteration number %d' % i)
-            i = i+1
+            i = i + 1
             learn.update(y0, u, y1)
-            if i > 20:
-                break
         
         
     logger.info('Commands: %s' % learn.command_list)

@@ -1,4 +1,3 @@
-from . import logger
 class CameraTracker:
     
     def __init__(self, threshold, distance):

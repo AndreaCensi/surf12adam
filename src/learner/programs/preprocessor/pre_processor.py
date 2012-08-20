@@ -6,7 +6,6 @@ from learner.programs.preprocessor.find_threshold import find_dt_threshold
 from learner.programs.preprocessor.utils import image_distance_L1
 from learner.programs.preprocessor.zoomer import Zoomer
 import rosbag
-import pdb
 from PIL import Image #@UnresolvedImport
 from learner.programs.diffeo_learner.ros_conversions import pil_to_imgmsg
 

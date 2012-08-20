@@ -1,8 +1,9 @@
-from contracts import contract, logger
+from contracts import contract
 from learner.programs.diffeo_learner.bag_reader import get_image_array
 import numpy as np
 from PIL import Image #@UnresolvedImport
 from procgraph_pil.pil_operations import resize
+factor = 5
 
 class Zoomer:
     
@@ -37,15 +38,16 @@ class Zoomer:
         command = msg.data
         _, _, zoom = command
 
-        factor = 5
-        next_zoom = self.current_zoom + zoom * factor 
-        self.current_zoom = np.clip(next_zoom, self.min_zoom, self.max_zoom)
-
-        if next_zoom != self.current_zoom:
-            # We are clipping the zoom, so we ignore it
-            pass # ..
-        else:
-            self.queue_command.append((t, msg))
+        if self.use_zoom or zoom == 0:
+            
+            next_zoom = self.current_zoom + zoom * factor 
+            self.current_zoom = np.clip(next_zoom, self.min_zoom, self.max_zoom)
+    
+            if next_zoom != self.current_zoom:
+                # We are clipping the zoom, so we ignore it
+                pass # ..
+            else:
+                self.queue_command.append((t, msg))
 
     def get_image_queue(self):
         old = self.queue_image 

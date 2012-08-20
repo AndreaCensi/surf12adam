@@ -1,5 +1,4 @@
 from . import logger
-import numpy as np
  
 STATE_START = 'START'
 STATE_WAIT_CMD = 'WAIT_CMD'
@@ -102,11 +101,11 @@ class StateMachine:
             assert False
     
     def write(self, Y0, U, Y1):
-        ty0, y0 = Y0
-        tu, u = U
-        ty1, y1 = Y1
+#        ty0, y0 = Y0
+#        tu, u = U
+#        ty1, y1 = Y1
         
-        delay_u_y0 = np.abs(tu - ty0)
+#        delay_u_y0 = np.abs(tu - ty0)
         #if tu < ty0:
         #    msg = 'Due to strange raw capture pipeline, the camera was already moving'
         
