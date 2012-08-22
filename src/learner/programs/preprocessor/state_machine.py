@@ -1,5 +1,4 @@
 from . import logger
-import numpy as np
  
 STATE_START = 'START'
 STATE_WAIT_CMD = 'WAIT_CMD'
@@ -22,7 +21,7 @@ class StateMachine:
         self.queue = [] 
         
     def dispatch(self, event, event_parameter):
-        logger.info(self.state)
+
         handler = self.state2handler[self.state]
         next_state = handler(event, event_parameter)
         if next_state is None:
@@ -31,14 +30,12 @@ class StateMachine:
         self.state = next_state
         
     def received_stopped_image(self, t, image):
-#        logger.debug('def received_stopped_image(self, t, image):')
         self.dispatch(EVENT_STOPPED, (t, image))
     
     def received_moving_image(self, t, image):
         self.dispatch(EVENT_MOVING, (t, image))
     
     def received_command(self, t, command):
-        logger.debug(command)
         self.dispatch(EVENT_CMD, (t, command))
     
     
@@ -72,7 +69,7 @@ class StateMachine:
         if event == EVENT_STOPPED:
             return
         elif event == EVENT_MOVING:
-            logger.debug('handle_wait_for_moving -> STATE_WAIT_FOR_STOP')
+#            logger.debug('handle_wait_for_moving -> STATE_WAIT_FOR_STOP')
             return STATE_WAIT_FOR_STOP 
         elif event == EVENT_CMD:
             msg = ('Warning: obtained a second command while waiting for the first moving '
@@ -83,7 +80,7 @@ class StateMachine:
             assert False
             
     def handle_wait_for_stop(self, event, params):
-        logger.debug('handle_wait_for_stop')
+#        logger.debug('handle_wait_for_stop')
         if event == EVENT_STOPPED:
             # Time to write stuff
             t, image = params
@@ -96,23 +93,24 @@ class StateMachine:
         elif event == EVENT_CMD:
             # Warn this shouldn't happen
             msg = ('Warning: obtained a second command while waiting for the stopped '
-                   'image. This should never happen in principle.')
+                   'image. This should never happen in principle. Last command was: '
+                   '%s and this command was: %s' % (self.u, params))
             logger.warning(msg)
             return STATE_WAIT_CMD
         else:
             assert False
     
     def write(self, Y0, U, Y1):
-        ty0, y0 = Y0
-        tu, u = U
-        ty1, y1 = Y1
+#        ty0, y0 = Y0
+#        tu, u = U
+#        ty1, y1 = Y1
         
-        delay_u_y0 = np.abs(tu - ty0)
+#        delay_u_y0 = np.abs(tu - ty0)
         #if tu < ty0:
         #    msg = 'Due to strange raw capture pipeline, the camera was already moving'
         
         # do some checks
-        logger.debug('append to queue')
+#        logger.debug('append to queue')
         self.queue.append((Y0, U, Y1))
         
     def get_queue(self):

@@ -2,6 +2,8 @@ from . import logger, read_bag
 from ... import DiffeoLearner
 from optparse import OptionParser
 import os
+import pickle
+import pdb
 
 
 def diffeo_learner_main():
@@ -15,6 +17,10 @@ def diffeo_learner_main():
                       help="Image size WxH")
     parser.add_option("-a", "--area", default='[6,6]',
                       help="Size of search area")
+    parser.add_option("-l", "--learner", default='No',
+                      help="Reuse learner")
+    parser.add_option("-o", "--outlearner", default='No',
+                      help="Save the learner")
     options, args = parser.parse_args()
      
     if not args:
@@ -30,13 +36,20 @@ def diffeo_learner_main():
     size = eval(options.size)
     area = eval(options.area)
 
+    learner = options.learner
+    outlearner = options.outlearner
+
+    if learner == 'No':
+        learn = DiffeoLearner(size, area)
+    else:
+        learn = pickle.load(open(learner))
+    pdb.set_trace()
     
     for bagfile in args:
-        learn = DiffeoLearner(size, area)
         i = 0
         for y0, u, y1 in read_bag(bagfile):    
             logger.info('Iteration number %d' % i)
-            i = i+1
+            i = i + 1
             learn.update(y0, u, y1)
         
         
@@ -45,4 +58,10 @@ def diffeo_learner_main():
     
     learn.diffeo_dump(dirname, name)
     learn.show_diffeomorphisms()
+    
+    
+    if outlearner == 'No':
+        pass
+    else:
+        pickle.dump(learn, open(outlearner, 'wb'))
 

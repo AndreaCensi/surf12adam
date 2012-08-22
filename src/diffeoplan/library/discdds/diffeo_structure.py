@@ -1,10 +1,11 @@
 from . import DiffeoAction, np, contract, plans_of_max_length
 from boot_agents.diffeo import (diffeo_to_rgb_angle, diffeo_to_rgb_norm,
-    scalaruncertainty2rgb)
+                                scalaruncertainty2rgb) #@UnresolvedImport
 from boot_agents.misc_utils import iterate_indices
 from collections import deque
 from diffeoplan.utils import memoize
 from diffeoplan.library.discdds.plan_reducer import PlanReducer
+import pdb
 
 
 class DiffeoStructure():
@@ -126,8 +127,6 @@ class DiffeoStructure():
         cplans = list(cplans)
         cplans.sort(key=lambda x: len(x))
         return cplans, plan2cplan
-        
-             
     
     def display(self, report):
         report.data('scale', self.scale)

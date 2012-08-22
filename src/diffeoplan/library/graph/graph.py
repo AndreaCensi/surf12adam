@@ -1,8 +1,11 @@
 import numpy as np
 from contracts import contract
+from diffeoplan.library.graph.node import Node
+import pdb
 
 class Graph():
     def __init__(self, root_node, metric, match_thresh):
+        assert root_node.__class__ == Node
         self.nodes = [root_node]
         self.distances = np.zeros((1, 1))
         self.metric = metric
@@ -19,7 +22,9 @@ class Graph():
         # TODO: cache
         
     def add_node(self, node):
+        assert node.__class__ == Node
         # Add child-parent index references
+#        pdb.set_trace()
         self.nodes[node.parent].child_nodes.append(len(self.nodes))
         self.nodes.append(node)
              
@@ -28,6 +33,8 @@ class Graph():
         """ Returns a list of actions available for the node. """
         # get the node
         node = self.nodes[i]
+        if node.__class__ != Node:
+            pdb.set_trace()
         # get the children nodes
         children = [self.nodes[j] for j in node.child_nodes]
         # get the actions

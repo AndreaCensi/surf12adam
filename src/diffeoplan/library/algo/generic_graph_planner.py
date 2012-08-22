@@ -5,6 +5,7 @@ from diffeoplan.configuration import get_current_config
 from diffeoplan.library.graph.graph import Graph
 
 import numpy as np
+import pdb
  
  
 class GenericGraphPlanner(DiffeoPlanningAlgo):
@@ -31,12 +32,9 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
     @contract(y0=UncertainImage, y1=UncertainImage, returns=PlanningResult)
     def plan(self, y0, y1):
         
-        start_node = Node(y=y0, path=[], parent=[], children=[])
-        start_tree = self.init_start_tree(start_node, self.metric, self.thresh)
-        
-        goal_node = Node(y=y1, path=[], parent=[], children=[])
-        goal_tree = self.init_goal_tree(goal_node, self.metric, self.thresh)
-                
+#        pdb.set_trace()
+        start_tree = self.init_start_tree(y0, self.metric, self.thresh)
+        goal_tree = self.init_goal_tree(y1, self.metric, self.thresh)
         connector = TreeConnector(start_tree, goal_tree, self.thresh)
 
         def make_extra():
@@ -58,14 +56,14 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
                 self.info('Breaking and failing.')
                 break
             
-            if self.should_add_node(start_tree, new_start_node.y):
+            if self.should_add_node(start_tree, new_start_node):
                 start_tree.add_node(new_start_node)
             
             new_goal_node = self.expand_goal_tree(goal_tree)
             if new_goal_node is not None:
                 self.info('Goal node is %s.' % new_goal_node)
             
-                if self.should_add_node(goal_tree, new_goal_node.y):
+                if self.should_add_node(goal_tree, new_goal_node):
                     goal_tree.add_node(new_goal_node)
 
             #if len(new_goal_node.path) <= self.nsteps:
@@ -82,23 +80,27 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         return PlanningResult(False, None, 'GraphSearch failed',
                               extra=make_extra())
         
-    def init_start_tree(self, node, metric, thresh):
+    def init_start_tree(self, y0, metric, thresh):
         """
         Start tree, by default first node open, may be override by subclass.  
         """
-        start_tree = Graph(node, metric, thresh)
+        start_node = Node(y=y0, path=[], parent=[], children=[])
+        start_tree = Graph(start_node, metric, thresh)
         start_tree.open_nodes = [0]
         return start_tree
     
-    def init_goal_tree(self, node, metric, thresh):
+    def init_goal_tree(self, y1, metric, thresh):
         """
         Goal tree, by default no open nodes, may be override by subclass.
         """
-        goal_tree = Graph(node, metric, thresh)
+        goal_node = Node(y=y1, path=[], parent=[], children=[])
+        goal_tree = Graph(goal_node, metric, thresh)
         return goal_tree
     
-    def should_add_node(self, tree, y):
+    def should_add_node(self, tree, node):
         # TODO later if needed: keep track of alternative paths
+        assert node.__class__ == Node 
+        y = node.y
         distances = tree.get_distances(y)
         someone_too_close = np.any(distances < self.thresh) 
         return not someone_too_close
@@ -130,7 +132,7 @@ class GraphSearchQueue(GenericGraphPlanner):
     
     def __init__(self, thresh, metric, max_ittr, nsteps):
         GenericGraphPlanner.__init__(self, thresh, metric, max_ittr)
-        self.start_open = None
+#        self.start_open = None
         self.nsteps = nsteps
     
     def get_new_node(self, tree):
@@ -164,6 +166,7 @@ class GraphSearchQueue(GenericGraphPlanner):
             # this node is now closed
             tree.open_nodes.remove(toexpand)
         
+        assert next_node.__class__ == Node
         return next_node
 
     def get_next_cmd(self, tree, node_index, available): #@UnusedVariable

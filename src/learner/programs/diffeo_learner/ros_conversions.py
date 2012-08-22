@@ -94,7 +94,7 @@ def pil_to_imgmsg(image, encodingmap={'L':'mono8', 'RGB':'rgb8', 'RGBA':'rgba8',
     return rosimage
   
 def numpy_to_imgmsg(image, stamp=None):
-    print image.shape
+#    print image.shape
     rosimage = sensor_msgs.msg.Image()
     rosimage.height = image.shape[0]
     rosimage.width = image.shape[1]
