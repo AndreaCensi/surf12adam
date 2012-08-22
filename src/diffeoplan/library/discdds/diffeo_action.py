@@ -108,7 +108,13 @@ class DiffeoAction():
         assert isinstance(a1, DiffeoAction)
         assert isinstance(a2, DiffeoAction)
         return DiffeoAction.distance(a1, a2, Diffeomorphism2D.distance_L2_infow)
-        
+
+    @staticmethod
+    def distance_L2_infow_scaled(a1, a2):
+        assert isinstance(a1, DiffeoAction)
+        assert isinstance(a2, DiffeoAction)
+        return DiffeoAction.distance(a1, a2, Diffeomorphism2D.distance_L2_infow_scaled)
+
 
     @staticmethod
     def anti_distance(a1, a2, diffeo_distance):

@@ -4,6 +4,7 @@ from boot_agents.diffeo import (diffeo_to_rgb_angle, diffeo_to_rgb_norm,
 from boot_agents.misc_utils import iterate_indices
 from collections import deque
 from diffeoplan.utils import memoize
+from diffeoplan.library.discdds.plan_reducer import PlanReducer
 
 
 class DiffeoStructure():
@@ -11,7 +12,7 @@ class DiffeoStructure():
         Estimates the intrinsic structure of a given DiffeoSystem
         and is able to tell you if a plan has a shorter equivalent.    
     """
-    def __init__(self, dds, tolerance=0.2, use_weighted=True):
+    def __init__(self, dds, tolerance, use_weighted=True):
         '''
         
         :param dds: The DiffeoSystem
@@ -37,8 +38,9 @@ class DiffeoStructure():
             self.labels = ["".join(map(shortname, x.original_cmd)) 
                            for x in self.dds.actions]
         
-        self.compute_distances()
         self.use_weighted = use_weighted 
+        self.compute_distances()
+        
         
     def compute_distances(self):
         self.D = self.dds.actions_distance_L2()
@@ -71,20 +73,22 @@ class DiffeoStructure():
         self.oppositew = self.aDw_n < self.tolerance
         self.swappablew = self.cDw_n < self.tolerance
        
+#        labels = self.labels
+        actions = range(len(self.dds.actions))
+        if self.use_weighted:
+            self.plan_reducer = PlanReducer.from_matrices(actions, self.swappablew,
+                                                          self.oppositew,
+                                                          self.samew)
+        else:
+            self.plan_reducer = PlanReducer.from_matrices(actions, self.swappable,
+                                                          self.opposite,
+                                                          self.same)
 
-    # TODO
-    def actions_commute(self, i, j):
-        if self.use_weighted:
-            return self.swappable[i, j]
-        else:
-            return self.swappablew[i, j]
-    
-    def actions_are_opposite(self, i, j):
-        if self.use_weighted:
-            return self.opposite[i, j]
-        else:
-            return self.oppositew[i, j]
-        
+    def get_canonical(self, plan):
+        cplan = self.plan_reducer.get_canonical(plan)
+        #print('get_canonical(%s) -> %s' % (plan, cplan))
+        return cplan
+     
     @contract(returns='tuple(list[M], list[M], list[M])')
     def compute_reduction_steps(self, max_nsteps=5):
         K = len(self.dds.actions)
@@ -123,54 +127,7 @@ class DiffeoStructure():
         cplans.sort(key=lambda x: len(x))
         return cplans, plan2cplan
         
-            
-    @memoize
-    def get_canonical(self, plan):
-        def log(s):
-            # print(s)
-            pass
-   
-        current = list()
-        remaining = deque(plan)
-        while remaining:
-            log('- %s %s' % (current, remaining))
-            # get a new action
-            new_action = remaining.popleft()
-            # if possible to do something...
-            if current:
-                prev_action = current[-1]
-                # if they cancel each other
-                if self.actions_are_opposite(prev_action, new_action):
-                    log('canceling %s %s' % (prev_action, new_action))
-                    # remove the current one
-                    current.pop()
-                    continue
-                elif self.actions_commute(prev_action, new_action):
-                    # if they commute, put them in order
-                    log('commuting actions %s %s' % (prev_action, new_action))
-                    current_order = [prev_action, new_action]
-                    canonical_order = sorted([prev_action, new_action])
-                    if current_order != canonical_order:
-                        log('reversing order')
-                        # they are not in the right order
-                        # now, of course, we put them both in the stack
-                        # because there might be other changes to do
-                        current.pop()
-                        remaining.appendleft(prev_action)
-                        remaining.appendleft(new_action)
-                    else:
-                        # just append
-                        current.append(new_action) 
-                else:
-                    current.append(new_action)
-            else:
-                # put it on current
-                current.append(new_action)
-                
-        return current
-    
-    # Below, just visualization
-    
+             
     
     def display(self, report):
         report.data('scale', self.scale)
@@ -193,9 +150,9 @@ class DiffeoStructure():
     def display_distances(self, report):
         f = report.figure('unweighted', cols=3)
 
-        def table(n, x, caption):
+        def table(n, x, caption, fmt=None):
             data = report.data(n, x)
-            report.table(n + '_table', x, rows=self.labels, cols=self.labels)
+            report.table(n + '_table', x, rows=self.labels, cols=self.labels, fmt=fmt)
             data.display('scale', caption=caption).add_to(f)
             
         def tableb(n, x, caption):
@@ -207,9 +164,13 @@ class DiffeoStructure():
         table('D', self.D, 'Distance between actions (L2 mixed)')
         table('aD', self.aD, 'Anti-distance between actions (L2 mixed)')
         table('cD', self.cD, 'Commutation error (L2 mixed)')
-        table('D_n', self.D_n, 'Normalized distance between actions (L2 mixed)')
-        table('aD_n', self.aD_n, 'Normalized Anti-distance between actions (L2 mixed)')
-        table('cD_n', self.cD_n, 'Normalized Commutation error (L2 mixed)')
+        smallfmt = '%.3f'
+        table('D_n', self.D_n, 'Normalized distance between actions (L2 mixed)',
+              smallfmt)
+        table('aD_n', self.aD_n, 'Normalized Anti-distance between actions (L2 mixed)',
+              smallfmt)
+        table('cD_n', self.cD_n, 'Normalized Commutation error (L2 mixed)',
+              smallfmt)
         tableb('same', self.same, 'same')
         tableb('opposite', self.opposite, 'opposite')
         tableb('commute', self.swappable, 'commute')
@@ -218,9 +179,12 @@ class DiffeoStructure():
         table('Dw', self.Dw, 'Distance between actions (L2 mixed)')
         table('aDw', self.aDw, 'Anti-distance between actions (L2 mixed)')
         table('cDw', self.cDw, 'Commutation error (L2 mixed)')
-        table('Dw_n', self.Dw_n, 'Normalized distance between actions (L2 mixed)')
-        table('aDw_n', self.aDw_n, 'Normalized Anti-distance between actions (L2 mixed)')
-        table('cDw_n', self.cDw_n, 'Normalized Commutation error (L2 mixed)')
+        table('Dw_n', self.Dw_n, 'Normalized distance between actions (L2 mixed)',
+              smallfmt)
+        table('aDw_n', self.aDw_n, 'Normalized Anti-distance between actions (L2 mixed)',
+              smallfmt)
+        table('cDw_n', self.cDw_n, 'Normalized Commutation error (L2 mixed)',
+              smallfmt)
         tableb('samew', self.samew, 'samew')
         tableb('oppositew', self.oppositew, 'oppositew')
         tableb('commutew', self.swappablew, 'commutew')

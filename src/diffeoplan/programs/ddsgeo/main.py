@@ -6,10 +6,12 @@ from diffeoplan.library.discdds import DiffeoStructure
 
 @declare_command('show-discdds-geo',
                  'show-discdds-geo [<discdds1> <discdds2> ...]')
-def ddsgeo(config, parser):
+def ddsgeo_main(config, parser):
     """ Displays the intrinsic geometry of a learned DDS """
     parser.add_option("-o", "--output", help="Output directory",
                       default='out/show_dds_geo/')
+    parser.add_option("-t", "--tolerance", help="Normalized tolerance",
+                      default=0.3, type='float')
     options, which = parser.parse()
     
     outdir = options.output 
@@ -25,12 +27,12 @@ def ddsgeo(config, parser):
         report = Report(id_dds)
         
         
-        show_diffeo_structure(dds, report)    
+        show_diffeo_structure(dds, report, tolerance=options.tolerance)    
         
         write_report_files(report, basename=os.path.join(outdir, id_dds))    
 
 
-def show_diffeo_structure(dds, report):
-    ds = DiffeoStructure(dds)
+def show_diffeo_structure(dds, report, tolerance):
+    ds = DiffeoStructure(dds, tolerance=tolerance)
     ds.display(report.section('distances'))
          

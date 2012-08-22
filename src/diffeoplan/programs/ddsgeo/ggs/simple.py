@@ -9,7 +9,7 @@ def breadth_first(open_nodes):
 def contains(iterable, needle, comparison):
     if needle in iterable:
         return True
-    for x in iterable:
+    for x in reversed(list(iterable)):
         if comparison(x, needle):
             return True
     return False
