@@ -1,6 +1,4 @@
-from diffeoplan.library.discdds.diffeo_structure import DiffeoStructure
-import pdb
-
+from diffeoplan.library.analysis.structure.diffeo_structure import DiffeoStructure
 
 class RedundantPlanTracker():
     """

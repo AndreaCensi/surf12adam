@@ -1,11 +1,8 @@
-from . import DiffeoAction, np, contract, plans_of_max_length
+from . import PlanReducer, np, contract
 from boot_agents.diffeo import (diffeo_to_rgb_angle, diffeo_to_rgb_norm,
-                                scalaruncertainty2rgb) #@UnresolvedImport
+    scalaruncertainty2rgb)
 from boot_agents.misc_utils import iterate_indices
-from collections import deque
-from diffeoplan.utils import memoize
-from diffeoplan.library.discdds.plan_reducer import PlanReducer
-import pdb
+from diffeoplan.library.discdds import DiffeoAction, plans_of_max_length
 
 
 class DiffeoStructure():
@@ -74,7 +71,6 @@ class DiffeoStructure():
         self.oppositew = self.aDw_n < self.tolerance
         self.swappablew = self.cDw_n < self.tolerance
        
-#        labels = self.labels
         actions = range(len(self.dds.actions))
         if self.use_weighted:
             self.plan_reducer = PlanReducer.from_matrices(actions, self.swappablew,
@@ -129,22 +125,13 @@ class DiffeoStructure():
         return cplans, plan2cplan
     
     def display(self, report):
-        report.data('scale', self.scale)
         report.data('tolerance', self.tolerance)
+        report.data('scale', self.scale)
+        report.data('scalew', self.scalew)
 
         self.display_distances(report)
-        self.display_structure(report)
         self.show_reduction_steps(report, max_nsteps=4)
         self.show_reduction(report)
-        #self.show_compositions(report)
-    
-    def display_structure(self, report):
-        f = report.figure(caption='Inferred structure')
-        labels = self.labels
-#        f.table('same', self.same, cols=labels, rows=labels)
-#        f.table('opposite', self.opposite, cols=labels, rows=labels)
-#        f.table('swappable', self.swappable, cols=labels, rows=labels)
-        
     
     def display_distances(self, report):
         f = report.figure('unweighted', cols=3)
@@ -159,20 +146,22 @@ class DiffeoStructure():
             report.table(n + '_table', x, rows=self.labels, cols=self.labels)
             data.display('scale', caption=caption + ' (green: true)', min_value=0,
                          max_value=1, min_color=[1, 0, 0], max_color=[0, 1, 0]).add_to(f)
-            
-        table('D', self.D, 'Distance between actions (L2 mixed)')
-        table('aD', self.aD, 'Anti-distance between actions (L2 mixed)')
-        table('cD', self.cD, 'Commutation error (L2 mixed)')
         smallfmt = '%.3f'
-        table('D_n', self.D_n, 'Normalized distance between actions (L2 mixed)',
-              smallfmt)
-        table('aD_n', self.aD_n, 'Normalized Anti-distance between actions (L2 mixed)',
-              smallfmt)
-        table('cD_n', self.cD_n, 'Normalized Commutation error (L2 mixed)',
-              smallfmt)
-        tableb('same', self.same, 'same')
-        tableb('opposite', self.opposite, 'opposite')
-        tableb('commute', self.swappable, 'commute')
+        
+        if False:
+            table('D', self.D, 'Distance between actions (L2 mixed)')
+            table('aD', self.aD, 'Anti-distance between actions (L2 mixed)')
+            table('cD', self.cD, 'Commutation error (L2 mixed)')
+            
+            table('D_n', self.D_n, 'Normalized distance between actions (L2 mixed)',
+                  smallfmt)
+            table('aD_n', self.aD_n, 'Normalized Anti-distance between actions (L2 mixed)',
+                  smallfmt)
+            table('cD_n', self.cD_n, 'Normalized Commutation error (L2 mixed)',
+                  smallfmt)
+            tableb('same', self.same, 'same')
+            tableb('opposite', self.opposite, 'opposite')
+            tableb('commute', self.swappable, 'commute')
         
         f = report.figure('weighted', cols=3)
         table('Dw', self.Dw, 'Distance between actions (L2 mixed)')

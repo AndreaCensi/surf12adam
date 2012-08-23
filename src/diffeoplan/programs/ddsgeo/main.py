@@ -1,7 +1,7 @@
 from .. import declare_command, write_report_files
 from reprep import Report
 import os
-from diffeoplan.library.discdds import DiffeoStructure
+from diffeoplan.library.analysis.structure.diffeo_structure import DiffeoStructure
 
 
 @declare_command('show-discdds-geo',

@@ -2,8 +2,7 @@ from . import contract
 from .. import UncertainImage
 from boot_agents.diffeo import Diffeomorphism2D
 from reprep import Report
-from boot_agents.diffeo.diffeo_basic import diffeo_identity
-
+ 
     
 class DiffeoAction():
     """ 

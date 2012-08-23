@@ -5,7 +5,6 @@ from diffeoplan.configuration import get_current_config
 from diffeoplan.library.graph.graph import Graph
 
 import numpy as np
-import pdb
  
  
 class GenericGraphPlanner(DiffeoPlanningAlgo):
@@ -25,14 +24,11 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         DiffeoPlanningAlgo.__init__(self)
         self.thresh = thresh # are two states the same?
         self.max_ittr = max_ittr
-        #self.comp_ind = 0 # Dont look for nodes of lower inde than this
         config = get_current_config()
         self.metric = config.distances.instance(metric)
         
     @contract(y0=UncertainImage, y1=UncertainImage, returns=PlanningResult)
     def plan(self, y0, y1):
-        
-#        pdb.set_trace()
         start_tree = self.init_start_tree(y0, self.metric, self.thresh)
         goal_tree = self.init_goal_tree(y1, self.metric, self.thresh)
         connector = TreeConnector(start_tree, goal_tree, self.thresh)
@@ -45,7 +41,6 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
             extra['connector'] = connector
             return extra
 
-                
         self.info('GraphSearch starting')
         while True:
             new_start_node = self.expand_start_tree(start_tree)

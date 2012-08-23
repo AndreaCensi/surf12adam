@@ -6,4 +6,5 @@ from .symdiffeo import *
 from .load import *
 from .algo import *
 from .graph import *
+from .analysis import *
 
