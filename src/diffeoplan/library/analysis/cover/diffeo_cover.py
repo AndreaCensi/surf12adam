@@ -2,8 +2,9 @@ from . import logger, np
 from contracts import contract
 from diffeoplan.library import DiffeoAction
 from diffeoplan.library.discdds.visualization.guess import guess_state_space
+from diffeoplan.library.discdds import plan_friendly
 from diffeoplan.utils import construct_matrix, memoize
-from geometry import assert_allclose, mds, printm
+from geometry import assert_allclose, mds
 from ggs import (EDGE_EQUIV, EDGE_REGULAR, EDGE_REDUNDANT, draw_node_graph,
     GenericGraphSearch)
 from networkx.algorithms.shortest_paths.dense import floyd_warshall_numpy
@@ -33,16 +34,68 @@ class DiffeoCover(GenericGraphSearch):
         self.debug_graph_iterations = debug_it
         self.max_it = max_it
         self.min_visibility = min_visibility
-        printm('samew', self.ds.samew,
-               'oppow', self.ds.oppositew,
-               'swapw', self.ds.swappablew)
+        from geometry import formatm
+        logger.info(formatm('samew', self.ds.samew,
+                            'oppow', self.ds.oppositew,
+                            'swapw', self.ds.swappablew))
         
-        GenericGraphSearch.__init__(self,
-                                    #choose_open_nodes=breadth_first,
-                                    choose_open_nodes=self.max_visibility_first,
-                                    available_actions=self.available_actions,
-                                    next_node=self.next_node,
-                                    node_compare=self.node_compare)
+        GenericGraphSearch.__init__(self)
+    
+    ######## GenericGraphSearch interface
+    def next_node(self, node, action):
+        child = node + (action,)
+        return tuple(self.ds.get_canonical(child))
+    
+    def available_actions(self, node): #@UnusedVariable
+        if self.iterations >= self.max_it:
+            return []
+        if self.visibility(node) < self.min_visibility:
+            return []
+        nactions = len(self.dds.actions)
+        return range(nactions)
+
+    def choose_open_nodes(self, nodes):
+        return self.max_visibility_first(nodes)
+    
+    @memoize
+    @contract(plan1='seq(int)', plan2='seq(int)')
+    def node_compare(self, plan1, plan2):
+        plan1 = tuple(plan1)
+        plan2 = tuple(plan2)
+        if plan1 == plan2:
+            return True
+        dn = self.plan_distance(plan1, plan2, DiffeoAction.distance_L2_infow) / self.ds.scalew
+        
+        match = dn < self.info_threshold
+        if match:
+            #print('%10g  %4d %4d' % (dn, len(plan1), len(plan2)))
+            logger.info('Found match at %g' % dn)
+            logger.info('- plan1: %s' % plan_friendly(plan1))
+            logger.info('- plan1: %s' % plan_friendly(plan2))
+        
+        return match 
+    
+    def log_child_generated(self, node, action, child): #@UnusedVariable
+        #logger.info('Generated %s from %s' % (child, node))
+        pass
+    
+    def log_child_equivalent_found(self, node, action, child, match): #@UnusedVariable
+        logger.info('Equiv found: %s = %s' % (child, match))
+        
+    def log_chosen(self, node):
+        all_visibility = map(self.visibility, self.G.nodes())
+        
+        logger.info('#%4d closed %4d open %4d [minvis: %.4g] pop %s' % 
+              (self.iterations, len(self.closed), len(self.open_nodes),
+               np.min(all_visibility),
+               plan_friendly(node)))
+        if (self.iterations + 1) % self.debug_graph_iterations == 0:
+            self.draw_graph()
+
+    def log_child_discarded(self, node, action, child, matches):
+        logger.info('Discarding %s because it matches %s' % (str(child), matches))
+
+    ######## / GenericGraphSearch interface
     
     def max_visibility_first(self, nodes):
         v = map(self.visibility, nodes)
@@ -76,33 +129,6 @@ class DiffeoCover(GenericGraphSearch):
         diffeo = self.compute_diffeomorphism(plan)
         return np.mean(diffeo.variance) 
     
-    @memoize
-    @contract(plan1='seq(int)', plan2='seq(int)')
-    def node_compare(self, plan1, plan2):
-        plan1 = tuple(plan1)
-        plan2 = tuple(plan2)
-        if plan1 == plan2:
-            return True
-        dn = self.plan_distance(plan1, plan2, DiffeoAction.distance_L2_infow) / self.ds.scalew
-        
-        match = dn < self.info_threshold
-        if match:
-            #print('%10g  %4d %4d' % (dn, len(plan1), len(plan2)))
-            print('%10g  %40s %40s' % (dn, plan1, plan2))
-        
-        return match 
-    
-    def next_node(self, node, action):
-        child = node + (action,)
-        return tuple(self.ds.get_canonical(child))
-    
-    def available_actions(self, node): #@UnusedVariable
-        if self.iterations >= self.max_it:
-            return []
-        if self.visibility(node) < self.min_visibility:
-            return []
-        nactions = len(self.dds.actions)
-        return range(nactions)
      
     def go(self):
         first = ()
@@ -213,11 +239,13 @@ class DiffeoCover(GenericGraphSearch):
                 distance = function(plan1, plan2)
                 for edge in self.G[plan1][plan2].values():
                     edge[field_name] = distance
-
-    def draw_embeddings(self, report):
-        
+    
+    @contract(returns='tuple(list, list(tuple(str, array[NxN])))')
+    def compute_distances(self):
+        """ Computes a bunch of distance measures. 
+            Returns plans, list of name, distance
+        """
         plans = self.get_plans_sorted()
-        
         distances = []
         
         # plan-to-plan distance
@@ -234,6 +262,13 @@ class DiffeoCover(GenericGraphSearch):
         distances.append(('L2_infow_edges', D_L2_infow_edges))
         distances.append(('pathlength', D_pathlength))
         
+        return plans, distances
+    
+        
+    def draw_embeddings(self, report):
+        print('computing distances...')
+        plans, distances = self.compute_distances()
+        print('done')
         for name, D in distances: 
             print name   
             self.draw_embedding(report.section(name), plans, D)
@@ -255,13 +290,15 @@ class DiffeoCover(GenericGraphSearch):
             report.text('warn', msg)
             return
             
-        
+        print('Embedding in 2D...')
         p2 = mds(D, 2)
         assert np.all(np.isfinite(p2))
         assert_allclose(p2.shape, (2, len(plans)))
         report.data('mds2', p2)
         
+        print('Embedding in 3D...')
         p3 = mds(D, 3)
+        print('... done')
         assert np.all(np.isfinite(p3))
         assert_allclose(p3.shape, (3, len(plans)))
         report.data('mds3', p3)
@@ -324,29 +361,11 @@ class DiffeoCover(GenericGraphSearch):
         except:
             pass
  
-    def log_child_generated(self, node, action, child): #@UnusedVariable
-        logger.info('Generated %s from %s' % (child, node))
-        pass
-    
-    def log_child_equivalent_found(self, node, action, child, match): #@UnusedVariable
-        logger.info('Equiv found: %s = %s' % (child, match))
-        
     def color_open_closed(self, n):
         if n in self.closed:
             return 0.6
         else:
             return 0.8
-
-    def log_chosen(self, node):
-        print('It: %d  closed: %5d  Open: %5d (%5d) Chosen %r' % 
-              (self.iterations, len(self.closed), len(self.open_nodes),
-               len(set(self.open_nodes)), node))
-        if (self.iterations + 1) % self.debug_graph_iterations == 0:
-            self.draw_graph()
-
-    def log_child_discarded(self, node, action, child, matches):
-        print('Discarding %s beacus matches %s' % (str(child), matches))
-
 
 def get_nodes_distance_matrix(G, nodelist, weight_field=None):
     n = len(nodelist)
@@ -358,4 +377,4 @@ def get_nodes_distance_matrix(G, nodelist, weight_field=None):
     D = np.array(D, dtype='float64')
     return D
     
-        
+

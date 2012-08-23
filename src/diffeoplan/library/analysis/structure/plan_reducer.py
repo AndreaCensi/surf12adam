@@ -11,7 +11,7 @@ class PlanReducer:
         self._null = set() # a
         self._commutes = set() # (a1,a2)
         self._inverse = set()
-        self._same = defaultdict(lambda: [])
+        self._same = dict() 
         
     def set_null(self, a):
         self._null.add(a) 
@@ -24,6 +24,10 @@ class PlanReducer:
         self._inverse.add((a, b))    
 
     def set_same(self, a, b):
+        if not a in self._same:
+            self._same[a] = []
+        if not b in self._same:
+            self._same[b] = []
         self._same[a].append(b)    
         self._same[b].append(a)
 

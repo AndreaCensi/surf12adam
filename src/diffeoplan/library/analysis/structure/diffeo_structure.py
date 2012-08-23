@@ -128,10 +128,10 @@ class DiffeoStructure():
         report.data('tolerance', self.tolerance)
         report.data('scale', self.scale)
         report.data('scalew', self.scalew)
-
         self.display_distances(report)
-        self.show_reduction_steps(report, max_nsteps=4)
-        self.show_reduction(report)
+        if False:
+            self.show_reduction_steps(report, max_nsteps=4)
+            self.show_reduction(report)
     
     def display_distances(self, report):
         f = report.figure('unweighted', cols=3)

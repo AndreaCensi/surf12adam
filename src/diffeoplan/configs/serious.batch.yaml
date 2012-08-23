@@ -93,3 +93,27 @@
   - graphsearch_deep_5
   testcases:
   - tc_dcam1_*_d3_*
+
+
+
+- id: test_misc1
+  desc: ""
+  desc_long: |
+    
+    Preparation
+    -----------
+        
+    Prepare test cases using:
+
+        dp gentests -n 1 -l 5 -i lena orbit-pt256-80x60 dptcam3
+
+    (this step should be automated)
+
+    ???
+
+  algorithms:
+  - infotree1
+  testcases:
+  - tc_orbit-pt256-80x60_*_d5_000
+  - tc_dptcam3_*_d5_000
+

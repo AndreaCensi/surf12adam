@@ -1,21 +1,21 @@
 import networkx as nx
+from ggs.simple import  breadth_first
+from abc import abstractmethod, ABCMeta
 
 EDGE_REGULAR = 'regular'
 EDGE_REDUNDANT = 'redundant'
 EDGE_EQUIV = 'equiv'
 
 class GenericGraphSearch:
-    def __init__(self, choose_open_nodes, available_actions,
-                       next_node, node_compare):
-        self.choose_open_nodes = choose_open_nodes
-        self.node_compare = node_compare
-        self.available_actions = available_actions
-        self.next_node = next_node
-        
+    
+    __metaclass__ = ABCMeta
+    
+    def __init__(self):
         self.G = nx.MultiGraph()
-        self.iterations = 0
-         
+     
     def go(self, first):
+        
+        self.iterations = 0
         self.G.add_node(first)
         self.open_nodes = [first]
         self.closed = set()
@@ -51,12 +51,28 @@ class GenericGraphSearch:
                         self.G.add_edge(node, m, action=action, type=EDGE_EQUIV)
                     self.log_child_discarded(node, action, child, matches)
             self.iterations += 1
-            
+    
+    @abstractmethod        
+    def next_node(self, node, action):
+        pass
+    
+    @abstractmethod        
+    def available_actions(self, node):
+        pass
+    
+    def choose_open_nodes(self, open_nodes):
+        """ Chose one of the open nodes. """
+        return breadth_first(open_nodes)
+        
     def get_matches(self, n, nodes):
         """ Returns a list of equivalent nodes that match ``n``. """
         for n2 in nodes:
             if self.node_compare(n, n2):
                 yield n2
+    
+    def node_compare(self, n1, n2):
+        """ Subclass this for adding better conditions """
+        return n1 == n2
             
     def log(self, s):
         print(s)

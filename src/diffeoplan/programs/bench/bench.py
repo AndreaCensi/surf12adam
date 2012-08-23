@@ -2,20 +2,17 @@ from diffeoplan.library import UncertainImage
 import time
  
 
-def run_planning(config, id_algo, id_tc):
+def run_planning(config, id_algo, id_tc, algo):
+    '''
+    
+    :param config:
+    :param id_algo:
+    :param id_discdds:
+    :param id_tc:
+    :param algo: Already init()ed instance of DiffeoPlanningAlgo
+    '''
     # load the test case 
     testcase = config.testcases.instance(id_tc)
-    # load the dynamics, as specified in the test case
-    id_discdds = testcase.id_discdds
-    discdds = config.discdds.instance(id_discdds)
-    # instance the algorithm
-    algo = config.algos.instance(id_algo)
-    
-    # initialize the algorithm with the dynamics
-    # TODO: add computation time
-    t0 = time.clock()
-    algo.init(discdds) 
-    init_time = time.clock() - t0
     
     # run the planning
     y0 = testcase.y0
@@ -29,10 +26,10 @@ def run_planning(config, id_algo, id_tc):
     
     results = {}
     results['id_tc'] = id_tc
-    results['id_discdds'] = id_discdds
+    results['id_discdds'] = testcase.id_discdds
     results['id_algo'] = id_algo
     results['result'] = planning_result
-    results['init_time'] = init_time
+    #results['init_time'] = init_time
     results['plan_time'] = plan_time
     return results
 

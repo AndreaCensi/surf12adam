@@ -11,9 +11,12 @@ def add_statistics(f):
     statistics[f.__name__] = f
     return f
 
-statistics['init_time'] = lambda s: s['init_time']
-statistics['plan_time'] = lambda s: s['plan_time']
+#statistics['init_time'] = lambda s: s['init_time']
 
+
+@add_statistics
+def plan_time(stats):
+    return stats['plan_time']
 
 @add_statistics
 def plan_found(stats):

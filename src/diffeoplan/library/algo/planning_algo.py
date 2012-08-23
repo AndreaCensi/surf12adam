@@ -1,5 +1,6 @@
 from . import PlanningResult, contract, logger
 from .. import DiffeoSystem, UncertainImage
+from reprep import Report
 
 class DiffeoPlanningAlgo:
     """ Interface for a generic planning algorithm. """
@@ -11,6 +12,11 @@ class DiffeoPlanningAlgo:
     def init(self, dds):
         """ Might be redefined to add precomputation. """ 
         self._dds = dds
+    
+    @contract(report=Report)
+    def init_report(self, report):
+        """ Creates a report for the initialization phase. """
+        report.text('warning', 'init_report() not implemented for this class.')
     
     def get_dds(self):
         """ Returns the system that we want to plan on. """

@@ -29,7 +29,7 @@ def visualize_result(config, id_tc, id_algo, stats):
     tc.display(r.section('testcase'))
     
     if not result.success:
-        r.text('Plannning unsuccesful')
+        r.text('warning', 'Plannning unsuccesful')
     else:
         rsol = r.section('solution')
         rsol.text('plan', 'Plan: %s' % result.plan)
