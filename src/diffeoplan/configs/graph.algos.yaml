@@ -61,5 +61,15 @@
     max_depth: 15
 
 
+# 1dir breadth-first
+# 1dir breadth-first, collapse nodes with same image
+# 1dir breadth-first, avoid equivalent plans
+# 1dir breadth-first, collapse nodes with same image, avoid equivalent plans
+# 2dir breadth-first, collapse nodes with same image
+# 1dir breadth-first, avoid equivalent plans
+# 1dir breadth-first, collapse nodes with same image, avoid equivalent plans
+
+
+
     
     

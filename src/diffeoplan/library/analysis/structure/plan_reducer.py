@@ -1,6 +1,6 @@
-from collections import defaultdict, deque
+from boot_agents.misc_utils import iterate_indices
+from collections import deque
 from contracts import contract
-from boot_agents.misc_utils.tensors_display import iterate_indices
 from diffeoplan.utils import memoize_instance as memoize
 from geometry import printm
 import numpy as np

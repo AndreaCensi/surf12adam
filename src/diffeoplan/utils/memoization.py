@@ -49,7 +49,7 @@ def memoize_instance(f2):
         if not has_this_method:
             msg = 'Class %s does not have method %s' % (obj.__class__, f.__name__)
             raise ValueError(msg)
-        method = obj.__class__.__dict__[f.__name__]
+        #method = obj.__class__.__dict__[f.__name__]
 #        if memoizer != method:
 #            msg = 'I expected %s = %s' % (method, memoizer)
 #            raise ValueError(msg)

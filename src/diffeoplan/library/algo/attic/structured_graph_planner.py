@@ -1,6 +1,6 @@
 import numpy as np
-from ..generic_graph_planner import GraphSearchQueue
-from diffeoplan.library.graph.node import Node
+from ..  import GraphSearchQueue
+from diffeoplan.library.graph import Node
 from diffeoplan.library.analysis.redundant_plan_tracker import RedundantPlanTracker
 
 class StructuredGraphPlanner(GraphSearchQueue):

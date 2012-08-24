@@ -47,6 +47,21 @@
   testcases:
   - tc_dcam3_lena_d10_000
 
+- id: test_misc4
+  desc: "another random test"
+  algorithms:
+  - gnbn1_it10
+  - gnbc1_it10
+  - gebn1_it10
+  - gebc1_it10
+  - h1_it10
+  testcases:
+  - tm_dcam3_lena_aaaaccdd
+    
+
+
+
+
 
 - id: torus2_d10
   desc: This is the torus, but now we can go both left and right.

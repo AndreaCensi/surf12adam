@@ -2,56 +2,11 @@ from . import write_report, np
 from compmake import comp
 from reprep import Report
 import itertools
-#import scipy.stats
 from scipy.stats.stats import nanmean, nanstd
-
-statistics = {}
-
-def add_statistics(f):
-    statistics[f.__name__] = f
-    return f
-
-#statistics['init_time'] = lambda s: s['init_time']
-
-
-@add_statistics
-def plan_time(stats):
-    return stats['plan_time']
-
-@add_statistics
-def plan_found(stats):
-    return stats['result'].plan is not None
-
-@add_statistics
-def plan_length(stats):
-    if plan_found(stats):
-        return len(stats['result'].plan)
-    else:
-        return np.nan
-    
-@add_statistics
-def dist_values_L1_old(s):
-    if not 'dist_y0_y1p' in s: 
-        return np.nan
-    return s['dist_y0_y1p']['values_L1']
-
-@add_statistics
-def dist_values_L2_old(s):
-    if not 'dist_y0_y1p' in s: 
-        return np.nan
-    return s['dist_y0_y1p']['values_L2']
-
-@add_statistics
-def dist_values_L1(s):
-    if not 'dist_y1_y1p' in s: 
-        return np.nan
-    return s['dist_y1_y1p']['values_L1']
-
-@add_statistics
-def dist_values_L2(s):
-    if not 'dist_y1_y1p' in s: 
-        return np.nan
-    return s['dist_y1_y1p']['values_L2']
+from diffeoplan.programs.bench.statistics import Stats
+from bootstrapping_olympics.utils.not_found import raise_x_not_found
+from contracts import contract
+from reprep.report_utils.store_results import StoreResults
 
 
 reductions = {}
@@ -62,12 +17,12 @@ reductions['stddev'] = nanstd
     
 def f(stats, s, r):
     reduce_ = reductions[r]
-    map_ = statistics[s]
+    map_ = Stats.statistics[s].function
     #print('computing %s %s' % (s, r))
     return reduce_([map_(x) for x in stats])
 
 tables = {}
-for a, b in itertools.product(statistics, reductions):
+for a, b in itertools.product(Stats.statistics, reductions):
     def funcC(a, b):
         def func(stats):
             return f(stats, a, b)
@@ -97,3 +52,66 @@ def create_tables(outdir, allruns):
         basename = '%s/reports/table-%s' % (outdir, id_table)
         comp(write_report, report, basename, job_id=job_id + '-write')
     
+    print Stats.statistics.keys()
+    statstables = {'all': list(Stats.statistics.keys()),
+                   'graph': ['plan_found',
+                             'num_start_closed',
+                             'num_start_open',
+                             'num_start_created',
+                             'num_start_redundant',
+                             'num_start_collapsed',
+                             'num_goal_closed',
+                             'num_goal_open',
+                             'num_goal_created',
+                             'num_goal_redundant',
+                             'num_goal_collapsed',
+                             ]}
+
+    # make sure we know them
+    for id_statstable in statstables:
+        for id_stats in statstables[id_statstable]:
+            if not id_stats in Stats.statistics:
+                raise_x_not_found('statistic', id_stats, Stats.statistics)
+
+
+    for id_statstable in statstables:
+        job_id = 'bysample-%s' % id_statstable
+        report = comp(create_tables_by_samples,
+                      id_statstable, statstables[id_statstable],
+                      allruns, job_id=job_id)
+        basename = '%s/reports/bysample_%s' % (outdir, id_statstable)
+        comp(write_report, report, basename, job_id=job_id + '-write')
+
+
+@contract(id_stats='str', stats='list[>=1](str)', allruns=StoreResults)
+def create_tables_by_samples(id_stats, stats, allruns):
+    '''
+    
+    :param id_stats: name of this set
+    :param stats: list of string corresponding to functions in statistics
+    :param allruns: 
+    '''
+    r = Report(id_stats)
+    testcases = sorted(list(set(allruns.field('id_tc'))))
+    algos = sorted(list(set(allruns.field('id_algo'))))
+    # for each sample
+    for id_tc in testcases:
+        rows = algos
+        cols = [s.symbol for s in map(Stats.statistics.__getitem__, stats)]
+        data = []
+        for id_algo in algos:
+            row = []
+            for id_stats in stats:
+                s = list(allruns.select(id_algo=id_algo, id_tc=id_tc).values())
+                assert len(s) == 1
+                value = Stats.statistics[id_stats].function(s[0])
+                row.append(value)
+            data.append(row)
+        r.table(id_tc, data=data, cols=cols, rows=rows)
+    
+    return  r
+    
+    
+
+        
+        

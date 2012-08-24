@@ -298,18 +298,22 @@ class DiffeoCover(GenericGraphSearch):
         
         f = report.figure('embedding')
 
-        with f.plot('3D') as pylab:
-            plan2point3 = get_embedding_mds(plans, D, ndim=3)
-            plan2color = self.visibility
-            plot_3d_graph(pylab, self.G, plan2point3.__getitem__, plan2color,
-                          edges2color)
-
-        with f.plot('2D') as pylab:
-            plan2point2 = get_embedding_mds(plans, D, ndim=2)
-            plan2color = self.visibility
-            plot_2d_graph(pylab, self.G, plan2point2.__getitem__, plan2color,
-                          edges2color)
- 
+        try:
+            with f.plot('3D') as pylab:
+                plan2point3 = get_embedding_mds(plans, D, ndim=3)
+                plan2color = self.visibility
+                plot_3d_graph(pylab, self.G, plan2point3.__getitem__,
+                              plan2color, edges2color)
+    
+            with f.plot('2D') as pylab:
+                plan2point2 = get_embedding_mds(plans, D, ndim=2)
+                plan2color = self.visibility
+                plot_2d_graph(pylab, self.G, plan2point2.__getitem__, plan2color,
+                              edges2color)
+        except Exception as e:
+            logger.exception(e)
+            
+            
     def color_open_closed(self, n):
         if n in self.closed:
             return 0.6

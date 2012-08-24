@@ -1,6 +1,7 @@
 import networkx as nx
 from ggs.simple import  breadth_first
 from abc import abstractmethod, ABCMeta
+from contracts import contract
 
 EDGE_REGULAR = 'regular'
 EDGE_REDUNDANT = 'redundant'
@@ -23,9 +24,43 @@ class GenericGraphSearch:
                    
     def init_search(self, first):
         self.iterations = 0
+        self.num_created = 0
+        self.num_redundant = 0
+        self.num_collapsed = 0
         self.G.add_node(first)
         self.open_nodes = [first]
         self.closed = set()
+        
+    @contract(returns='int,>=0')
+    def get_num_closed(self):
+        return len(self.closed)
+    
+    @contract(returns='int,>=0')
+    def get_num_open(self):
+        return len(self.open_nodes)
+    
+    @contract(returns='int,>=0')
+    def get_num_created(self):
+        """ Number of nodes created using next_node() """
+        return self.num_created
+
+    @contract(returns='int,>=0')
+    def get_num_created_but_redundant(self):
+        """ 
+            Number of nodes that were created, but 
+            found to be an exact duplicated. 
+            equivalent to __eq__() used implicitly)
+        """
+        return self.num_redundant
+
+    @contract(returns='int,>=0')
+    def get_num_created_but_collapsed(self):
+        """
+            Returns the number of nodes that were created, but get_matches()
+            found a match.self.get_matches().
+        """ 
+        return self.num_collapsed
+        
 
     def do_iteration(self):
         """ Returns the list of new nodes added """
@@ -45,11 +80,13 @@ class GenericGraphSearch:
         children_accepted = []
         for action in self.available_actions(node):
             child = self.next_node(node, action)
+            self.num_created += 1
             self.log_child_generated(node, action, child)
             # first case: exactly the same node
             if child in self.G:
                 self.G.add_edge(node, child, action=action, type=EDGE_REDUNDANT)
                 self.log_child_existed(node, action, child)
+                self.num_redundant += 1
                 continue
             # check equivalent nodes
             matches = list(self.get_matches(child, self.G.nodes())) 
@@ -67,6 +104,8 @@ class GenericGraphSearch:
                     self.log_child_equivalent_found(node, action, child, m)
                     self.G.add_edge(node, m, action=action, type=EDGE_EQUIV)
                 self.log_child_discarded(node, action, child, matches)
+                self.num_collapsed += 1
+                
         return children_accepted
     
     @abstractmethod        
@@ -91,7 +130,7 @@ class GenericGraphSearch:
         """ Subclass this for adding better conditions """
         return n1 == n2
             
-    def log(self, s):
+    def log(self, s): # TODO: add private log
         print(s)
         
     def log_chosen(self, node):

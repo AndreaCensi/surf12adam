@@ -1,4 +1,6 @@
 from .. import logger, np, contract
+from .statistics import *
+
 from .bench import *
 from .report import *
 from .tables import *

@@ -8,13 +8,13 @@ import yaml
 class TestCase():
     
     @contract(id_tc='str', y0=UncertainImage, y1=UncertainImage, id_discdds='str',
-              true_plan='None|list(int)')
+              true_plan='None|seq(int)')
     def __init__(self, id_tc, y0, y1, id_discdds, true_plan):
         self.id_tc = id_tc
         self.y0 = y0
         self.y1 = y1
         self.id_discdds = id_discdds
-        self.true_plan = true_plan
+        self.true_plan = list(true_plan)
 
 
     def save(self, outdir):

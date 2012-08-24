@@ -80,7 +80,10 @@ class DiffeoStructure():
             self.plan_reducer = PlanReducer.from_matrices(actions, self.swappable,
                                                           self.opposite,
                                                           self.same)
-
+    
+    def get_plan_reducer(self):
+        return self.plan_reducer
+    
     def get_canonical(self, plan):
         cplan = self.plan_reducer.get_canonical(plan)
         #print('get_canonical(%s) -> %s' % (plan, cplan))

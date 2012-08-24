@@ -1,0 +1,80 @@
+
+- id: "gnbn1_it${n}"
+  desc: "One-dir search; no pre-filtering; no post-filtering; ${n} iterations."
+  code:
+  - diffeoplan.library.GenericGraphPlanner
+  - metric_goal: L2
+    metric_goal_threshold: 0.1
+    metric_collapse:  L2
+    metric_collapse_threshold: -1 # no collapse
+    max_iterations: "${n}"
+    max_depth: 100
+
+- id: "gnbc1_it${n}"
+  desc: "One-dir search; no pre-filtering; L2 post (0.1); ${n} iterations."
+  code:
+  - diffeoplan.library.GenericGraphPlanner
+  - metric_goal: L2
+    metric_goal_threshold: 0.1
+    metric_collapse:  L2
+    metric_collapse_threshold: 0.1 
+    max_iterations: "${n}"
+    max_depth: 15
+
+- id: "gebn1_it${n}"
+  desc: "One-dir search; pre-filter equiv; no post-filtering; ${n} iterations."
+  code:
+  - diffeoplan.library.InformedPlanner
+  - hard_choice_params:
+        use_isomorphism_heuristics: True
+        info_percentile: 50
+        info_threshold: null
+    diffeo_structure_params:
+        tolerance: 0.5 # threshold for two commands to be commutative, etc.
+    metric_goal: L2
+    metric_goal_threshold: 0.1
+    metric_collapse:  L2
+    metric_collapse_threshold: -1 # no collapse
+    max_iterations: "${n}"
+    max_depth: 100
+
+- id: "gebc1_it${n}"
+  desc: "One-dir search; pre-filter equiv; no post-filtering; ${n} iterations."
+  code:
+  - diffeoplan.library.InformedPlanner
+  - hard_choice_params:
+        use_isomorphism_heuristics: True
+        info_percentile: 50
+        info_threshold: null
+    diffeo_structure_params:
+        tolerance: 0.5 # threshold for two commands to be commutative, etc.
+    metric_goal: L2
+    metric_goal_threshold: 0.1
+    metric_collapse:  L2
+    metric_collapse_threshold: 0.1
+    max_iterations: "${n}"
+    max_depth: 100
+
+- id: "h1_it${n}"
+  desc: "Hierarchical"
+  code:
+  - diffeoplan.library.InformedPlannerHierarchy
+  - metric_goal: L2
+    metric_goal_threshold: 0.1
+    metric_collapse:  L2
+    metric_collapse_threshold: 0.1
+    max_iterations: "${n}"
+    max_depth: 100
+    hard_choice_params:
+        use_isomorphism_heuristics: True
+        info_percentile: 50
+        info_threshold: null
+    diffeo_structure_params:
+        tolerance: 0.5 # threshold for two commands to be commutative, etc.
+    diffeo_cover_params:
+        min_visibility: 0.4  # do not expand nodes with less that this
+        info_threshold: 0.5 # threshold for nodes to be the same
+        debug_it: 100 # debug graph written every debug_it iterations
+        max_it: 1000 # maximum number of iterations
+        #max_it: 1000 # maximum number of iterations
+

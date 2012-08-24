@@ -1,13 +1,13 @@
+from . import np, contract
+from boot_agents.diffeo import Diffeomorphism2D
+from diffeoplan.library.analysis import PlanReducer
+from diffeoplan.library.discdds import DiffeoAction, guess_state_space
+ 
+from diffeoplan.utils import memoize_instance
 from ggs import GenericGraphSearch
-from contracts import contract
-from diffeoplan.library.analysis.structure.plan_reducer import PlanReducer
-from diffeoplan.library.images.uncertain_image import UncertainImage
-from diffeoplan.utils.memoization import memoize_instance
-from boot_agents.diffeo.diffeomorphism2d import Diffeomorphism2D
-from diffeoplan.library.discdds.diffeo_action import DiffeoAction
-import numpy as np
-from diffeoplan.library.discdds.visualization.guess import guess_state_space
 import collections
+import networkx as nx
+
 
 class DiffeoTreeSearch(GenericGraphSearch):
     """
@@ -95,26 +95,4 @@ class DiffeoTreeSearch(GenericGraphSearch):
         nx.draw_networkx(self.G, with_labels=True, pos=pos, labels=labels,
                         node_color=node_color, cmap=cmap)
         
-
-import networkx as nx
-
-class DiffeoTreeSearchImage(DiffeoTreeSearch):
-    """
-        It also knows that:
-            - each plan gives an image
-    """    
-     
-
-    def __init__(self, image, *args, **kwargs):
-        DiffeoTreeSearch.__init__(self, *args, **kwargs)
-        self.image = image
-    
-    @memoize_instance
-    @contract(returns=UncertainImage)
-    def plan2image(self, plan):
-        action = self.plan2action(plan)
-        return action.predict(self.image)
-
-
-
 

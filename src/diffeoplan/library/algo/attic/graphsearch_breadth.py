@@ -1,5 +1,5 @@
 from diffeoplan.library.graph.graph import Graph
-from diffeoplan.library.algo.generic_graph_planner import GraphSearchQueue
+from . import GraphSearchQueue
 from diffeoplan.library.algo.structured.structured_graph_planner import StructuredGraphPlanner
 from diffeoplan.library.graph.node import Node
 
