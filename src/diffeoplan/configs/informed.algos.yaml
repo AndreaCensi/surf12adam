@@ -13,4 +13,5 @@
         min_visibility: 0.3  # do not expand nodes with less that this
         info_threshold: 0.5 # threshold for nodes to be the same
         debug_it: 100 # debug graph written every debug_it iterations
-        max_it: 1000 # maximum number of iterations
+        max_it: 1 # maximum number of iterations
+        #max_it: 1000 # maximum number of iterations

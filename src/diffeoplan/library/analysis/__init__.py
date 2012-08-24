@@ -1,3 +1,3 @@
 from .. import np, contract, logger
-from .cover import *
+from .covering import *
 from .structure import *

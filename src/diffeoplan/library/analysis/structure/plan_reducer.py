@@ -1,7 +1,7 @@
 from collections import defaultdict, deque
 from contracts import contract
 from boot_agents.misc_utils.tensors_display import iterate_indices
-from diffeoplan.utils import memoize
+from diffeoplan.utils import memoize_instance as memoize
 from geometry import printm
 
 

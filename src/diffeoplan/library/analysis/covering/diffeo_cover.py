@@ -3,7 +3,8 @@ from contracts import contract
 from diffeoplan.library import DiffeoAction
 from diffeoplan.library.discdds.visualization.guess import guess_state_space
 from diffeoplan.library.discdds import plan_friendly
-from diffeoplan.utils import construct_matrix, memoize
+from diffeoplan.utils import construct_matrix
+
 from geometry import assert_allclose, mds
 from ggs import (EDGE_EQUIV, EDGE_REGULAR, EDGE_REDUNDANT, draw_node_graph,
     GenericGraphSearch)
@@ -13,6 +14,10 @@ from reprep.plot_utils import turn_all_axes_off
 import matplotlib
 import os
 import random
+from boot_agents.diffeo.diffeomorphism2d import Diffeomorphism2D
+from diffeoplan.library.discdds.diffeo_action import diffeoaction_distance_L2_infow, \
+    diffeoaction_distance_L2_infow_scaled
+from diffeoplan.utils.memoization import memoize_instance
 
 
 class DiffeoCover(GenericGraphSearch):
@@ -57,14 +62,14 @@ class DiffeoCover(GenericGraphSearch):
     def choose_open_nodes(self, nodes):
         return self.max_visibility_first(nodes)
     
-    @memoize
+    @memoize_instance
     @contract(plan1='seq(int)', plan2='seq(int)')
     def node_compare(self, plan1, plan2):
         plan1 = tuple(plan1)
         plan2 = tuple(plan2)
         if plan1 == plan2:
             return True
-        dn = self.plan_distance(plan1, plan2, DiffeoAction.distance_L2_infow) / self.ds.scalew
+        dn = self.plan_distance(plan1, plan2, diffeoaction_distance_L2_infow) / self.ds.scalew
         
         match = dn < self.info_threshold
         if match:
@@ -102,7 +107,7 @@ class DiffeoCover(GenericGraphSearch):
         i = np.argmax(v)
         return nodes[i]
     
-    @memoize
+    @memoize_instance
     @contract(plan='tuple', returns=DiffeoAction)
     def compute_action(self, plan):
         if len(plan) == 0:
@@ -117,12 +122,13 @@ class DiffeoCover(GenericGraphSearch):
             rest = self.compute_action(plan[:-1])
             return DiffeoAction.compose(last, rest)
          
-    @memoize
+    @memoize_instance
+    @contract(plan='tuple', returns=Diffeomorphism2D)
     def compute_diffeomorphism(self, plan):
         action = self.compute_action(plan)
         return action.get_diffeo2d_forward()
     
-    @memoize
+    @memoize_instance
     def visibility(self, plan):
         if len(plan) == 0:
             return 1
@@ -135,9 +141,9 @@ class DiffeoCover(GenericGraphSearch):
         return GenericGraphSearch.go(self, first)
         
     def draw_graph(self):
-        use_distance = DiffeoAction.distance_L2_infow
+        use_distance = diffeoaction_distance_L2_infow
 #        use_distance = DiffeoAction.distance_L2
-        use_distance = DiffeoAction.distance_L2_infow_scaled
+        use_distance = diffeoaction_distance_L2_infow_scaled
         
         def label_plan_length(n):
             return  len(n)
@@ -197,7 +203,8 @@ class DiffeoCover(GenericGraphSearch):
         random.shuffle(all_plans)
         random_plans = all_plans[:3]
         for pi, ref_plan in enumerate(random_plans):
-            color_func = lambda p2: self.plan_distance(ref_plan, p2)
+            color_func = lambda p2: self.plan_distance(ref_plan, p2,
+                                            diffeoaction_distance_L2_infow)
             name = 'random%d' % pi
             with f.data_file(name, MIME_PNG) as filename:
                 draw_node_graph(filename=filename,
@@ -212,7 +219,7 @@ class DiffeoCover(GenericGraphSearch):
         logger.info('Writing to %r' % filename)
         r.to_html(filename)
 
-    @memoize
+    @memoize_instance
     def plan_distance(self, p1, p2, action_distance):
         a1 = self.compute_action(p1)
         a2 = self.compute_action(p2)
@@ -226,7 +233,7 @@ class DiffeoCover(GenericGraphSearch):
     def get_distance_matrix(self, plans, action_distance):
         n = len(plans)
         D_ij = lambda i, j: self.plan_distance(plans[i], plans[j],
-                                               action_distance=action_distance)
+                                               action_distance)
         D = construct_matrix((n, n), D_ij)
         return plans, D                         
         
@@ -249,10 +256,10 @@ class DiffeoCover(GenericGraphSearch):
         distances = []
         
         # plan-to-plan distance
-        _, D_L2_infow = self.get_distance_matrix(plans, DiffeoAction.distance_L2_infow)
+        _, D_L2_infow = self.get_distance_matrix(plans, diffeoaction_distance_L2_infow)
         
         # plan-to-plan distance, but only on edge path
-        function = lambda p1, p2: self.plan_distance(p1, p2, DiffeoAction.distance_L2_infow)
+        function = lambda p1, p2: self.plan_distance(p1, p2, diffeoaction_distance_L2_infow)
         self.set_edge_field_to_plan_distance('L2_infow', function)
         D_L2_infow_edges = get_nodes_distance_matrix(self.G, plans, 'L2_infow')
         

@@ -1,6 +1,10 @@
 from . import DiffeoAction, np, contract, UncertainImage, logger
 from reprep import Report
 from diffeoplan.utils.matrices import construct_matrix
+from diffeoplan.library.discdds.diffeo_action import diffeoaction_comm_distance_L2_infow, \
+    diffeoaction_comm_distance_L2, diffeoaction_anti_distance_L2_infow, \
+    diffeoaction_anti_distance_L2, diffeoaction_distance_L2_infow, \
+    diffeoaction_distance_L2
 
 class DiffeoSystem():
     """
@@ -116,20 +120,20 @@ class DiffeoSystem():
         return construct_matrix((K, K), entries)
         
     def actions_distance_L2(self):
-        return self.actions_distance(DiffeoAction.distance_L2)
+        return self.actions_distance(diffeoaction_distance_L2)
     
     def actions_distance_L2_infow(self):
-        return self.actions_distance(DiffeoAction.distance_L2_infow)
+        return self.actions_distance(diffeoaction_distance_L2_infow)
     
     def actions_anti_distance_L2(self):
-        return self.actions_distance(DiffeoAction.anti_distance_L2)
+        return self.actions_distance(diffeoaction_anti_distance_L2)
 
     def actions_anti_distance_L2_infow(self):
-        return self.actions_distance(DiffeoAction.anti_distance_L2_infow)
+        return self.actions_distance(diffeoaction_anti_distance_L2_infow)
         
     def actions_comm_distance_L2(self):
-        return self.actions_distance(DiffeoAction.comm_distance_L2)
+        return self.actions_distance(diffeoaction_comm_distance_L2)
         
     def actions_comm_distance_L2_infow(self):
-        return self.actions_distance(DiffeoAction.comm_distance_L2_infow)
+        return self.actions_distance(diffeoaction_comm_distance_L2_infow)
     

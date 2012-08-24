@@ -1,13 +1,11 @@
 from contracts import contract
 from diffeoplan.library.algo.planning_algo import DiffeoPlanningAlgo
 from diffeoplan.library.algo.planning_result import PlanningResult
-from diffeoplan.library.analysis import DiffeoStructure
-from diffeoplan.library.discdds import DiffeoSystem
-from diffeoplan.library.images.uncertain_image import UncertainImage
-from diffeoplan.library.analysis.cover.diffeo_cover import DiffeoCover
+from diffeoplan.library.analysis import (DiffeoCover, DiffeoStructure,
+    make_hard_choices)
+from diffeoplan.library.discdds import DiffeoAction, DiffeoSystem
+from diffeoplan.library.images import UncertainImage
 from reprep import Report
-from diffeoplan.library.analysis.cover.hard_choices import make_hard_choices
-from diffeoplan.library.discdds.diffeo_action import DiffeoAction
 
 
 class InformedTree(DiffeoPlanningAlgo):
@@ -29,6 +27,7 @@ class InformedTree(DiffeoPlanningAlgo):
         self.cover.go()
         # precompute and save all distances
         self.cover.compute_distances()
+#        self.cover.G = None
         
     @contract(report=Report)
     def init_report(self, report):
@@ -43,11 +42,11 @@ class InformedTree(DiffeoPlanningAlgo):
 
     def display_products(self, report, nsteps):
         # XXX: make separate
-        for a in self.dds_hard.actions:
-            f = report.figure(a.label, cols=nsteps)
+        for i, a in enumerate(self.dds_hard.actions):
+            f = report.figure('cmd%s' % i, cols=nsteps)
             A = a
             for k in range(nsteps):
                 A = DiffeoAction.compose(A, a)
                 rgb = A.get_diffeo2d_forward().get_rgb_info()
-                f.data_rgb('%s_%s' % (a.label, k), rgb)
+                f.data_rgb('%s_%s' % (i, k), rgb)
     
