@@ -18,6 +18,7 @@ from boot_agents.diffeo.diffeomorphism2d import Diffeomorphism2D
 from diffeoplan.library.discdds.diffeo_action import diffeoaction_distance_L2_infow, \
     diffeoaction_distance_L2_infow_scaled
 from diffeoplan.utils.memoization import memoize_instance
+from networkx.classes.multigraph import MultiGraph
 
 
 class DiffeoCover(GenericGraphSearch):
@@ -285,8 +286,6 @@ class DiffeoCover(GenericGraphSearch):
         
         f = report.figure('distances')
         
-        plan2index = dict([(p, i) for i, p in enumerate(plans)])
-        
         report.data('plans', plans)
         report.data('distance', D).display('scale').add_to(f)
         with f.plot('D_stats', caption='Distance') as pylab:
@@ -297,82 +296,116 @@ class DiffeoCover(GenericGraphSearch):
             report.text('warn', msg)
             return
             
-        print('Embedding in 2D...')
-        p2 = mds(D, 2)
-        assert np.all(np.isfinite(p2))
-        assert_allclose(p2.shape, (2, len(plans)))
-        report.data('mds2', p2)
-        
-        print('Embedding in 3D...')
-        p3 = mds(D, 3)
-        print('... done')
-        assert np.all(np.isfinite(p3))
-        assert_allclose(p3.shape, (3, len(plans)))
-        report.data('mds3', p3)
-        
-        color = [self.visibility(plan) for plan in plans]    
+#        print('Embedding in 2D...')
+#        p2 = mds(D, 2)
+#        assert np.all(np.isfinite(p2))
+#        assert_allclose(p2.shape, (2, len(plans)))
+#        report.data('mds2', p2)
+#        
+#        print('Embedding in 3D...')
+#        p3 = mds(D, 3)
+#        print('... done')
+#        assert np.all(np.isfinite(p3))
+#        assert_allclose(p3.shape, (3, len(plans)))
+#        report.data('mds3', p3)
+#        
+#            
+
+        edges2color = lambda n1, n2: edges_type_to_color(self.G, n1, n2)
         
         f = report.figure('embedding')
 
-        type2color = {}
-        type2color[frozenset([EDGE_REGULAR])] = [0, 0, 0]
-        type2color[frozenset([EDGE_REDUNDANT])] = [.8, .8, .8]
-        type2color[frozenset([EDGE_EQUIV])] = [0, 1, 0]
-        
-        type2color[frozenset([EDGE_REGULAR, EDGE_REDUNDANT])] = [0, 0, 0] # regular wins
-        type2color[frozenset([EDGE_EQUIV, EDGE_REDUNDANT])] = [0, 1, 0] # equiv wins
-        type2color[frozenset([EDGE_EQUIV, EDGE_REGULAR])] = [0, 0, 0] # regular wins
-        type2color[frozenset([EDGE_REGULAR, EDGE_REDUNDANT, EDGE_REGULAR])] = [0, 0, 0] # regular wins
+        with f.plot('3D') as pylab:
+            plan2point3 = get_embedding_mds(plans, D, ndim=3)
+            plan2color = self.visibility
+            plot_3d_graph(pylab, self.G, plan2point3.__getitem__, plan2color,
+                          edges2color)
 
-        def get_edges_indices():
-            for plan1 in self.G:
-                for plan2 in self.G[plan1]:
-                    i = plan2index[plan1]
-                    j = plan2index[plan2]
-                    x = self.G[plan1][plan2] 
-                    # x = {0: {'action': 1, 'type': 'regular'}, 1: ...
-                    edge_types = frozenset([e['type'] for e in x.values()])                        
-                    yield i, j, type2color[edge_types]
-
-        try:
-            with f.plot('3D') as pylab:
-                cm = matplotlib.cm.get_cmap('RdYlBu')
-                import mpl_toolkits.mplot3d.axes3d as plot3
-                fig = pylab.gcf()
-                ax = plot3.Axes3D(fig)
-                for i, j, ec in get_edges_indices():
-                    coords = np.vstack((p3[:, i], p3[:, j])).T
-                    ax.plot3D(xs=coords[0], ys=coords[1], zs=coords[2],
-                                  linestyle='-', color=ec)
-                p = ax.scatter3D(p3[0], p3[1], p3[2], s=40, c=color, cmap=cm)
-                try:                    
-                    fig.colorbar(p)
-                except TypeError as e:
-                    logger.error('Cannot use colorbar')
-                    logger.exception(e)
-        except:
-            pass
-            
-        try:                
-            with f.plot('2D') as pylab:
-                pylab.jet()
-                for i, j, ec in get_edges_indices():
-                    coords = np.vstack((p2[:, i], p2[:, j])).T
-                    pylab.plot(coords[0], coords[1],
-                                  linestyle='-', color=ec)
-                pylab.scatter(p2[0], p2[1], s=40, c=color)
-                pylab.axis('equal')
-                
-                turn_all_axes_off(pylab)
-                pylab.colorbar()
-        except:
-            pass
+        with f.plot('2D') as pylab:
+            plan2point2 = get_embedding_mds(plans, D, ndim=2)
+            plan2color = self.visibility
+            plot_2d_graph(pylab, self.G, plan2point2.__getitem__, plan2color,
+                          edges2color)
  
     def color_open_closed(self, n):
         if n in self.closed:
             return 0.6
         else:
             return 0.8
+
+
+type2color = {}
+type2color[frozenset([EDGE_REGULAR])] = [0, 0, 0]
+type2color[frozenset([EDGE_REDUNDANT])] = [.8, .8, .8]
+type2color[frozenset([EDGE_EQUIV])] = [0, 1, 0]
+
+type2color[frozenset([EDGE_REGULAR, EDGE_REDUNDANT])] = [0, 0, 0] # regular wins
+type2color[frozenset([EDGE_EQUIV, EDGE_REDUNDANT])] = [0, 1, 0] # equiv wins
+type2color[frozenset([EDGE_EQUIV, EDGE_REGULAR])] = [0, 0, 0] # regular wins
+type2color[frozenset([EDGE_REGULAR, EDGE_REDUNDANT, EDGE_REGULAR])] = [0, 0, 0] # regular wins
+
+@contract(G=MultiGraph)
+def edges_type_to_color(G, n1, n2):
+    edges = G[n1][n2]
+    assert len(edges)
+    edge_types = frozenset([e['type'] for e in edges.values()])                        
+    type2color[edge_types]
+
+def get_edges_points_and_color(G, plan2point, edges2color):
+    """
+        Assumes G multigraph
+        plan2point: node -> point
+    """
+    for plan1 in G:
+        for plan2 in G[plan1]:
+            pi = plan2point(plan1)
+            pj = plan2point(plan2)
+            yield pi, pj, edges2color(plan1, plan2)
+
+
+def plot_3d_graph(pylab, G, plan2point, plan2color, edges2color=None):
+    if edges2color is None:
+        edges2color = lambda n1, n2: [0, 0, 0] #@UnusedVariable
+
+    cm = matplotlib.cm.get_cmap('RdYlBu')
+    import mpl_toolkits.mplot3d.axes3d as plot3
+    fig = pylab.gcf()
+    ax = plot3.Axes3D(fig)
+    for pi, pj, ec in get_edges_points_and_color(G, plan2point, edges2color):
+        coords = np.vstack((pi, pj)).T
+        ax.plot3D(xs=coords[0], ys=coords[1], zs=coords[2],
+                      linestyle='-', color=ec)
+    n = len(G)
+    P = np.array(map(plan2point, G)).T
+    assert_allclose(P.shape, (3, n))
+    color = map(plan2color, G)
+    
+    patches = ax.scatter3D(P[0], P[1], P[2], s=40, c=color, cmap=cm)
+    try:                    
+        fig.colorbar(patches)
+    except TypeError as e:
+        logger.error('Cannot use colorbar')
+        logger.exception(e)
+
+def plot_2d_graph(pylab, G, plan2point, plan2color, edges2color=None):
+    if edges2color is None:
+        edges2color = lambda n1, n2: [0, 0, 0] #@UnusedVariable
+        
+    cm = matplotlib.cm.get_cmap('RdYlBu')
+        
+    for pi, pj, ec in get_edges_points_and_color(G, plan2point, edges2color):
+        coords = np.vstack((pi, pj)).T
+        pylab.plot(coords[0], coords[1], linestyle='-', color=ec)
+        
+    n = len(G)
+    P = np.array(map(plan2point, G)).T
+    assert_allclose(P.shape, (2, n))
+    color = map(plan2color, G)
+    pylab.scatter(P[0], P[1], s=40, c=color, cmap=cm)
+    pylab.axis('equal')            
+    turn_all_axes_off(pylab)
+    pylab.colorbar()
+
 
 def get_nodes_distance_matrix(G, nodelist, weight_field=None):
     n = len(nodelist)
@@ -384,4 +417,15 @@ def get_nodes_distance_matrix(G, nodelist, weight_field=None):
     D = np.array(D, dtype='float64')
     return D
     
+    
+@contract(plans='seq[N]', D='array[NxN]', ndim='K',
+          returns='dict(seq: array[K])')
+def get_embedding_mds(plans, D, ndim):
+    """ Returns a dictionary plan -> position """
+    plan2index = dict([(p, i) for i, p in enumerate(plans)])
+    p2 = mds(D, ndim)
+    plan2point = dict([(p, p2[:, plan2index[p]]) for p in plans])
+    return plan2point
+    
+
 

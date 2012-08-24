@@ -14,8 +14,9 @@ def memoize_simple(obj):
     return memoizer
 
 
-memoize_instance_show_store = True
-memoize_instance_stats_interval = 1
+memoize_instance_show_store = False
+memoize_instance_show_initial_cache = False
+memoize_instance_stats_interval = 100000000
 
 def memoize_instance(f):
     """ 
@@ -66,12 +67,13 @@ def memoize_instance(f):
             obj.__cache[f.__name__] = {}
 
         cache = obj.__cache[f.__name__]            
-        if f.__cache_calls == 0 and len(cache) > 0: 
-            # first time we call it
-            print('For %r I already have a cache of %d calls' % 
-                  (f.__name__, len(cache)))
-            for key in cache:
-                print('- %s' % str(key))
+        if memoize_instance_show_initial_cache:
+            if f.__cache_calls == 0 and len(cache) > 0: 
+                # first time we call it
+                print('For %r I already have a cache of %d calls' % 
+                      (f.__name__, len(cache)))
+                for key in cache:
+                    print('- %s' % str(key))
         
         def get_signature():
             args_str = ",".join(str(x) for x in args)

@@ -37,22 +37,39 @@ def get_objective(D, fixed):
     
 
 @contract(D='array[NxN](>=0)', returns='tuple(list(int,>=0,<N), *)')
-def make_distancetree(D):
+def make_distancetree(D, nodes, max_branching):
     """ Returns the sequence of indices that give best coverage
         and a tree. """
+        
+    def get_closest_node_index(i, possibilities):
+        Dslice = D[i, possibilities]
+        best = np.argmin(Dslice)
+        closest = possibilities[best]
+        return closest
+                    
     G = nx.Graph()
     fixed = []
+    
+    def available_to_link():
+        """ Returns the subset in fixed that is available
+            to link because the branching factor is small """
+        ok = lambda i: len(G[nodes[i]]) < max_branching # num_edges
+        return [i for i in fixed if ok(i)]
+        
     for i in make_distancesequence(D):
-        G.add_node(i)
-        G.node[i]['order'] = len(fixed)
+        n_i = nodes[i]
+        G.add_node(n_i)
+        G.node[n_i]['order'] = len(fixed)
         if fixed: 
-            distance_to_fixed = D[i, fixed]
-            best = np.argmin(distance_to_fixed)
-            closest = fixed[best]
-            G.add_edge(closest, i)
-            G.node[i]['level'] = G.node[closest]['level'] + 1
+            available = available_to_link()
+            linkto = get_closest_node_index(i, available)
+            
+            n_closest = nodes[linkto]
+            G.add_edge(n_closest, n_i)
+            G.node[n_i]['level'] = G.node[n_closest]['level'] + 1
         else:
-            G.node[i]['level'] = 0
+            G.node[n_i]['level'] = 0
         fixed.append(i)
     return fixed, G
     
+
