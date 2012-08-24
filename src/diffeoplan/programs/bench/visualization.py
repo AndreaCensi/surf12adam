@@ -32,7 +32,7 @@ def visualize_result(config, id_tc, id_algo, stats):
         r.text('warning', 'Plannning unsuccesful')
     else:
         rsol = r.section('solution')
-        rsol.text('plan', 'Plan: %s' % result.plan)
+        rsol.text('plan', 'Plan: %s' % str(result.plan))
     
         f = rsol.figure(cols=4)
         y0 = tc.y0
@@ -45,17 +45,20 @@ def visualize_result(config, id_tc, id_algo, stats):
         
         mismatch = np.abs(y1.get_values() - y1plan.get_values()).sum(axis=2)
         f.data_rgb('mismatch', scale(mismatch),
-                   caption='Mismatch value pixel by pixel (zero for synthetic testcases...)')
+                   caption='Mismatch value pixel by pixel '
+                            '(zero for synthetic testcases...)')
     
+    algo = stats['algo']
+    algo.plan_report(r.section('planning'), tc)
     
     extra = result.extra
     
-    draw_trees(config, r, tc, discdds, extra)
+#    draw_trees(config, r, tc, discdds, extra)
     write_log_lines(r, extra)
     
     return r
 
-def draw_trees(config, r, tc, discdds, extra):
+def draw_trees(config, r, tc, discdds, extra): # XXX: unused
     if not 'start_tree' in extra:
         return
     

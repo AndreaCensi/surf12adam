@@ -9,9 +9,11 @@ class DiffeoPlanningAlgo:
         self.log_lines = [] # log lines
         
     @contract(dds=DiffeoSystem)
-    def init(self, dds):
-        """ Might be redefined to add precomputation. """ 
+    def init(self, id_dds, dds):
+        """ Might be redefined to add precomputation. """
+        self.info('Initialized with dds %r' % id_dds) 
         self._dds = dds
+        self.id_dds = id_dds
     
     @contract(report=Report)
     def init_report(self, report):
@@ -30,6 +32,9 @@ class DiffeoPlanningAlgo:
         """
         return PlanningResult(success=False, plan=None, status='Not implemented')
 
+    def plan_report(self, report):
+        """ Report after planning (using own data structures) """
+        report.text('warning', 'plan_report() not implemented for this class.')
     
     def info(self, s):
         """ Logs a string; saves it for visualization. """

@@ -1,16 +1,12 @@
+from .. import DiffeoPlanningAlgo, PlanningResult
 from contracts import contract
-from diffeoplan.library.algo import DiffeoPlanningAlgo, PlanningResult
 from diffeoplan.library.analysis import (DiffeoCover, DiffeoStructure,
-    make_hard_choices)
+    make_hard_choices, get_embedding_mds, plot_3d_graph, plot_2d_graph,
+    make_distancetree)
 from diffeoplan.library.discdds import DiffeoAction, DiffeoSystem
 from diffeoplan.library.images import UncertainImage
-from reprep import Report
-from diffeoplan.library.analysis.covering.distancetree import make_distancetree
-from reprep.constants import MIME_PNG
 from ggs.drawing import draw_node_graph
-from geometry.mds_algos import mds
-from diffeoplan.library.analysis.covering.diffeo_cover import get_embedding_mds, \
-    plot_3d_graph, plot_2d_graph
+from reprep import MIME_PNG, Report
 
 
 class InformedTree(DiffeoPlanningAlgo):
@@ -74,10 +70,21 @@ class InformedTree(DiffeoPlanningAlgo):
         with f.plot('3D') as pylab:
             plot_3d_graph(pylab, Gsub, plan2point3.__getitem__, plan_level)
             
-        
     @contract(y0=UncertainImage, y1=UncertainImage, returns=PlanningResult)
     def plan(self, y0, y1): 
+
+        while True:
+        
+        
+            pass
+        
         return PlanningResult(success=False, plan=None, status='Not implemented')
+
+
+
+    def plan_report(self, report):
+        """ Report after planning (using own data structures) """
+        pass
 
     def display_products(self, report, nsteps):
         # XXX: make separate

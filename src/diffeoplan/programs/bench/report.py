@@ -1,6 +1,7 @@
 from . import contract, logger
-from reprep import Report
 from conf_tools.utils import friendly_path
+from reprep import Report
+import numpy as np
 import os
 
 
@@ -30,7 +31,6 @@ def report_stats(r, stats):
             report_values(r.section(d), values)
 
     
-import numpy as np
 
 @contract(values='seq[N]')
 def report_values(r, values):

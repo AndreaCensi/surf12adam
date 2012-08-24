@@ -24,6 +24,14 @@ class DiffeoAction():
         self.diffeo_inv = diffeo_inv
         self.original_cmd = original_cmd
     
+    def inverse(self):
+        """ Return the action with swapped diffeomorphisms. """
+        label = self.label + '_inv'
+        diffeo = self.diffeo_inv # <-- note swapped
+        diffeo_inv = self.diffeo # <-- note swapped
+        cmd = -self.original_cmd # XXX
+        return DiffeoAction(label, diffeo, diffeo_inv, cmd)
+    
     @staticmethod
     def identity(label, shape, original_cmd):
         """ Constructs the identity action of the given shape. """

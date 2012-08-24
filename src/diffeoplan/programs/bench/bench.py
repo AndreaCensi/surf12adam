@@ -28,6 +28,7 @@ def run_planning(config, id_algo, id_tc, algo):
     results['id_tc'] = id_tc
     results['id_discdds'] = testcase.id_discdds
     results['id_algo'] = id_algo
+    results['algo'] = algo
     results['result'] = planning_result
     #results['init_time'] = init_time
     results['plan_time'] = plan_time

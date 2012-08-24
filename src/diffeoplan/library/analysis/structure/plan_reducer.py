@@ -3,7 +3,7 @@ from contracts import contract
 from boot_agents.misc_utils.tensors_display import iterate_indices
 from diffeoplan.utils import memoize_instance as memoize
 from geometry import printm
-
+import numpy as np
 
 class PlanReducer:
     
@@ -44,7 +44,15 @@ class PlanReducer:
     def same(self, a, b):
         return (a, b) in self._inverse
     
-        
+    @staticmethod
+    @contract(labels='seq[N]')
+    def dummy(labels):
+        n = len(labels)
+        print n, labels
+        commute = np.eye(n).astype('bool')
+        inverse = np.zeros((n, n)).astype('bool')
+        same = np.eye(n).astype('bool')
+        return PlanReducer.from_matrices(labels, commute, inverse, same)
 
     @staticmethod
     @contract(labels='seq[N]',

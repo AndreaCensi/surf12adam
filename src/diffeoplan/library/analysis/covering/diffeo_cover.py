@@ -1,24 +1,22 @@
 from . import logger, np
+from boot_agents.diffeo.diffeomorphism2d import Diffeomorphism2D
 from contracts import contract
 from diffeoplan.library import DiffeoAction
+from diffeoplan.library.discdds import (diffeoaction_distance_L2_infow,
+    diffeoaction_distance_L2_infow_scaled, plan_friendly)
 from diffeoplan.library.discdds.visualization.guess import guess_state_space
-from diffeoplan.library.discdds import plan_friendly
-from diffeoplan.utils import construct_matrix
-
+from diffeoplan.utils import construct_matrix, memoize_instance
 from geometry import assert_allclose, mds
 from ggs import (EDGE_EQUIV, EDGE_REGULAR, EDGE_REDUNDANT, draw_node_graph,
     GenericGraphSearch)
 from networkx.algorithms.shortest_paths.dense import floyd_warshall_numpy
+from networkx.classes.multigraph import MultiGraph
 from reprep import Report, MIME_PNG
 from reprep.plot_utils import turn_all_axes_off
 import matplotlib
 import os
 import random
-from boot_agents.diffeo.diffeomorphism2d import Diffeomorphism2D
-from diffeoplan.library.discdds.diffeo_action import diffeoaction_distance_L2_infow, \
-    diffeoaction_distance_L2_infow_scaled
-from diffeoplan.utils.memoization import memoize_instance
-from networkx.classes.multigraph import MultiGraph
+
 
 
 class DiffeoCover(GenericGraphSearch):
@@ -295,21 +293,6 @@ class DiffeoCover(GenericGraphSearch):
             msg = 'Cannot draw embedding with only %d plans. ' % (len(plans))
             report.text('warn', msg)
             return
-            
-#        print('Embedding in 2D...')
-#        p2 = mds(D, 2)
-#        assert np.all(np.isfinite(p2))
-#        assert_allclose(p2.shape, (2, len(plans)))
-#        report.data('mds2', p2)
-#        
-#        print('Embedding in 3D...')
-#        p3 = mds(D, 3)
-#        print('... done')
-#        assert np.all(np.isfinite(p3))
-#        assert_allclose(p3.shape, (3, len(plans)))
-#        report.data('mds3', p3)
-#        
-#            
 
         edges2color = lambda n1, n2: edges_type_to_color(self.G, n1, n2)
         

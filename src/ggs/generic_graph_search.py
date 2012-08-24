@@ -13,44 +13,61 @@ class GenericGraphSearch:
     def __init__(self):
         self.G = nx.MultiGraph()
      
-    def go(self, first):
+    def has_next(self):
+        return len(self.open_nodes) > 0
         
+    def go(self, first):
+        self.init_search(first)
+        while self.has_next():
+            _ = self.do_iteration()
+                   
+    def init_search(self, first):
         self.iterations = 0
         self.G.add_node(first)
         self.open_nodes = [first]
         self.closed = set()
 
-        while self.open_nodes:
-            node = self.choose_open_nodes(self.open_nodes)
-            self.log_chosen(node)
-            assert node in self.open_nodes
-            self.open_nodes.remove(node)
-            self.closed.add(node)
-            self.log_closed(node)
-            for action in self.available_actions(node):
-                child = self.next_node(node, action)
-                self.log_child_generated(node, action, child)
-                # first case: exactly the same node
-                if child in self.G:
-                    self.G.add_edge(node, child, action=action, type=EDGE_REDUNDANT)
-                    self.log_child_existed(node, action, child)
-                    continue
-                # check equivalent nodes
-                matches = list(self.get_matches(child, self.G.nodes())) 
-                if not matches:
-                    # this is a new node
-                    self.open_nodes.append(child)
-                    self.G.add_node(child)
-                    self.G.add_edge(node, child, action=action, type=EDGE_REGULAR)
-                    self.log_child_open(node, action, child)
-                else:
-                    # add extra edges
-                    for m in matches:
-                        # XXX: multi actions?
-                        self.log_child_equivalent_found(node, action, child, m)
-                        self.G.add_edge(node, m, action=action, type=EDGE_EQUIV)
-                    self.log_child_discarded(node, action, child, matches)
-            self.iterations += 1
+    def do_iteration(self):
+        """ Returns the list of new nodes added """
+        assert self.has_next()
+        node = self.choose_open_nodes(self.open_nodes)
+        self.log_chosen(node)
+        assert node in self.open_nodes
+        self.open_nodes.remove(node)
+        self.closed.add(node)
+        self.log_closed(node)
+        children_accepted = self.expand_node(node)
+        self.iterations += 1
+        return children_accepted
+    
+    def expand_node(self, node):
+        """ Returns the list of new nodes added """
+        children_accepted = []
+        for action in self.available_actions(node):
+            child = self.next_node(node, action)
+            self.log_child_generated(node, action, child)
+            # first case: exactly the same node
+            if child in self.G:
+                self.G.add_edge(node, child, action=action, type=EDGE_REDUNDANT)
+                self.log_child_existed(node, action, child)
+                continue
+            # check equivalent nodes
+            matches = list(self.get_matches(child, self.G.nodes())) 
+            if not matches:
+                # this is a new node
+                children_accepted.append(child)
+                self.open_nodes.append(child)
+                self.G.add_node(child)
+                self.G.add_edge(node, child, action=action, type=EDGE_REGULAR)
+                self.log_child_open(node, action, child)
+            else:
+                # add extra edges
+                for m in matches:
+                    # XXX: multi actions?
+                    self.log_child_equivalent_found(node, action, child, m)
+                    self.G.add_edge(node, m, action=action, type=EDGE_EQUIV)
+                self.log_child_discarded(node, action, child, matches)
+        return children_accepted
     
     @abstractmethod        
     def next_node(self, node, action):

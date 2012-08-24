@@ -33,6 +33,20 @@
   - tc_dtx2_lena_d10_*
 
 
+- id: test_misc2
+  desc: "another random test"
+  algorithms:
+  - generic_100
+  testcases:
+  - tc_dtx2_lena_d10_000
+
+- id: test_misc3
+  desc: "another random test"
+  algorithms:
+  - generic_100
+  testcases:
+  - tc_dcam3_lena_d10_000
+
 
 - id: torus2_d10
   desc: This is the torus, but now we can go both left and right.

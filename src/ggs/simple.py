@@ -1,9 +1,11 @@
 """ Simple pieces for searching """
         
 def deep_first(open_nodes):
+    assert len(open_nodes) > 0
     return open_nodes[-1]
 
 def breadth_first(open_nodes):
+    assert len(open_nodes) > 0
     return open_nodes[0]
 
 def contains(iterable, needle, comparison):

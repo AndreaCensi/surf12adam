@@ -1,24 +1,27 @@
-import functools
 from reprep.report_utils.store_results import frozendict
+from decorator import decorator
 
 
 def memoize_simple(obj):
     cache = obj.cache = {}
 
-    @functools.wraps(obj)
-    def memoizer(*args, **kwargs):
+    #@functools.wraps(obj)
+    def memoizer(f, *args, **kwargs):
         key = (args, frozendict(kwargs))
         if key not in cache:
-            cache[key] = obj(*args, **kwargs)
+            cache[key] = f(*args, **kwargs)
         return cache[key]
-    return memoizer
+    
+    return decorator(memoizer, obj)
+    
+    #return memoizer
 
 
 memoize_instance_show_store = False
 memoize_instance_show_initial_cache = False
 memoize_instance_stats_interval = 100000000
 
-def memoize_instance(f):
+def memoize_instance(f2):
     """ 
         Assumes the function is a function of a class.
         Puts the cache in the instance so that it can be pickled.
@@ -35,20 +38,21 @@ def memoize_instance(f):
         
     """ 
     
-    f.__cache_calls = 0 
-    f.__cache_hits = 0
+    f2.__cache_calls = 0 
+    f2.__cache_hits = 0
     
-    @functools.wraps(f)
-    def memoizer(obj, *args, **kwargs):
+    #@functools.wraps(f)
+    
+    def memoizer(f, obj, *args, **kwargs):
         # just make sure everything clicks together
         has_this_method = f.__name__ in obj.__class__.__dict__
         if not has_this_method:
             msg = 'Class %s does not have method %s' % (obj.__class__, f.__name__)
             raise ValueError(msg)
         method = obj.__class__.__dict__[f.__name__]
-        if memoizer != method:
-            msg = 'I expected %s = %s' % (method, memoizer)
-            raise ValueError(msg)
+#        if memoizer != method:
+#            msg = 'I expected %s = %s' % (method, memoizer)
+#            raise ValueError(msg)
         
 #        print('object %s' % (obj))
 #        print('found: %s' % obj.__class__.__dict__[f.__name__])
@@ -99,7 +103,9 @@ def memoize_instance(f):
                                                            perc, f.__name__)) 
         
         return cache[key]
-    return memoizer
+    
+    return decorator(memoizer, f2)
+    #return memoizer
 
 
 if __name__ == '__main__':

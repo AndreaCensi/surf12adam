@@ -1,4 +1,6 @@
 from .. import contract, np, logger
+from .diffeo_tree_search import *
+from .tree_connector import *
 from .planning_result import *
 from .planning_algo import * 
 
