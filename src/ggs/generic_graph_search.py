@@ -78,7 +78,11 @@ class GenericGraphSearch:
     def expand_node(self, node):
         """ Returns the list of new nodes added """
         children_accepted = []
-        for action in self.available_actions(node):
+        actions = self.available_actions(node)
+        if not actions:
+            self.log_actionless_node(node)
+            return []
+        for action in actions:
             child = self.next_node(node, action)
             self.num_created += 1
             self.log_child_generated(node, action, child)
@@ -129,6 +133,10 @@ class GenericGraphSearch:
     def node_compare(self, n1, n2):
         """ Subclass this for adding better conditions """
         return n1 == n2
+    
+    def node_friendly(self, n1):
+        """ Returns a string description of the node. """
+        return n1.__str__()
             
     def log(self, s): # TODO: add private log
         print(s)
@@ -139,6 +147,9 @@ class GenericGraphSearch:
     def log_closed(self, node):
         pass
 
+    def log_actionless_node(self, node):
+        """ This node has no actions. """
+        
     def log_child_open(self, node, action, child):
         pass
     

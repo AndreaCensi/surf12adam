@@ -41,3 +41,16 @@
   code:
   - diffeoplan.library.DistanceNorm
   - order: 2
+
+- id: L1w
+  desc: "L1, weighted by uncertainty"
+  code:
+  - diffeoplan.library.DistanceNormWeighted
+  - order: 1
+
+
+- id: L2w
+  desc: "L2, weighted by uncertainty"
+  code:
+  - diffeoplan.library.DistanceNormWeighted
+  - order: 2

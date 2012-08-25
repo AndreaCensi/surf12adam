@@ -1,12 +1,13 @@
 from . import PlanningResult, contract, logger
 from .. import DiffeoSystem, UncertainImage
 from reprep import Report
+from diffeoplan.utils.with_internal_log import WithInternalLog
 
-class DiffeoPlanningAlgo:
+class DiffeoPlanningAlgo(WithInternalLog):
     """ Interface for a generic planning algorithm. """
     
     def __init__(self):
-        self.log_lines = [] # log lines
+        WithInternalLog.__init__(self)
         
     @contract(dds=DiffeoSystem)
     def init(self, id_dds, dds):
@@ -36,11 +37,6 @@ class DiffeoPlanningAlgo:
         """ Report after planning (using own data structures) """
         report.text('warning', 'plan_report() not implemented for this class.')
     
-    def info(self, s):
-        """ Logs a string; saves it for visualization. """
-        logger.info(s)
-        self.log_lines.append(s)
-
     def make_extra(self):
         """ 
             Returns the dictionary that we can send as part of PlanningResults. 

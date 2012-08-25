@@ -3,8 +3,7 @@ from .. import UncertainImage
 from diffeoplan.configuration import get_current_config
 from diffeoplan.library.algo import Connector, DiffeoTreeSearchImage
 from diffeoplan.library.analysis import PlanReducer
-from diffeoplan.library.discdds import guess_state_space
-from diffeoplan.library.discdds.diffeo_system import DiffeoSystem
+from diffeoplan.library.discdds import DiffeoSystem, guess_state_space
 
  
 class GenericGraphPlanner(DiffeoPlanningAlgo):
@@ -16,22 +15,14 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         - metric
         - expand_start_tree
         - expand_goal_tree
-        
-
     """
     
-    def __init__(self,
+    def __init__(self, bidirectional,
                  metric_goal, metric_goal_threshold,
                  metric_collapse, metric_collapse_threshold,
-                 max_depth=1000, max_iterations=1000):
-        '''
-        :param threshold:
-        :param metric: ID of metric
-        :param max_iterations:
-        :param max_depth:
-        '''
+                 max_depth=10000, max_iterations=10000):
         DiffeoPlanningAlgo.__init__(self)
-        
+        self.bidirectional = bidirectional
         config = get_current_config()
         self.metric_goal = config.distances.instance(metric_goal)        
         self.metric_goal_threshold = metric_goal_threshold
@@ -39,7 +30,18 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         self.metric_collapse_threshold = metric_collapse_threshold
         self.max_iterations = max_iterations
         self.max_depth = max_depth
+        
+    def __strparams__(self):
+        return ("%s;g:%s<=%s;c:%s<=%s" % 
+                ('1' if self.bidirectional else '2',
+                 self.metric_goal,
+                 self.metric_goal_threshold,
+                 self.metric_collapse,
+                 self.metric_collapse_threshold))
 
+    def __str__(self):
+        return 'GenericGraphPlanner(%s)' % self.__strparams__()
+        
     @contract(dds=DiffeoSystem)
     def init(self, id_dds, dds):
         """ Might be redefined to add precomputation. """
@@ -71,30 +73,48 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
             connections = list(self.connector.get_connections())
             if connections:
                 self.log_connections_found(connections)
-                # let's choose one
+                # let's choose any one
                 connection = connections[0]
                 p1, p2 = connection
                 plan = p1 + tuple(reversed(p2))
-                return PlanningResult(True, plan, 'Found', extra=self.make_extra())        
+                return PlanningResult(True, plan, 'Found',
+                                      extra=self.make_extra())        
         self.log_planning_failed()
         
-        return PlanningResult(False, None, 'not found', extra=self.make_extra())
+        return PlanningResult(False, None, 'not found',
+                              extra=self.make_extra())
     
     def log_start_tree_expanded(self, added):
-        self.info('Adding %s' % added)
-        pass
+        if False:
+            if added:
+                added = map(self.start_tree.node_friendly, added)
+                self.info('Adding to start tree: %s' % ", ".join(added))
+            else:
+                self.info('Nothing added to start tree.')
     
     def log_goal_tree_expanded(self, added):
-        pass
+        if False:
+            if added:
+                added = map(self.goal_tree.node_friendly, added)
+                self.info('Adding to goal tree: %s' % ", ".join(added))
+            else:
+                self.info('Nothing added to goal tree.')
+                pass
     
     def log_connections_found(self, connections):
-        pass
+        self.info('Found %d connections')
+        for c in connections:
+            self.info(' - between %s and %s' % 
+                      (self.start_tree.node_friendly(c[0]),
+                       self.goal_tree.node_friendly(c[1])))
             
     def log_planning_init(self):
-        pass
+        self.info('Planning started')
+        
     
     def log_planning_failed(self):
-        pass
+        self.info('Planning failed')
+        
     
     def make_extra(self):
         """ Extra information to return about the search """
@@ -105,16 +125,9 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         return extra
 
     def init_connector(self, start_tree, end_tree):
-#        G1 = start_tree.G
-#        G2 = end_tree.G
-#        G1_node2value = start_tree.plan2image
-#        G2_node2value = end_tree.plan2image
-        
-        connector = Connector(#G1, G1_node2value, G2, G2_node2value,
-                              start_tree, end_tree,
+        connector = Connector(start_tree, end_tree,
                               self.metric_goal, self.metric_goal_threshold)
         return connector
-    
     
     def get_plan_reducer(self):
         """ Returns a dummy plan reducer. """
@@ -125,12 +138,12 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
      
     def init_start_tree(self, y0):
         """
-        Start tree, by default first node open, may be override by subclass.  
+            Start tree, by default first node open, may be override by subclass.  
         """
         dds = self.get_dds()
         id_dds = self.id_dds
-        max_depth = self.max_depth # do not expand anything
-        max_iterations = self.max_iterations # do not expand anything
+        max_depth = self.max_depth 
+        max_iterations = self.max_iterations
         plan_reducer = self.get_plan_reducer()
         dts = DiffeoTreeSearchImage(image=y0, id_dds=id_dds,
                         dds=dds, plan_reducer=plan_reducer,
@@ -147,8 +160,12 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         """
         dds = self.get_dds().inverse() # <-- note inverse()
         id_dds = self.id_dds
-        max_depth = 0 # do not expand anything
-        max_iterations = 0 # do not expand anything
+        if self.bidirectional:
+            max_depth = self.max_depth
+            max_iterations = self.max_iterations
+        else:
+            max_depth = 0 # do not expand anything
+            max_iterations = 0 # do not expand anything
         plan_reducer = self.get_plan_reducer()
         dts = DiffeoTreeSearchImage(image=y1, id_dds=id_dds,
                         dds=dds, plan_reducer=plan_reducer,

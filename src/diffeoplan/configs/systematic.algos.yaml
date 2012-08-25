@@ -3,78 +3,126 @@
   desc: "One-dir search; no pre-filtering; no post-filtering; ${n} iterations."
   code:
   - diffeoplan.library.GenericGraphPlanner
-  - metric_goal: L2
-    metric_goal_threshold: 0.1
-    metric_collapse:  L2
+  - bidirectional: False
+    metric_goal: &metric_goal L2w
+    metric_goal_threshold: &metric_goal_threshold 0.001
+    metric_collapse: &metric_collapse L2w
     metric_collapse_threshold: -1 # no collapse
     max_iterations: "${n}"
-    max_depth: 100
+    max_depth: &max_depth 15
 
 - id: "gnbc1_it${n}"
-  desc: "One-dir search; no pre-filtering; L2 post (0.1); ${n} iterations."
+  desc: "One-dir search; no pre-filtering; L2w post (0.1); ${n} iterations."
   code:
   - diffeoplan.library.GenericGraphPlanner
-  - metric_goal: L2
-    metric_goal_threshold: 0.1
-    metric_collapse:  L2
-    metric_collapse_threshold: 0.1 
+  - bidirectional: False
+    metric_goal: *metric_goal
+    metric_goal_threshold: *metric_goal_threshold
+    metric_collapse: *metric_collapse
+    metric_collapse_threshold: &metric_collapse_threshold 0.001
     max_iterations: "${n}"
-    max_depth: 15
+    max_depth: *max_depth
 
 - id: "gebn1_it${n}"
   desc: "One-dir search; pre-filter equiv; no post-filtering; ${n} iterations."
   code:
   - diffeoplan.library.InformedPlanner
-  - hard_choice_params:
+  - bidirectional: False
+    metric_goal: *metric_goal
+    metric_goal_threshold: *metric_goal_threshold
+    metric_collapse: *metric_collapse
+    metric_collapse_threshold: -1 # no collapse
+    max_iterations: "${n}"
+    max_depth: *max_depth
+    hard_choice_params: &hard_choice_params
         use_isomorphism_heuristics: True
         info_percentile: 50
         info_threshold: null
-    diffeo_structure_params:
+    diffeo_structure_params: &diffeo_structure_params
         tolerance: 0.5 # threshold for two commands to be commutative, etc.
-    metric_goal: L2
-    metric_goal_threshold: 0.1
-    metric_collapse:  L2
-    metric_collapse_threshold: -1 # no collapse
-    max_iterations: "${n}"
-    max_depth: 100
-
+    
 - id: "gebc1_it${n}"
   desc: "One-dir search; pre-filter equiv; no post-filtering; ${n} iterations."
   code:
   - diffeoplan.library.InformedPlanner
-  - hard_choice_params:
-        use_isomorphism_heuristics: True
-        info_percentile: 50
-        info_threshold: null
-    diffeo_structure_params:
-        tolerance: 0.5 # threshold for two commands to be commutative, etc.
-    metric_goal: L2
-    metric_goal_threshold: 0.1
-    metric_collapse:  L2
-    metric_collapse_threshold: 0.1
+  - bidirectional: False
+    metric_goal: *metric_goal
+    metric_goal_threshold: *metric_goal_threshold
+    metric_collapse: *metric_collapse
+    metric_collapse_threshold: *metric_collapse_threshold
     max_iterations: "${n}"
-    max_depth: 100
+    max_depth: *max_depth
+    hard_choice_params: *hard_choice_params
+    diffeo_structure_params: *diffeo_structure_params
+
+- id: "bnbn1_it${n}"
+  desc: "Bi-dir search; no pre-filtering; no post-filtering; ${n} iterations."
+  code:
+  - diffeoplan.library.GenericGraphPlanner
+  - bidirectional: False
+    metric_goal: *metric_goal
+    metric_goal_threshold: *metric_goal_threshold
+    metric_collapse: *metric_collapse
+    metric_collapse_threshold: -1 # no collapse
+    max_iterations: "${n}"
+    max_depth: *max_depth
+
+- id: "bnbc1_it${n}"
+  desc: "Bi-dir search; no pre-filtering; L2w post (0.1); ${n} iterations."
+  code:
+  - diffeoplan.library.GenericGraphPlanner
+  - bidirectional: True
+    metric_goal: *metric_goal
+    metric_goal_threshold: *metric_goal_threshold
+    metric_collapse: *metric_collapse
+    metric_collapse_threshold: *metric_collapse_threshold 
+    max_iterations: "${n}"
+    max_depth: 15
+
+- id: "bebn1_it${n}"
+  desc: "Bi-dir search; pre-filter equiv; no post-filtering; ${n} iterations."
+  code:
+  - diffeoplan.library.InformedPlanner
+  - bidirectional: True
+    metric_goal: *metric_goal
+    metric_goal_threshold: *metric_goal_threshold
+    metric_collapse: *metric_collapse
+    metric_collapse_threshold: -1 # no collapse
+    max_iterations: "${n}"
+    max_depth: *max_depth
+    hard_choice_params: *hard_choice_params
+    diffeo_structure_params: *diffeo_structure_params
+    
+- id: "bebc1_it${n}"
+  desc: "One-dir search; pre-filter equiv; no post-filtering; ${n} iterations."
+  code:
+  - diffeoplan.library.InformedPlanner
+  - bidirectional: True
+    metric_goal: *metric_goal
+    metric_goal_threshold: *metric_goal_threshold
+    metric_collapse: *metric_collapse
+    metric_collapse_threshold: *metric_collapse_threshold
+    max_iterations: "${n}"
+    max_depth: *max_depth
+    hard_choice_params: *hard_choice_params
+    diffeo_structure_params: *diffeo_structure_params
 
 - id: "h1_it${n}"
   desc: "Hierarchical"
   code:
   - diffeoplan.library.InformedPlannerHierarchy
-  - metric_goal: L2
-    metric_goal_threshold: 0.1
-    metric_collapse:  L2
-    metric_collapse_threshold: 0.1
+  - bidirectional: False
+    metric_goal: *metric_goal
+    metric_goal_threshold: *metric_goal_threshold
+    metric_collapse: *metric_collapse
+    metric_collapse_threshold: *metric_collapse_threshold
     max_iterations: "${n}"
-    max_depth: 100
-    hard_choice_params:
-        use_isomorphism_heuristics: True
-        info_percentile: 50
-        info_threshold: null
-    diffeo_structure_params:
-        tolerance: 0.5 # threshold for two commands to be commutative, etc.
+    max_depth: *max_depth
+    hard_choice_params: *hard_choice_params
+    diffeo_structure_params: *diffeo_structure_params
     diffeo_cover_params:
         min_visibility: 0.4  # do not expand nodes with less that this
         info_threshold: 0.5 # threshold for nodes to be the same
         debug_it: 100 # debug graph written every debug_it iterations
         max_it: 1000 # maximum number of iterations
-        #max_it: 1000 # maximum number of iterations
-
+    

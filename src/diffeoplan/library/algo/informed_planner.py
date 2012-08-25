@@ -14,6 +14,14 @@ class InformedPlanner(GenericGraphPlanner):
         self.diffeo_structure_params = diffeo_structure_params
         self.hard_choice_params = hard_choice_params
     
+    def __str__(self):
+        return 'InformedPlanner(%s)' % (self.__strparams__())
+        
+    def __strparams__(self):
+        # TODO: use classes
+        p = GenericGraphPlanner.__strparams__(self)
+        return p # + "%s;%s" % (self.diffeo_structure_params, self.hard_choice_params)
+    
     @contract(dds=DiffeoSystem)
     def init(self, id_dds, dds):
         GenericGraphPlanner.init(self, id_dds, dds)

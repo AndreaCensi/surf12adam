@@ -1,29 +1,27 @@
-from diffeoplan.utils.memoization import memoize_instance
-from networkx.classes.multigraph import MultiGraph
-from contracts import contract
+from . import np
+from diffeoplan.utils import construct_matrix_iterators, memoize_instance
+import itertools
+from geometry.utils.numpy_backport import assert_allclose
+from diffeoplan.utils.with_internal_log import WithInternalLog
 
-class Connector():
+class Connector(WithInternalLog):
     
-#    @contract(G1=MultiGraph, G2=MultiGraph)
-#    def __init__(self, G1, G1_node2value, G2, G2_node2value, metric, threshold):
     def __init__(self, tree1, tree2, metric, threshold):
         '''
-        :param G1: First graph
-        :param G1_node2value: how to map each node to a value
-        :param G2: Second graph
-        :param G2_node2value: how to map each node to a value
+        :param tree1: First graph
+        :param tree2: Second graph        
         :param metric: a metric on values
         :param threshold: threshold for matching
         '''
-#        self.G1 = G1
-#        self.G2 = G2
-#        self.G1_node2value = G1_node2value
-#        self.G2_node2value = G2_node2value
         self.tree1 = tree1
         self.tree2 = tree2
         self.metric = metric
         self.threshold = threshold
+        WithInternalLog.__init__(self)
         
+    def __str__(self):
+        return "Connector(%s<=%s)" % (self.metric, self.treshold)
+    
     def update(self, new_nodes_G1, new_nodes_G2):
         pass
     
@@ -54,11 +52,32 @@ class Connector():
     
     def get_connections(self):
         """ Returns all connections between the two graphs. """
-        for n1 in self.tree1.G:
-            for n2 in self.tree2.G:
-                if self.close_enough(n1, n2):
-                    yield n1, n2
-            
-            
-            
-    
+        matches = []
+        for n1, n2 in itertools.product(self.tree1.G, self.tree2.G):    
+            if self.close_enough(n1, n2):
+                matches.append((n1, n2))
+
+        self.print_minimum()
+        return matches
+
+    def print_minimum(self):
+        f = lambda n1, n2: self.distance(n1, n2)
+        D = construct_matrix_iterators((self.tree1.G, self.tree2.G), f)
+        m = md_argmin(D)
+        
+        n1 = self.tree1.G.nodes()[m[0]]                    
+        n2 = self.tree2.G.nodes()[m[1]]
+        assert_allclose(D[m], self.distance(n1, n2)) 
+        s1 = self.tree1.node_friendly(n1)
+        s2 = self.tree1.node_friendly(n2)
+        self.info('Minimum distance: %g between %s and %s' % (np.min(D), s1, s2))
+        self.info('y1: %s' % self.value1(n1))            
+        self.info('y2: %s' % self.value2(n2))
+
+def md_argmin(a):
+    """ Returns the index coordinate of a multidimensional array """
+    index_flat = np.argmin(a)
+    ij = np.unravel_index(index_flat, a.shape)
+    ij = tuple(ij)
+    assert_allclose(a[ij], np.min(a))
+    return ij

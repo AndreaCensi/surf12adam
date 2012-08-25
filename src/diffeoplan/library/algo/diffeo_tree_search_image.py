@@ -17,6 +17,9 @@ class DiffeoTreeSearchImage(DiffeoTreeSearch):
         self.metric_collapse = metric_collapse        
         self.metric_collapse_threshold = metric_collapse_threshold
     
+    def __str__(self):
+        return 'DiffeoTreeSearchImage'
+
     @memoize_instance
     @contract(plan='seq(int)', returns=UncertainImage)
     def plan2image(self, plan):
