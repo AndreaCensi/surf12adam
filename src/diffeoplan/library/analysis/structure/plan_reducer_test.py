@@ -1,5 +1,5 @@
 from . import PlanReducer, np
-from geometry.utils.numpy_backport import assert_allclose
+from geometry.utils import assert_allclose
 import itertools
 
 

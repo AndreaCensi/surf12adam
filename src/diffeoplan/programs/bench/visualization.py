@@ -160,7 +160,8 @@ def plan2point(discdds, plan):
 def write_log_lines(r, extra):    
     if 'log_lines' in extra:
         log_lines = extra['log_lines']
-        r.text('execution_log', '\n'.join(log_lines))
+        lines = [l[1] for l in log_lines]
+        r.text('execution_log', '\n'.join(lines)) # XXX
     else:
         r.text('execution_log', '(no log recorded)')
     

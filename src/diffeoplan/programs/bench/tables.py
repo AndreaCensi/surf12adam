@@ -52,9 +52,20 @@ def create_tables(outdir, allruns):
         basename = '%s/reports/table-%s' % (outdir, id_table)
         comp(write_report, report, basename, job_id=job_id + '-write')
     
-    print Stats.statistics.keys()
+def create_tables_by_sample(outdir, allruns):
     statstables = {'all': list(Stats.statistics.keys()),
                    'graph': ['plan_found',
+                             'num_closed',
+                             'num_open',
+                             'num_created',
+                             'num_redundant',
+                             'num_collapsed'],
+                   'graph_details': ['plan_found',
+                             'num_closed',
+                             'num_open',
+                             'num_created',
+                             'num_redundant',
+                             'num_collapsed',
                              'num_start_closed',
                              'num_start_open',
                              'num_start_created',
@@ -97,7 +108,7 @@ def create_tables_by_samples(id_stats, stats, allruns):
     # for each sample
     for id_tc in testcases:
         rows = algos
-        cols = [s.symbol for s in map(Stats.statistics.__getitem__, stats)]
+        cols = ["$%s$" % s.symbol for s in map(Stats.statistics.__getitem__, stats)]
         data = []
         for id_algo in algos:
             row = []
@@ -107,7 +118,7 @@ def create_tables_by_samples(id_stats, stats, allruns):
                 value = Stats.statistics[id_stats].function(s[0])
                 row.append(value)
             data.append(row)
-        r.table(id_tc, data=data, cols=cols, rows=rows)
+        r.table(id_tc, data=data, cols=cols, rows=rows, fmt='%g')
     
     return  r
     

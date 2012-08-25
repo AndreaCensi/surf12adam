@@ -1,5 +1,5 @@
 from . import (create_tables, report_for_stats, write_report, run_planning_stats,
-    run_planning)
+    run_planning, logger)
 from collections import defaultdict
 from compmake import comp
 from contracts import contract
@@ -7,6 +7,7 @@ from diffeoplan.programs.bench.visualization import create_visualization_jobs
 from reprep import Report
 from reprep.report_utils import StoreResults
 import os
+from diffeoplan.programs.bench.tables import create_tables_by_sample
 
 
 def create_bench_jobs(config, algos, testcases, outdir):
@@ -77,11 +78,16 @@ def create_bench_jobs(config, algos, testcases, outdir):
             stats = list(this_algo.select(id_discdds=id_discdds).values())
             add_report('%s-%s' % (id_algo, id_discdds), stats,
                        'All runs of algorithm %s on %s' % (id_algo, id_discdds))
-        
-    create_tables(outdir, allruns)
+   
+    if False:     
+        create_tables(outdir, allruns)
+    else:
+        logger.warning('Temporarely disabled table jobs.')
     
+    create_tables_by_sample(outdir, allruns)
     create_visualization_jobs(config, outdir, allruns)
     
+
 def create_algo_init_jobs(outdir, algoinit):
     """ add the initialization report for each algorithm """
     for k, algo in algoinit.items():

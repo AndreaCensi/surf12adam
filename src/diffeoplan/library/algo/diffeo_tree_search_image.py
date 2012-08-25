@@ -41,3 +41,16 @@ class DiffeoTreeSearchImage(DiffeoTreeSearch):
         return d <= self.metric_collapse_threshold
 
 
+    def available_actions(self, node): #@UnusedVariable
+        image = self.plan2image(node)
+        if image.get_scalar_uncertainty().max() == 0:
+            self.log_node_uncertain(node)
+            return []
+        return DiffeoTreeSearch.available_actions(self, node)
+        
+    def log_node_uncertain(self, node):
+        self.info('Skipping plan %s because uncertainty is too much.' 
+                  % self.node_friendly(node))
+        self.info('image: %s' % self.plan2image(node))
+        
+        

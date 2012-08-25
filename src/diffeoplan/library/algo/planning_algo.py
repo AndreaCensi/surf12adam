@@ -1,4 +1,4 @@
-from . import PlanningResult, contract, logger
+from . import PlanningResult, contract
 from .. import DiffeoSystem, UncertainImage
 from reprep import Report
 from diffeoplan.utils.with_internal_log import WithInternalLog

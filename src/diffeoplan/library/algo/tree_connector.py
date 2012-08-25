@@ -20,7 +20,7 @@ class Connector(WithInternalLog):
         WithInternalLog.__init__(self)
         
     def __str__(self):
-        return "Connector(%s<=%s)" % (self.metric, self.treshold)
+        return "Connector(%s<=%s)" % (self.metric, self.threshold)
     
     def update(self, new_nodes_G1, new_nodes_G2):
         pass
@@ -71,8 +71,8 @@ class Connector(WithInternalLog):
         s1 = self.tree1.node_friendly(n1)
         s2 = self.tree1.node_friendly(n2)
         self.info('Minimum distance: %g between %s and %s' % (np.min(D), s1, s2))
-        self.info('y1: %s' % self.value1(n1))            
-        self.info('y2: %s' % self.value2(n2))
+        #self.info('y1: %s' % self.value1(n1))            
+        #self.info('y2: %s' % self.value2(n2))
 
 def md_argmin(a):
     """ Returns the index coordinate of a multidimensional array """

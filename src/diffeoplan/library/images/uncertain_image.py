@@ -28,7 +28,7 @@ class UncertainImage():
         
         if scalar_uncertainty is None:
             H, W = values.shape[:2]
-            scalar_uncertainty = np.zeros((H, W), dtype='float32')
+            scalar_uncertainty = np.ones((H, W), dtype='float32')
             
         self.scalar_uncertainty = scalar_uncertainty
     
