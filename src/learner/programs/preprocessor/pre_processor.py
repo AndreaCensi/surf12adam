@@ -12,7 +12,7 @@ from learner.programs.diffeo_learner.ros_conversions import pil_to_imgmsg
 
 def preprocess(infile, outfile, output_size,
                 use_zoom=True,
-                min_zoom=100, max_zoom=500):
+                min_zoom=100, max_zoom=200):
     logger.info('Preprocessing file %r' % infile)
     
     distance = image_distance_L1
@@ -33,8 +33,12 @@ def preprocess(infile, outfile, output_size,
                                       threshold=diff_threshold)
     
     out_bag = rosbag.Bag(outfile, 'w')
+    i = 0
     for Y0, U, Y1 in tuples_stream:
         write_stuff(out_bag, Y0, U, Y1)
+        i += 1
+#        if i > 20:
+#            break
     out_bag.close()
 
       
