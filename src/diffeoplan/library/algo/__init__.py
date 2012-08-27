@@ -3,7 +3,7 @@ from .planning_result import *
 from .planning_algo import * 
 
 from .informed_search import *
-from .graphsearch import *
+#from .graphsearch import *
 from .graphsearch_breadth import *
 from .graphsearch_deep import *
 from .random_plan import *
