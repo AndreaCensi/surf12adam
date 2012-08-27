@@ -5,7 +5,7 @@ from boot_agents.diffeo import Diffeomorphism2D
 
 def DDSFromSymbolic(resolution, actions, topology=None):
     """ 
-        Creates a synthetic example of a DDS from synthetic diffeomorphisms. 
+        Creates a DiffeoSystem from synthetic diffeomorphisms. 
     """  
     config = get_current_config()
     

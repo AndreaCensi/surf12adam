@@ -33,6 +33,63 @@
   - tc_dtx2_lena_d10_*
 
 
+- id: test_misc2
+  desc: "another random test"
+  algorithms:
+  - generic_100
+  testcases:
+  - tc_dtx2_lena_d10_000
+
+- id: test_misc3
+  desc: "another random test"
+  algorithms:
+  - generic_100
+  testcases:
+  - tc_dcam3_lena_d10_000
+
+- id: test_misc4
+  desc: "another random test"
+  algorithms:
+  - gnbn1_it10
+  - gnbc1_it10
+  - gebn1_it10
+  - gebc1_it10
+  - bnbn1_it10
+  - bnbc1_it10
+  - bebn1_it10
+  - bebc1_it10
+  - h1_it10
+  testcases:
+  - tm_dcam3_lena_aaaaaaaaaa
+
+
+- id: test_misc5
+  desc: "another random test"
+  algorithms:
+  #- gnbn1_it1000
+  #- gnbc1_it1000
+  - gebn1_it1000
+  - gebc1_it1000
+  #- bnbn1_it1000
+  #- bnbc1_it1000
+  - bebn1_it1000
+  - bebc1_it1000
+  - begc1_it1000 # greedy
+  - betc1_it1000 # tree
+  - betc2_it1000 # with L2 distance
+  - begc2_it1000 # with L2 distance
+  - gegc2_it1000 # with L2 distance
+  - h1_it1000
+  testcases:
+  # - tm_dcam3_lena_aaaaaaaaaa
+  # - tm_dcam3_lena_aaaaa
+  - tm_dtxty_lena_aaaaa
+  - tm_dtxty_lena_aaaa
+  # - tm_dtxty_lena_aaaaaaaaaa
+
+
+
+
 
 - id: torus2_d10
   desc: This is the torus, but now we can go both left and right.
@@ -93,3 +150,27 @@
   - graphsearch_deep_5
   testcases:
   - tc_dcam1_*_d3_*
+
+
+
+- id: test_misc1
+  desc: ""
+  desc_long: |
+    
+    Preparation
+    -----------
+        
+    Prepare test cases using:
+
+        dp gentests -n 1 -l 5 -i lena orbit-pt256-80x60 dptcam3
+
+    (this step should be automated)
+
+    ???
+
+  algorithms:
+  - infotree1
+  testcases:
+  - tc_orbit-pt256-80x60_*_d5_000
+  - tc_dptcam3_*_d5_000
+

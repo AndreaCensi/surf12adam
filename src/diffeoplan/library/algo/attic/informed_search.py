@@ -1,7 +1,7 @@
 from ..graph import Node
 import copy
 import numpy as np
-from diffeoplan.library.algo.generic_graph_planner import GraphSearchQueue
+from . import GraphSearchQueue
 
 class InformedSearch(GraphSearchQueue):
     """  TODO: add in docs

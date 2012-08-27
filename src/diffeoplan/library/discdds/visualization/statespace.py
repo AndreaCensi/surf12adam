@@ -24,12 +24,15 @@ class DiffeoSystemStateSpace:
         """ Integrates the dynamics from the state. """
     
     @contract(commands='seq(array)', returns='array')
-    def state_from_commands(self, commands):
+    def state_from_commands(self, commands, start=None):
         """ 
             Returns the state corresponding to a sequence of commands,
             starting from the identity. 
         """
-        state = self.default_state()
+        if start is None:
+            start = self.default_state()
+            
+        state = start
         for c in commands:
             state = self.integrate(state, c)
         return state

@@ -11,8 +11,7 @@ def discdds_make_test_cases(config, outdir, id_discdds,
     rgb = config.images.instance(id_image)
     
     shape = discdds.get_shape()
-    rgb = resize(rgb, shape[1], shape[0])
-        
+    rgb = resize(rgb, shape[1], shape[0])       
     assert rgb.shape[0] == shape[0]
     assert rgb.shape[1] == shape[1]
     

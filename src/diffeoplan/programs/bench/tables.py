@@ -1,76 +1,11 @@
-from . import write_report, np
+from . import  np
+from bootstrapping_olympics.utils.not_found import raise_x_not_found
 from compmake import comp
+from contracts import contract
+from diffeoplan.programs.bench.statistics import Stats
 from reprep import Report
-import itertools
-#import scipy.stats
-from scipy.stats.stats import nanmean, nanstd
+from reprep.report_utils.store_results import StoreResults
 
-statistics = {}
-
-def add_statistics(f):
-    statistics[f.__name__] = f
-    return f
-
-statistics['init_time'] = lambda s: s['init_time']
-statistics['plan_time'] = lambda s: s['plan_time']
-
-
-@add_statistics
-def plan_found(stats):
-    return stats['result'].plan is not None
-
-@add_statistics
-def plan_length(stats):
-    if plan_found(stats):
-        return len(stats['result'].plan)
-    else:
-        return np.nan
-    
-@add_statistics
-def dist_values_L1_old(s):
-    if not 'dist_y0_y1p' in s: 
-        return np.nan
-    return s['dist_y0_y1p']['values_L1']
-
-@add_statistics
-def dist_values_L2_old(s):
-    if not 'dist_y0_y1p' in s: 
-        return np.nan
-    return s['dist_y0_y1p']['values_L2']
-
-@add_statistics
-def dist_values_L1(s):
-    if not 'dist_y1_y1p' in s: 
-        return np.nan
-    return s['dist_y1_y1p']['values_L1']
-
-@add_statistics
-def dist_values_L2(s):
-    if not 'dist_y1_y1p' in s: 
-        return np.nan
-    return s['dist_y1_y1p']['values_L2']
-
-
-reductions = {}
-reductions['min'] = np.nanmin
-reductions['max'] = np.nanmax
-reductions['mean'] = nanmean
-reductions['stddev'] = nanstd 
-    
-def f(stats, s, r):
-    reduce_ = reductions[r]
-    map_ = statistics[s]
-    #print('computing %s %s' % (s, r))
-    return reduce_([map_(x) for x in stats])
-
-tables = {}
-for a, b in itertools.product(statistics, reductions):
-    def funcC(a, b):
-        def func(stats):
-            return f(stats, a, b)
-        return func
-    tables['%s-%s' % (a, b)] = funcC(a, b)
-        
 def create_table_algos_discdds(allruns, id_table):
     algos = list(set(allruns.field('id_algo')))
     discdds = list(set(allruns.field('id_discdds')))
@@ -80,17 +15,84 @@ def create_table_algos_discdds(allruns, id_table):
     for i, id_algo in enumerate(algos):
         for j, id_discdds in enumerate(discdds):
             stats = allruns.select(id_algo=id_algo, id_discdds=id_discdds).values()
-            value = tables[id_table](stats)
+            value = Stats.tables[id_table](stats)
             data[i, j] = '%g' % value
              
     r = Report(id_table)
     r.table(id_table, data=data, cols=discdds, rows=algos, caption=id_table)
     return r
                                     
-def create_tables(outdir, allruns):
-    for id_table in tables: 
+def create_tables(allruns, rm):
+    for id_table in Stats.tables: 
         job_id = 'table-%s' % id_table
         report = comp(create_table_algos_discdds, allruns, id_table, job_id=job_id)
-        basename = '%s/reports/table-%s' % (outdir, id_table)
-        comp(write_report, report, basename, job_id=job_id + '-write')
+        rm.add(report, 'table', id_table=id_table)
     
+def create_tables_by_sample(allruns, rm):
+    for id_statstable in Stats.statstables:
+        if len(Stats.statstables[id_statstable]) == 0:
+            raise ValueError(Stats.statstables)
+        for id_stats in Stats.statstables[id_statstable]:
+            if not id_stats in Stats.statistics:
+                raise_x_not_found('statistic', id_stats, Stats.statistics)
+
+
+    for id_statstable in Stats.statstables:
+        stats = Stats.statstables[id_statstable]
+        job_id = 'bysample-all-%s' % id_statstable
+        report = comp(create_tables_by_samples,
+                      id_statstable, stats,
+                      allruns, job_id=job_id)
+        rm.add(report, 'bysample-all', id_statstable=id_statstable)
+        
+    
+        testcases = list(set(allruns.field('id_tc')))
+        for id_tc in testcases:
+            tcruns = allruns.select(id_tc=id_tc)
+            
+            job_id = 'bysample-%s-%s' % (id_tc, id_statstable)
+            r = comp(create_table_for_sample, id_tc, id_stats, stats, tcruns,
+                     job_id=job_id)
+
+            rm.add(r, 'bysample-single', id_tc=id_tc, id_statstable=id_statstable)
+            
+
+
+@contract(id_stats='str', stats='list[>=1](str)', allruns=StoreResults)
+def create_tables_by_samples(id_stats, stats, allruns):
+    '''
+    
+    :param id_stats: name of this set
+    :param stats: list of string corresponding to functions in statistics
+    :param allruns: 
+    '''
+    r = Report(id_stats)
+    testcases = sorted(list(set(allruns.field('id_tc'))))
+    for id_tc in testcases:
+        tcruns = allruns.select(id_tc=id_tc)
+        rt = create_table_for_sample(id_tc, id_stats, stats, tcruns)
+        r.add_child(rt)
+    return  r
+    
+def create_table_for_sample(id_tc, id_stats, stats, tcruns):
+    r = Report('%s-%s' % (id_stats, id_tc))
+    algos = sorted(list(set(tcruns.field('id_algo'))))
+    rows = algos
+    cols = ["$%s$" % s.symbol for s in map(Stats.statistics.__getitem__, stats)]
+    data = []
+    for id_algo in algos:
+        row = []
+        for id_stats in stats:
+            s = list(tcruns.select(id_algo=id_algo).values())
+            assert len(s) == 1
+            value = Stats.statistics[id_stats].function(s[0])
+            row.append(value)
+        data.append(row)
+    r.table(id_tc, data=data, cols=cols, rows=rows, fmt='%g')
+    return  r
+        
+
+    
+
+        
+        

@@ -1,13 +1,12 @@
-'''
-Created on Aug 20, 2012
-
-@author: adam
-'''
 import numpy as np
+
 from ..generic_graph_planner import GraphSearchQueue
 from diffeoplan.library.discdds.redundant_plan_tracker import RedundantPlanTracker
 from diffeoplan.library.graph.node import Node
 import pdb
+
+from diffeoplan.library.graph import Node
+from diffeoplan.library.analysis.redundant_plan_tracker import RedundantPlanTracker
 
 class StructuredGraphPlanner(GraphSearchQueue):
     '''

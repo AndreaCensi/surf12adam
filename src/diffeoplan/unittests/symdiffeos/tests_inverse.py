@@ -1,11 +1,16 @@
 from diffeoplan.unittests.tests_generation import for_all_symdiffeos
 import numpy as np
 from geometry import printm
+from diffeoplan.library.symdiffeo.sym_diffeo import NoInverseAvailable
 
 
 @for_all_symdiffeos
 def check_symdiffeo_inverse1(id_symdiffeo, symdiffeo): #@UnusedVariable
-    inverse = symdiffeo.get_inverse()
+    try:
+        inverse = symdiffeo.get_inverse()
+    except NoInverseAvailable:
+        print('Skipping %r because no inverse available.' % id_symdiffeo)
+        return
     manifold = symdiffeo.get_topology()
      
     p = np.array([0, 0])

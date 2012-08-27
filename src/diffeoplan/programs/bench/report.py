@@ -1,8 +1,5 @@
-from . import contract, logger
+from . import contract, np
 from reprep import Report
-from conf_tools.utils import friendly_path
-import os
-
 
 def report_for_stats(short, stats, desc):
     r = Report(short, caption=desc)
@@ -30,7 +27,6 @@ def report_stats(r, stats):
             report_values(r.section(d), values)
 
     
-import numpy as np
 
 @contract(values='seq[N]')
 def report_values(r, values):
@@ -46,14 +42,8 @@ def report_values(r, values):
     
     with f.plot('histogram') as pylab:
         pylab.hist(values)
-    
 
-def write_report(report, report_basename): 
-    html = report_basename + '.html'
-    logger.info('Writing to %r.' % friendly_path(html))
-    rd = os.path.join(os.path.dirname(report_basename), 'images')
-    report.to_html(html, write_pickle=True, resources_dir=rd)
-    # TODO: save hdf format
+
 
 def report_for_all(stats):
     # TODO

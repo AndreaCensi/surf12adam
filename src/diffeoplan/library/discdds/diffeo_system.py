@@ -1,6 +1,10 @@
 from . import DiffeoAction, np, contract, UncertainImage, logger
-from reprep import Report
+from diffeoplan.library.discdds.diffeo_action import (
+    diffeoaction_comm_distance_L2_infow, diffeoaction_comm_distance_L2,
+    diffeoaction_anti_distance_L2_infow, diffeoaction_anti_distance_L2,
+    diffeoaction_distance_L2_infow, diffeoaction_distance_L2)
 from diffeoplan.utils.matrices import construct_matrix
+from reprep import Report
 
 class DiffeoSystem():
     """
@@ -19,6 +23,13 @@ class DiffeoSystem():
         for a in actions:
             # TODO: check that the discretization is the same
             assert isinstance(a, DiffeoAction)
+
+    def inverse(self):
+        """ Returns the DiffeoSystem with all actions
+            reversed. """
+        label = self.label + '_inv'
+        actions = map(DiffeoAction.inverse, self.actions)
+        return DiffeoSystem(label, actions)
 
     @contract(returns='tuple(int,int)')
     def get_shape(self):
@@ -39,7 +50,7 @@ class DiffeoSystem():
             rplan = np.random.randint(low=0, high=(n - 1), size=plan_length)
         return rplan.tolist() 
 
-    @contract(plan='list[>=1](int)', y0=UncertainImage, returns=UncertainImage)
+    @contract(plan='seq[>=1](int)', y0=UncertainImage, returns=UncertainImage)
     def predict(self, y0, plan):
         """ 
             Predicts the result of applying the given plan to the image. 
@@ -116,20 +127,20 @@ class DiffeoSystem():
         return construct_matrix((K, K), entries)
         
     def actions_distance_L2(self):
-        return self.actions_distance(DiffeoAction.distance_L2)
+        return self.actions_distance(diffeoaction_distance_L2)
     
     def actions_distance_L2_infow(self):
-        return self.actions_distance(DiffeoAction.distance_L2_infow)
+        return self.actions_distance(diffeoaction_distance_L2_infow)
     
     def actions_anti_distance_L2(self):
-        return self.actions_distance(DiffeoAction.anti_distance_L2)
+        return self.actions_distance(diffeoaction_anti_distance_L2)
 
     def actions_anti_distance_L2_infow(self):
-        return self.actions_distance(DiffeoAction.anti_distance_L2_infow)
+        return self.actions_distance(diffeoaction_anti_distance_L2_infow)
         
     def actions_comm_distance_L2(self):
-        return self.actions_distance(DiffeoAction.comm_distance_L2)
+        return self.actions_distance(diffeoaction_comm_distance_L2)
         
     def actions_comm_distance_L2_infow(self):
-        return self.actions_distance(DiffeoAction.comm_distance_L2_infow)
+        return self.actions_distance(diffeoaction_comm_distance_L2_infow)
     

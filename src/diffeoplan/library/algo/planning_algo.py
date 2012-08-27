@@ -1,16 +1,25 @@
-from . import PlanningResult, contract, logger
+from . import PlanningResult, contract
 from .. import DiffeoSystem, UncertainImage
+from reprep import Report
+from diffeoplan.utils.with_internal_log import WithInternalLog
 
-class DiffeoPlanningAlgo:
+class DiffeoPlanningAlgo(WithInternalLog):
     """ Interface for a generic planning algorithm. """
     
     def __init__(self):
-        self.log_lines = [] # log lines
+        WithInternalLog.__init__(self)
         
     @contract(dds=DiffeoSystem)
-    def init(self, dds):
-        """ Might be redefined to add precomputation. """ 
+    def init(self, id_dds, dds):
+        """ Might be redefined to add precomputation. """
+        self.info('Initialized with dds %r' % id_dds) 
         self._dds = dds
+        self.id_dds = id_dds
+    
+    @contract(report=Report)
+    def init_report(self, report):
+        """ Creates a report for the initialization phase. """
+        report.text('warning', 'init_report() not implemented for this class.')
     
     def get_dds(self):
         """ Returns the system that we want to plan on. """
@@ -24,12 +33,10 @@ class DiffeoPlanningAlgo:
         """
         return PlanningResult(success=False, plan=None, status='Not implemented')
 
+    def plan_report(self, report):
+        """ Report after planning (using own data structures) """
+        report.text('warning', 'plan_report() not implemented for this class.')
     
-    def info(self, s):
-        """ Logs a string; saves it for visualization. """
-        logger.info(s)
-        self.log_lines.append(s)
-
     def make_extra(self):
         """ 
             Returns the dictionary that we can send as part of PlanningResults. 

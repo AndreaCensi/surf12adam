@@ -30,7 +30,7 @@ class FlatStructure():
         neighbor_coords = [None] * N
         self.neighbor_indices_flat = [None] * N
     
-        self.flattening = Flattening.by_rows(shape)
+        self.flattening = Flattening.by_rows(tuple(shape))
         
         self.cmg = cmg
         for coord in coords_iterate(shape):

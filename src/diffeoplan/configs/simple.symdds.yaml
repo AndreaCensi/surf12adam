@@ -10,6 +10,17 @@
       diffeo: Ipx1
     topology: plane
 
+- id: dpx3
+  desc: Simple horizontal left motion
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: 64
+    actions: 
+    - original_cmd: [1] # for visualization
+      diffeo: px1
+    topology: plane
+
+
 - id: dpx2
   desc: |
     Simple horizontal translation back and forth,
@@ -78,6 +89,24 @@
 
     topology: plane
 
+- id: dcam3
+  desc: |
+    Camera (pan/tilt)
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: 64
+    actions: 
+    - original_cmd: [1, 0] 
+      diffeo: R3px1
+    - original_cmd: [-1, 0] 
+      diffeo: R3Ipx1
+    - original_cmd: [0, 1] 
+      diffeo: R3py1
+    - original_cmd: [0, -1] 
+      diffeo: R3Ipy1
+
+    topology: plane
+
 
 - id: dptcam1
   desc: |
@@ -94,8 +123,43 @@
       diffeo: py1
     - original_cmd: [0, -1] 
       diffeo: Ipy1
-
     topology: plane
+
+
+- id: dptcam3
+  desc: |
+    Camera (pan: torus, tilt: plane)
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: 64
+    actions: 
+    - original_cmd: [1, 0] 
+      diffeo: R3tx1
+    - original_cmd: [-1, 0] 
+      diffeo: R3Itx1
+    - original_cmd: [0, 1] 
+      diffeo: R3py1
+    - original_cmd: [0, -1] 
+      diffeo: R3Ipy1
+    topology: plane
+
+- id: dtxty
+  desc: |
+    Torus xy
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: 64
+    actions: 
+    - original_cmd: [1, 0] 
+      diffeo: R3tx1
+    - original_cmd: [-1, 0] 
+      diffeo: R3Itx1
+    - original_cmd: [0, 1] 
+      diffeo: R3ty1
+    - original_cmd: [0, -1] 
+      diffeo: R3Ity1
+    topology: plane
+
 
 
 - id: dcamz1

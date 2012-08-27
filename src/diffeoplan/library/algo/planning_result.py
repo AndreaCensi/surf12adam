@@ -3,7 +3,7 @@ from . import contract
 class PlanningResult:
     """ Results of planning. (more fields might be added in the future) """
     
-    @contract(success='bool', plan='None|list(int)', status='None|str', extra='dict')
+    @contract(success='bool', plan='None|seq(int)', status='None|str', extra='dict')
     def __init__(self, success, plan, status, extra={}):
         '''
             :param success: True if planning was succesful.
@@ -13,6 +13,8 @@ class PlanningResult:
                 
         '''
         self.success = success
+        if plan is not None:
+            plan = tuple(plan)
         self.plan = plan
         self.status = status
         self.extra = extra
