@@ -48,7 +48,7 @@ class GenericGraphSearch:
     def get_num_created_but_redundant(self):
         """ 
             Number of nodes that were created, but 
-            found to be an exact duplicated. 
+            found to be an exact duplicate. 
             equivalent to __eq__() used implicitly)
         """
         return self.num_redundant

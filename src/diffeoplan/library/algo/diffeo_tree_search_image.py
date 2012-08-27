@@ -1,7 +1,6 @@
-from . import contract
+from . import DiffeoTreeSearch, contract
 from diffeoplan.library.images import UncertainImage
 from diffeoplan.utils import memoize_instance
-from . import DiffeoTreeSearch
 
 class DiffeoTreeSearchImage(DiffeoTreeSearch):
     """
@@ -11,12 +10,13 @@ class DiffeoTreeSearchImage(DiffeoTreeSearch):
      
 
     def __init__(self, image, metric_collapse,
-                        metric_collapse_threshold, *args, **kwargs):
-        DiffeoTreeSearch.__init__(self, *args, **kwargs)
+                        metric_collapse_threshold, **kwargs):
+        DiffeoTreeSearch.__init__(self, **kwargs)
         self.image = image
         self.metric_collapse = metric_collapse        
         self.metric_collapse_threshold = metric_collapse_threshold
     
+        
     def __str__(self):
         return 'DiffeoTreeSearchImage'
 
@@ -53,4 +53,5 @@ class DiffeoTreeSearchImage(DiffeoTreeSearch):
                   % self.node_friendly(node))
         self.info('image: %s' % self.plan2image(node))
         
-        
+
+    

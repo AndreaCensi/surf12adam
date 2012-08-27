@@ -34,7 +34,8 @@ class InformedPlannerHierarchy(InformedPlanner):
         
         self.display_distancetree(report.section('distancetree'))
        
-    def display_distancetree(self, report, max_level=3, max_branching=5):
+    def display_distancetree(self, report, max_level=100, frac=0.5,
+                             max_branching=5):
         plans, distances = self.cover.compute_distances()
         D = dict(distances)['pathlength']
         plan2point2 = get_embedding_mds(plans, D, ndim=2)
@@ -42,11 +43,10 @@ class InformedPlannerHierarchy(InformedPlanner):
         plan_level = lambda x: G.node[x]['level']
         _, G = make_distancetree(D, plans, max_branching=max_branching)
         copy_nodes_attrs(self.cover.G, G)
-        
-        frac = 0.5
+
         n = len(plans)
-        # subnodes = [x for x in G if G.node[x]['level'] <= max_level]
-        subnodes = [x for x in G if G.node[x]['order'] <= frac * n]
+        subnodes = [x for x in G if G.node[x]['level'] <= max_level
+                                and  G.node[x]['order'] <= frac * n]
         Gsub = G.subgraph(subnodes)
         f = report.figure()
         with f.data_file('tree', MIME_PNG) as filename:

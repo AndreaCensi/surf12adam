@@ -1,9 +1,8 @@
-from diffeoplan.library import UncertainImage
-import time
-from diffeoplan.library.images.distance.distance_norm_weighted import DistanceNormWeighted
-from diffeoplan.library.images.distance.distance_norm import DistanceNorm
+from . import (
+    get_visualization_distances, visualization_images)
+from reprep.report_utils import StoreResults
 import itertools
-from reprep.report_utils.store_results import StoreResults
+import time
  
 
 def run_planning(config, id_algo, id_tc, algo):
@@ -90,32 +89,3 @@ def run_planning_stats(config, results):
             distances[dict(i1=i1, i2=i2, d=d)] = dvalue 
         
     return results
-
-def get_combination_desc(i1, i2, d):
-    alld = get_visualization_distances()
-    sd = alld[d]['symbol']
-    desc1 = visualization_images[i1][0]
-    desc2 = visualization_images[i2][0]
-    s1 = visualization_images[i1][1]
-    s2 = visualization_images[i2][1]
-    symbol = 'd_{%s}(%s,%s)' % (sd, s1, s2)
-    desc = 'Distance %s between %s and %s' % (d, desc1, desc2)
-    return dict(symbol=symbol, desc=desc)
-
-visualization_images = {
-    'y0': ('Start image', 'y_0'),
-    'y1': ('Goal image', 'y_1'),
-    'py0': ('Predicted start using plan', 'p\cdot y_1'),
-    'ipy1': ('Predicted goal using plan inverse', 'p^{-1}\cdot y_1'),
-    'ty0': ('Predicted start using true plan', 'p\cdot y_1'),
-    'ity1': ('Predicted goal using true plan inverse', 'p^{-1}\cdot y_1'),
-}
-        
-
-def get_visualization_distances():
-    distances = {}
-    distances['L2'] = dict(distance=DistanceNorm(2), symbol='L_2')
-    distances['L1'] = dict(distance=DistanceNorm(1), symbol='L_1')
-    distances['L1w'] = dict(distance=DistanceNormWeighted(1), symbol='L_1^w')
-    distances['L2w'] = dict(distance=DistanceNormWeighted(2), symbol='L_2^w')
-    return distances

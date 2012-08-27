@@ -7,8 +7,6 @@ def test_distance_norm_weighted1():
     
     shape = (5, 3)
     one = np.ones(shape)
-    v1 = 0.5 * one
-    v2 = 0.3 * one
     sure = one
     zero = 0 * one
     

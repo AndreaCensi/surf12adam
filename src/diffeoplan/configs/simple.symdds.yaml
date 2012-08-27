@@ -143,6 +143,22 @@
       diffeo: R3Ipy1
     topology: plane
 
+- id: dtxty
+  desc: |
+    Torus xy
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: 64
+    actions: 
+    - original_cmd: [1, 0] 
+      diffeo: R3tx1
+    - original_cmd: [-1, 0] 
+      diffeo: R3Itx1
+    - original_cmd: [0, 1] 
+      diffeo: R3ty1
+    - original_cmd: [0, -1] 
+      diffeo: R3Ity1
+    topology: plane
 
 
 

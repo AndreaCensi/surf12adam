@@ -3,7 +3,10 @@ from .. import UncertainImage
 from diffeoplan.configuration import get_current_config
 from diffeoplan.library.algo import Connector, DiffeoTreeSearchImage
 from diffeoplan.library.analysis import PlanReducer
-from diffeoplan.library.discdds import DiffeoSystem, guess_state_space
+from diffeoplan.library.discdds import (DiffeoSystem, guess_state_space,
+    plan_friendly)
+from matplotlib.cm import get_cmap
+from reprep.plot_utils import turn_all_axes_off
 
  
 class GenericGraphPlanner(DiffeoPlanningAlgo):
@@ -48,14 +51,23 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         DiffeoPlanningAlgo.init(self, id_dds, dds)
     
     
-    @contract(y0=UncertainImage, y1=UncertainImage, returns=PlanningResult)
-    def plan(self, y0, y1):
+    def plan_init(self, y0, y1):
+        self.y0 = y0
+        self.y1 = y1
         self.start_tree = self.init_start_tree(y0)
         self.goal_tree = self.init_goal_tree(y1)
+        plan0 = ()
+        self.start_tree.init_search(plan0)
+        self.goal_tree.init_search(plan0)
+
         self.connector = self.init_connector(self.start_tree, self.goal_tree)
         
         self.log_planning_init()
 
+    @contract(y0=UncertainImage, y1=UncertainImage, returns=PlanningResult)
+    def plan(self, y0, y1):
+        self.plan_init(y0, y1)
+        
         while self.start_tree.has_next() or self.goal_tree.has_next():
             if self.start_tree.has_next():
                 added1 = self.start_tree.do_iteration()
@@ -75,8 +87,13 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
                 self.log_connections_found(connections)
                 # let's choose any one
                 connection = connections[0]
-                p1, p2 = connection
-                plan = p1 + tuple(reversed(p2))
+                d, p1, p2 = connection 
+                # this can be redundant
+                plan_red = p1 + tuple(reversed(p2))
+                # let's simplify it
+                plan = self.get_plan_reducer().get_canonical(plan_red)
+                self.log_plan_found(d, p1, p2, plan_red, plan)
+                
                 return PlanningResult(True, plan, 'Found',
                                       extra=self.make_extra())        
         self.log_planning_failed()
@@ -102,11 +119,12 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
                 pass
     
     def log_connections_found(self, connections):
-        self.info('Found %d connections')
+        self.info('Found %d connections' % len(connections))
         for c in connections:
+            d, p1, p2 = c
             self.info(' - between %s and %s' % 
-                      (self.start_tree.node_friendly(c[0]),
-                       self.goal_tree.node_friendly(c[1])))
+                      (self.start_tree.node_friendly(p1),
+                       self.goal_tree.node_friendly(p2)))
             
     def log_planning_init(self):
         self.info('Planning started')
@@ -115,7 +133,13 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
     def log_planning_failed(self):
         self.info('Planning failed')
         
-    
+    def log_plan_found(self, d, p1, p2, plan_red, plan):
+        self.info('Connection between %s and %s' % 
+                  (self.start_tree.node_friendly(p1),
+                   self.goal_tree.node_friendly(p2)))
+        self.info(' concat: %s' % plan_friendly(plan_red))
+        self.info('reduced: %s' % plan_friendly(plan))
+        
     def make_extra(self):
         """ Extra information to return about the search """
         extra = DiffeoPlanningAlgo.make_extra(self)
@@ -150,8 +174,6 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
                         max_depth=max_depth, max_iterations=max_iterations,
                         metric_collapse=self.metric_collapse,
                         metric_collapse_threshold=self.metric_collapse_threshold)
-        plan0 = ()
-        dts.init_search(plan0)
         return dts
     
     def init_goal_tree(self, y1):
@@ -172,8 +194,6 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
                         max_depth=max_depth, max_iterations=max_iterations,
                         metric_collapse=self.metric_collapse,
                         metric_collapse_threshold=self.metric_collapse_threshold)
-        plan0 = ()
-        dts.init_search(plan0)
         return dts
     
     def plan_report(self, report, tc):
@@ -181,29 +201,90 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
             We pass the testcase structure, so we can use the ground
             truth (if available) to make a nicer visualization.
         """
-        f = report.figure()
+        f = report.figure(cols=3)
+        plan2length = lambda x: len(x)
+        cmap_start = get_cmap('bones') 
+        cmap_goal = get_cmap('jet')
+        
+        def distance_to(tree, y, node):
+            image = tree.plan2image(node)
+            return self.metric_goal.distance(image, y)
+             
+        from functools import partial
+        start_dist_y0 = partial(distance_to, self.start_tree, self.y0)
+        goal_dist_y0 = partial(distance_to, self.goal_tree, self.y0)
+        start_dist_y1 = partial(distance_to, self.start_tree, self.y1)
+        goal_dist_y1 = partial(distance_to, self.goal_tree, self.y1)
+        
         with f.plot('start_tree') as pylab:
-            cmap = None
-            plan2color = lambda x: len(x)
             self.start_tree.plot_graph_using_guessed_statespace(
-                pylab, plan2color=plan2color, cmap=cmap)
+                pylab, plan2color=plan2length, cmap=cmap_start,
+                show_plan=tc.true_plan)
+            pylab.title('plan length')
+            turn_all_axes_off(pylab)
+            pylab.colorbar()
             
         with f.plot('goal_tree') as pylab:
-            cmap = None
-            plan2color = lambda x: len(x)
             self.goal_tree.plot_graph_using_guessed_statespace(
-                pylab, plan2color=plan2color, cmap=cmap)
-
+                pylab, plan2color=plan2length, cmap=cmap_goal)
+            pylab.title('plan length')
+            turn_all_axes_off(pylab)
+            pylab.colorbar()
+            
         true_plan = tc.true_plan
+        ss = guess_state_space(self.id_dds, self._dds)
+        u0 = self.get_dds().indices_to_commands(true_plan)
+        origin = ss.state_from_commands(u0)
+
         with f.plot('joint') as pylab:
-            #print('true plan: %s' % str(true_plan))
-            ss = guess_state_space(self.id_dds, self._dds)
-            u0 = self.get_dds().indices_to_commands(true_plan)
-            origin = ss.state_from_commands(u0)
-            #print('origin: %s' % str(origin))
-
             self.start_tree.plot_graph_using_guessed_statespace(
-                pylab, plan2color=plan2color, cmap=cmap)
+                pylab, plan2color=plan2length, cmap=cmap_start)
             self.goal_tree.plot_graph_using_guessed_statespace(
-                pylab, plan2color=plan2color, cmap=cmap, origin=origin)
-
+                pylab, plan2color=plan2length, cmap=cmap_goal, origin=origin)
+            turn_all_axes_off(pylab)
+            pylab.colorbar()
+            
+        with f.plot('start_tree_y0') as pylab:
+            self.start_tree.plot_graph_using_guessed_statespace(
+                pylab, plan2color=start_dist_y0, cmap=cmap_start)
+            pylab.title('distance to $y_0$')
+            turn_all_axes_off(pylab)
+            pylab.colorbar()
+            
+        with f.plot('goal_tree_y0') as pylab:
+            self.goal_tree.plot_graph_using_guessed_statespace(
+                pylab, plan2color=goal_dist_y0, cmap=cmap_goal, origin=origin)
+            pylab.title('distance to y_0')
+            turn_all_axes_off(pylab)
+            pylab.colorbar()
+            
+        with f.plot('joint_y0') as pylab:
+            self.start_tree.plot_graph_using_guessed_statespace(
+                pylab, plan2color=start_dist_y0, cmap=cmap_start)
+            self.goal_tree.plot_graph_using_guessed_statespace(
+                pylab, plan2color=goal_dist_y0, cmap=cmap_goal, origin=origin)
+            turn_all_axes_off(pylab)
+            pylab.colorbar()
+        
+        with f.plot('start_tree_y1') as pylab:
+            self.start_tree.plot_graph_using_guessed_statespace(
+                pylab, plan2color=start_dist_y1, cmap=cmap_start)
+            pylab.title('distance to $y_1$')
+            turn_all_axes_off(pylab)
+            pylab.colorbar()
+            
+        with f.plot('goal_tree_y1') as pylab:
+            self.goal_tree.plot_graph_using_guessed_statespace(
+                pylab, plan2color=goal_dist_y1, cmap=cmap_goal)
+            pylab.title('distance to y_1')
+            turn_all_axes_off(pylab)
+            pylab.colorbar()
+            
+        with f.plot('joint_y1') as pylab:
+            self.start_tree.plot_graph_using_guessed_statespace(
+                pylab, plan2color=start_dist_y1, cmap=cmap_start)
+            self.goal_tree.plot_graph_using_guessed_statespace(
+                pylab, plan2color=goal_dist_y1, cmap=cmap_goal, origin=origin)
+            turn_all_axes_off(pylab)
+            pylab.colorbar()
+        

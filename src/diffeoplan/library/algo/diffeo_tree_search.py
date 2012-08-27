@@ -1,12 +1,13 @@
 from . import np, contract
 from boot_agents.diffeo import Diffeomorphism2D
 from diffeoplan.library.analysis import PlanReducer
-from diffeoplan.library.discdds import DiffeoAction, guess_state_space
+from diffeoplan.library.discdds import (DiffeoAction, guess_state_space,
+    DiffeoSystem)
 from diffeoplan.utils import WithInternalLog, memoize_instance
 from ggs import GenericGraphSearch
 import collections
 import networkx as nx
-from diffeoplan.library.discdds.diffeo_system import DiffeoSystem
+from diffeoplan.library.discdds.plan_utils import plan_friendly
  
 
 class DiffeoTreeSearch(GenericGraphSearch, WithInternalLog):
@@ -31,6 +32,9 @@ class DiffeoTreeSearch(GenericGraphSearch, WithInternalLog):
     def __str__(self):
         return 'DiffeoTreeSearch'
 
+    def node_friendly(self, plan):
+        return plan_friendly(plan)
+    
     @contract(node='tuple,seq(int)')    
     def next_node(self, node, action):
         child = node + (action,)
@@ -67,8 +71,8 @@ class DiffeoTreeSearch(GenericGraphSearch, WithInternalLog):
         action = self.compute_action(plan)
         return action.get_diffeo2d_forward()
 
-    def plot_graph_using_guessed_statespace(self, pylab,
-            plan2color=None, plan2label=None, cmap=None, origin=None):
+    def plot_graph_using_guessed_statespace(self, pylab, #@UnusedVariable
+            plan2color=None, plan2label=None, cmap=None, origin=None, show_plan=None):
         ss = guess_state_space(self.id_dds, self.dds) 
         
         def plan2xy(plan):
@@ -76,6 +80,14 @@ class DiffeoTreeSearch(GenericGraphSearch, WithInternalLog):
             state = ss.state_from_commands(commands, start=origin)
             xy = ss.xy_from_state(state)
             return 5 * xy
+       
+        if show_plan is not None:
+            points = []
+            for i in range(len(show_plan)):
+                partial = show_plan[:i]
+                points.append(plan2xy(partial))
+            points = np.array(points).T
+            pylab.plot(points[0], points[1], 'r-')
        
         if plan2color is None:
             plan2color = lambda plan: [0, 0, 0] #@UnusedVariable
@@ -114,13 +126,15 @@ class DiffeoTreeSearch(GenericGraphSearch, WithInternalLog):
                                               self.node_friendly(child)))
         
     def log_child_equivalent_found(self, node, action, child, match): #@UnusedVariable
-        self.info('%s->%s but equivalent found' % (self.node_friendly(node),
-                                              self.node_friendly(child)))
+        self.info('%s->%s but equivalent found (%s)' % 
+                  (self.node_friendly(node),
+                   self.node_friendly(child),
+                   self.node_friendly(match)))
  
     def log_node_too_deep(self, node):
         self.info('Node %s is too deep. (%s)' % (self.node_friendly(node),
                                                  self.max_depth))
 
-    def log_too_many_iterations(self, node):
+    def log_too_many_iterations(self, node): #@UnusedVariable
         self.info('Cutting because iterations = %s' % self.iterations)
 

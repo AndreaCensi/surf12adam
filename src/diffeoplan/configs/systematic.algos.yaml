@@ -94,7 +94,7 @@
     diffeo_structure_params: *diffeo_structure_params
     
 - id: "bebc1_it${n}"
-  desc: "One-dir search; pre-filter equiv; no post-filtering; ${n} iterations."
+  desc: "Bi-dir search; pre-filter equiv; b-first; L2W collapse; ${n} iterations."
   code:
   - diffeoplan.library.InformedPlanner
   - bidirectional: True
@@ -106,6 +106,98 @@
     max_depth: *max_depth
     hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
+
+- id: "begc1_it${n}"
+  desc: "Bi-dir search; pre-filter equiv; greedy; L2W collapse; ${n} iterations."
+  code:
+  - diffeoplan.library.InformedPlannerGreedy
+  - bidirectional: True
+    metric_goal: *metric_goal
+    metric_goal_threshold: *metric_goal_threshold
+    metric_collapse: *metric_collapse
+    metric_collapse_threshold: *metric_collapse_threshold
+    max_iterations: "${n}"
+    max_depth: *max_depth
+    hard_choice_params: *hard_choice_params
+    diffeo_structure_params: *diffeo_structure_params
+    metric_attractor: *metric_goal # could choose a different one in principle
+
+- id: "betc1_it${n}"
+  desc: "Bi-dir search; pre-filter equiv; greedy-tree; L2W collapse; ${n} iterations."
+  code:
+  - diffeoplan.library.InformedPlannerGreedyTree
+  - bidirectional: True
+    metric_goal: *metric_goal
+    metric_goal_threshold: *metric_goal_threshold
+    metric_collapse: *metric_collapse
+    metric_collapse_threshold: *metric_collapse_threshold
+    max_iterations: "${n}"
+    max_depth: *max_depth
+    hard_choice_params: *hard_choice_params
+    diffeo_structure_params: *diffeo_structure_params
+    metric_attractor: *metric_goal # could choose a different one in principle
+
+######## Try L2
+- id: "betc2_it${n}"
+  desc: "Bi-dir search; L2 goal; pre-filter equiv; greedy-tree; L2 collapse; ${n} iterations."
+  code:
+  - diffeoplan.library.InformedPlannerGreedyTree
+  - bidirectional: True
+    metric_goal: L2
+    metric_goal_threshold: *metric_goal_threshold
+    metric_collapse: L2
+    metric_collapse_threshold: *metric_collapse_threshold
+    max_iterations: "${n}"
+    max_depth: *max_depth
+    hard_choice_params: *hard_choice_params
+    diffeo_structure_params: *diffeo_structure_params
+    metric_attractor: *metric_goal # could choose a different one in principle
+
+- id: "begc2_it${n}"
+  desc: "Bi-dir search; L2 goal; pre-filter equiv; greedy; L2 collapse; ${n} iterations."
+  code:
+  - diffeoplan.library.InformedPlannerGreedy
+  - bidirectional: True
+    metric_goal: L2
+    metric_goal_threshold: *metric_goal_threshold
+    metric_collapse: L2
+    metric_collapse_threshold: *metric_collapse_threshold
+    max_iterations: "${n}"
+    max_depth: *max_depth
+    hard_choice_params: *hard_choice_params
+    diffeo_structure_params: *diffeo_structure_params
+    metric_attractor: *metric_goal # could choose a different one in principle
+
+- id: "gegc2_it${n}"
+  desc: "One-dir search; L2 goal; pre-filter equiv; greedy; L2 collapse; ${n} iterations."
+  code:
+  - diffeoplan.library.InformedPlannerGreedy
+  - bidirectional: False
+    metric_goal: L2
+    metric_goal_threshold: *metric_goal_threshold
+    metric_collapse: L2
+    metric_collapse_threshold: *metric_collapse_threshold
+    max_iterations: "${n}"
+    max_depth: *max_depth
+    hard_choice_params: *hard_choice_params
+    diffeo_structure_params: *diffeo_structure_params
+    metric_attractor: *metric_goal # could choose a different one in principle
+
+
+- id: "gegn2_it${n}"
+  desc: "One-dir search; L2 goal; pre-filter equiv; greedy; no collapse; ${n} iterations."
+  code:
+  - diffeoplan.library.InformedPlannerGreedy
+  - bidirectional: False
+    metric_goal: L2
+    metric_goal_threshold: *metric_goal_threshold
+    metric_collapse: L2
+    metric_collapse_threshold: -10
+    max_iterations: "${n}"
+    max_depth: *max_depth
+    hard_choice_params: *hard_choice_params
+    diffeo_structure_params: *diffeo_structure_params
+    metric_attractor: *metric_goal # could choose a different one in principle
 
 - id: "h1_it${n}"
   desc: "Hierarchical"

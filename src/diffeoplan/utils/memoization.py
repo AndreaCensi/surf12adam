@@ -41,14 +41,14 @@ def memoize_instance(f2):
     f2.__cache_calls = 0 
     f2.__cache_hits = 0
     
-    #@functools.wraps(f)
-    
     def memoizer(f, obj, *args, **kwargs):
-        # just make sure everything clicks together
-        has_this_method = f.__name__ in obj.__class__.__dict__
-        if not has_this_method:
-            msg = 'Class %s does not have method %s' % (obj.__class__, f.__name__)
-            raise ValueError(msg)
+        if False:
+            # just make sure everything clicks together
+            # Note: this doesn't work with subclasses
+            has_this_method = f.__name__ in obj.__class__.__dict__
+            if not has_this_method:
+                msg = 'Class %s does not have method %s' % (obj.__class__, f.__name__)
+                raise ValueError(msg)
         #method = obj.__class__.__dict__[f.__name__]
 #        if memoizer != method:
 #            msg = 'I expected %s = %s' % (method, memoizer)

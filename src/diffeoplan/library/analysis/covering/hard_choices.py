@@ -1,13 +1,11 @@
-import copy
-import numpy as np
-from boot_agents.diffeo.diffeomorphism2d import Diffeomorphism2D
-from boot_agents.diffeo.diffeo_display import diffeo_stats
+from boot_agents.diffeo import Diffeomorphism2D, diffeo_stats
+from diffeoplan.library.discdds import DiffeoAction, DiffeoSystem
+from . import np
 
 
 def make_hard_choices(dds, info_threshold=0.5, use_isomorphism_heuristics=True,
                       info_percentile=50):
     """ Applies a threshold to the uncertainty of the diffeomorphisms """ 
-    dds = copy.deepcopy(dds)
     
     def make_hard(dd):
         assert isinstance(dd, Diffeomorphism2D)
@@ -21,14 +19,20 @@ def make_hard_choices(dds, info_threshold=0.5, use_isomorphism_heuristics=True,
             #if limit <= 1:
             #    print('limit was %g' % limit)
             #    limit = 4
-            dd.variance = (stats.norm > limit).astype('float')
+            variance = (stats.norm > limit).astype('float')
             print('limit: %g pixels' % limit)
             print('visibility: %g' % np.mean(dd.variance))
         else:
-            dd.variance = (dd.variance > info_threshold).astype('float')
-    for a in dds.actions:
-        df = a.get_diffeo2d_forward()
-        make_hard(df)
-        db = a.get_diffeo2d_backward()
-        make_hard(db)
-    return dds
+            variance = (dd.variance > info_threshold).astype('float')
+        return Diffeomorphism2D(dd.d, variance)
+    
+    def make_hard_action(a):
+        label = a.label + '_inv'
+        diffeo = make_hard(a.get_diffeo2d_backward())
+        diffeo_inv = make_hard(a.get_diffeo2d_forward())
+        original_cmd = a.original_cmd
+        return DiffeoAction(label, diffeo, diffeo_inv, original_cmd)
+    
+    actions = map(make_hard_action, dds.actions)
+    label = dds.label + '_inv'    
+    return DiffeoSystem(label, actions)

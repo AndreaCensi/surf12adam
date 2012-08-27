@@ -1,8 +1,8 @@
-from . import GenericGraphPlanner
-from contracts import contract
+from . import contract, GenericGraphPlanner
 from diffeoplan.library.analysis import DiffeoStructure, make_hard_choices
 from diffeoplan.library.discdds import DiffeoAction, DiffeoSystem
 from reprep import Report
+
 
 class InformedPlanner(GenericGraphPlanner):
     """
@@ -48,5 +48,4 @@ class InformedPlanner(GenericGraphPlanner):
     def get_plan_reducer(self):
         return self.ds.get_plan_reducer()
     
-
-    
+        

@@ -46,6 +46,14 @@
     inverse:  '[x, y-0.05]'
     topology: plane
 
+- id: ty1
+  desc: Vertical translation  (up)
+  code: 
+  - diffeoplan.library.EvalDiffeo
+  - function: '[x, y+0.05]' 
+    inverse:  '[x, y-0.05]'
+    topology: torus
+
 - id: pr1
   desc: Rotation of 15 degrees around the center (plane topology)
   code: 

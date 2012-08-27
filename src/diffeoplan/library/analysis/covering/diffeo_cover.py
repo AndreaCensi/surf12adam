@@ -96,7 +96,7 @@ class DiffeoCover(GenericGraphSearch):
         if (self.iterations + 1) % self.debug_graph_iterations == 0:
             self.draw_graph()
 
-    def log_child_discarded(self, node, action, child, matches):
+    def log_child_discarded(self, node, action, child, matches): #@UnusedVariable
         logger.info('Discarding %s because it matches %s' % (str(child), matches))
 
     ######## / GenericGraphSearch interface

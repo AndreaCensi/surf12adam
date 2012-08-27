@@ -24,13 +24,17 @@ class UncertainImage():
             msg = 'Invalid bounds for image ([%s,%s])' % (vmin, vmax)
             raise ValueError(msg)
 
-        self._values = values.astype('float32')
+        self._values = values.astype('float32').copy()
         
         if scalar_uncertainty is None:
             H, W = values.shape[:2]
             scalar_uncertainty = np.ones((H, W), dtype='float32')
             
-        self.scalar_uncertainty = scalar_uncertainty
+        self.scalar_uncertainty = scalar_uncertainty.copy()
+    
+        # Make them immutable
+        self._values.setflags(write=False)
+        self.scalar_uncertainty.setflags(write=False)
     
     @contract(returns='array[HxW](float32,>=0,<=1)|array[HxWxN](float32,>=0,<=1)')
     def get_values(self):
@@ -58,7 +62,14 @@ class UncertainImage():
         v = self.get_values()
         if v.ndim == 2:
             raise NotImplementedError
-        rgb = (v / 255).astype('uint8')        
+        rgb = (v * 255).astype('uint8')        
+        
+        # set to gray parts where the certainty is 0
+        w = self.get_scalar_uncertainty() == 0
+        rgb[:, :, 0][w] = 125
+        rgb[:, :, 1][w] = 125
+        rgb[:, :, 2][w] = 125
+        
         return rgb 
 
     @contract(returns='array[HxWx3](uint8)')

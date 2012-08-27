@@ -42,12 +42,12 @@ class Connector(WithInternalLog):
         
     @memoize_instance
     def value1(self, node1):
-        assert node1 in self.tree1.G
+        #assert node1 in self.tree1.G
         return self.tree1.plan2image(node1)
     
     @memoize_instance
     def value2(self, node2):
-        assert node2 in self.tree2.G
+        #assert node2 in self.tree2.G
         return self.tree2.plan2image(node2)
     
     def get_connections(self):
@@ -55,18 +55,29 @@ class Connector(WithInternalLog):
         matches = []
         for n1, n2 in itertools.product(self.tree1.G, self.tree2.G):    
             if self.close_enough(n1, n2):
-                matches.append((n1, n2))
-
+                matches.append((self.distance(n1, n2), n1, n2))
+        # Choose the best one
+        matches.sort(key=lambda x: x[0])
         self.print_minimum()
         return matches
 
     def print_minimum(self):
-        f = lambda n1, n2: self.distance(n1, n2)
-        D = construct_matrix_iterators((self.tree1.G, self.tree2.G), f)
-        m = md_argmin(D)
+        self.info('print_minimum:')
+        for n1, n2 in itertools.product(self.tree1.G, self.tree2.G):
+            d = self.distance(n1, n2)    
+            s1 = self.tree1.node_friendly(n1)
+            s2 = self.tree1.node_friendly(n2)
+            self.info('- %5f %20s %20s' % (d, s1, s2))
+        #for n1, n2 in itertools.product(self.tree1.G, self.tree2.G)
         
-        n1 = self.tree1.G.nodes()[m[0]]                    
-        n2 = self.tree2.G.nodes()[m[1]]
+        nodes1 = list(self.tree1.G.nodes())
+        nodes2 = list(self.tree2.G.nodes())
+        
+        f = lambda n1, n2: self.distance(n1, n2)
+        D = construct_matrix_iterators((nodes1, nodes2), f)
+        m = md_argmin(D)
+        n1 = nodes1[m[0]]                    
+        n2 = nodes2[m[1]]
         assert_allclose(D[m], self.distance(n1, n2)) 
         s1 = self.tree1.node_friendly(n1)
         s2 = self.tree1.node_friendly(n2)

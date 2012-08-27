@@ -74,10 +74,18 @@
   #- bnbc1_it1000
   - bebn1_it1000
   - bebc1_it1000
+  - begc1_it1000 # greedy
+  - betc1_it1000 # tree
+  - betc2_it1000 # with L2 distance
+  - begc2_it1000 # with L2 distance
+  - gegc2_it1000 # with L2 distance
   - h1_it1000
   testcases:
-  - tm_dcam3_lena_aaaaaaaaaa
-    
+  # - tm_dcam3_lena_aaaaaaaaaa
+  # - tm_dcam3_lena_aaaaa
+  - tm_dtxty_lena_aaaaa
+  - tm_dtxty_lena_aaaa
+  # - tm_dtxty_lena_aaaaaaaaaa
 
 
 
