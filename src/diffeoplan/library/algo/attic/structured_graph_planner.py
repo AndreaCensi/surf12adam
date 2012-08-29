@@ -1,5 +1,10 @@
 import numpy as np
-from ..  import GraphSearchQueue
+
+from ..generic_graph_planner import GraphSearchQueue
+from diffeoplan.library.discdds.redundant_plan_tracker import RedundantPlanTracker
+from diffeoplan.library.graph.node import Node
+import pdb
+
 from diffeoplan.library.graph import Node
 from diffeoplan.library.analysis.redundant_plan_tracker import RedundantPlanTracker
 
@@ -33,10 +38,16 @@ class StructuredGraphPlanner(GraphSearchQueue):
             tracker = RedundantPlanTracker(self.get_dds(), self.tracker_thresh)
         else:
             tracker = self.tracker
-        
+#        pdb.set_trace()
         plan = node.path
         
         if tracker.is_redundant(plan):
+            # Close the redundant action
+            tree.nodes[node.parent].closed_cmd.append(plan[-1])
+            # Close the redundant node in no more commands
+            if len(tree.actions_available_for_node(node.parent, self.all_actions())) == 0:
+                tree.open_nodes.remove(node.parent)
+                
             return False
         else:
             return not someone_too_close
