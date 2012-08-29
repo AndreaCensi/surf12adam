@@ -83,12 +83,22 @@
   testcases:
   # - tm_dcam3_lena_aaaaaaaaaa
   # - tm_dcam3_lena_aaaaa
-  - tm_dtxty_lena_aaaaa
   - tm_dtxty_lena_aaaa
-  # - tm_dtxty_lena_aaaaaaaaaa
+  - tm_dtxty_lena_aaaaa
+  - tm_dtxty_lena_aaaaaaa
+  - tm_dtxty_lena_aaaaaaaaaaaaabbbbb
 
-
-
+- id: test_misc6
+  desc: "another random test"
+  algorithms:
+  #- gnbn1_it1000
+  #- gnbc1_it1000
+  - gebn1_it1000
+  - gebc1_it1000
+  #- bnbn1_it1000
+  testcases:
+  - tl_orbit-pt256-80x60_000
+ 
 
 
 - id: torus2_d10

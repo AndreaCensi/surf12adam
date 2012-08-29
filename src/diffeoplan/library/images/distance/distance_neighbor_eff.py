@@ -1,6 +1,8 @@
 from . import np, contract
 from boot_agents.diffeo import Flattening, cmap, coords_iterate
 from geometry.utils.numpy_backport import assert_allclose
+from diffeoplan.utils.memoization import memoize_simple
+from boot_agents.diffeo.diffeo_basic import dmod
 
 
 class FlatStructure():
@@ -22,10 +24,9 @@ class FlatStructure():
         cmg = cmap(np.array(neighborarea))
         area_shape = cmg.shape[0], cmg.shape[1]
 
+        self.shape = shape
         H, W = shape
-#        h, w = area_shape
         N = H * W
-#        A = h * w 
         
         neighbor_coords = [None] * N
         self.neighbor_indices_flat = [None] * N
@@ -50,7 +51,21 @@ class FlatStructure():
 
         self.neighbor_indices_flat = np.array(self.neighbor_indices_flat)
         
-        
+    @contract(value='array[HxW]|array[HxWxC]', returns='array[NxA]|array[NxAxC]')
+    def ndvalues2unrolledneighbors(self, value):
+        if value.ndim == 3:
+            return self.image2unrolledneighbors(value)
+        if value.ndim == 2:
+            return self.values2unrolledneighbors(value)
+        raise NotImplemented
+    
+    @contract(value='array[HxW]|array[HxWxC]', returns='array[NxA]|array[NxAxC]')
+    def ndvalues2repeated(self, value):
+        if value.ndim == 3:
+            return self.image2repeated(value)
+        if value.ndim == 2:
+            return self.values2repeated(value)
+        raise NotImplemented
         
     @contract(value='array[HxW]', returns='array[NxA]')
     def values2unrolledneighbors(self, value):
@@ -82,7 +97,23 @@ class FlatStructure():
             res[:, :, c] = self.values2repeated(value[:, :, c])
         return res
 
-
+    @memoize_simple
+    @contract(returns='array[NxA]')
+    def get_distances(self):
+        N, A = self.neighbor_indices_flat.shape
+        D = np.zeros((N, A))
+        for i in range(N):
+            pi = self.flattening.index2cell[i]
+            for jj in range(A):
+                j = self.neighbor_indices_flat[i, jj]
+                pj = self.flattening.index2cell[j]
+                dx = pi[0] - pj[0]
+                dy = pi[1] - pj[1]
+                dxn = dmod(dx, self.shape[0] / 2)
+                dyn = dmod(dy, self.shape[1] / 2)
+                d = np.hypot(dxn, dyn)
+                D[i, jj] = d
+        return D 
 
 class DistanceNeighborEff():
     """ A more efficient version. """

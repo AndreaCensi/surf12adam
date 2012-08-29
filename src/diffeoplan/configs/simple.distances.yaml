@@ -27,7 +27,57 @@
   - diffeoplan.library.DistanceNeighborEff
   - size: [40, 30]
     neighborarea: [2, 2]
-    
+
+
+- id: N01
+  desc: XXX
+  code:
+  - diffeoplan.library.DistanceNeighborRatio
+  - ratios: [0.01, 0.01]
+
+- id: N10
+  desc: XXX
+  code:
+  - diffeoplan.library.DistanceNeighborRatio
+  - ratios: [0.1, 0.1]
+
+- id: N30
+  desc: XXX
+  code:
+  - diffeoplan.library.DistanceNeighborRatio
+  - ratios: [0.3, 0.3]
+
+- id: N20
+  desc: XXX
+  code:
+  - diffeoplan.library.DistanceNeighborRatio
+  - ratios: [0.2, 0.2]
+
+- id: D05
+  desc: XXX
+  code:
+  - diffeoplan.library.DistanceNeighborDist
+  - ratios: [0.05, 0.05]
+
+
+- id: D10
+  desc: XXX
+  code:
+  - diffeoplan.library.DistanceNeighborDist
+  - ratios: [0.1, 0.1]
+
+- id: D20
+  desc: XXX
+  code:
+  - diffeoplan.library.DistanceNeighborDist
+  - ratios: [0.2, 0.2]
+
+- id: D30
+  desc: XXX
+  code:
+  - diffeoplan.library.DistanceNeighborDist
+  - ratios: [0.3, 0.3]
+
 
 - id: L1
   desc: L1 distance

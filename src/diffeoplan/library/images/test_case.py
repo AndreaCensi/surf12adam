@@ -3,6 +3,9 @@ from bootstrapping_olympics.utils import safe_pickle_dump
 from conf_tools.utils import friendly_path
 import os
 import yaml
+from diffeoplan.configuration import get_current_config
+from diffeoplan.library.images.distance.distance_norm import DistanceNorm
+from reprep.graphics.filter_scale import scale
 
 
 class TestCase():
@@ -46,34 +49,30 @@ class TestCase():
         report.text('summary',
                     'Testcase: %s\nPlan: %s' % (self.id_tc, self.true_plan))
         report.data('id_tc', self.id_tc)
+        report.data('id_discdds', self.id_discdds)
         report.data('true_plan', self.true_plan)
         f = report.figure(cols=4)
-        f.data_rgb('y0_rgb', self.y0.get_rgb(), caption='y0 (rgb)')
-        f.data_rgb('y1_rgb', self.y1.get_rgb(), caption='y1 (rgb)')
-        
-#    
-#    
-#def tc_to_yaml():
-#    image1_filename = '%s-start.pickle' % tcname 
-#    image2_filename = '%s-goal.pickle' % tcname
-#    safe_pickle_dump(image1, os.path.join(outdir, image1_filename))
-#    safe_pickle_dump(image2, os.path.join(outdir, image2_filename))
-#    image1_values_filename = '%s-start.values.png' % tcname 
-#    image2_values_filename = '%s-goal.values.png' % tcname
-#    imwrite(image1.get_values(), os.path.join(outdir, image1_values_filename))
-#    imwrite(image2.get_values(), os.path.join(outdir, image2_values_filename))
-#    
-#    description = {'id': tcname,
-#                   'desc': 'Automatically generated test case',
-#                   'code': ['diffeoplan.library.TestCase',
-#                            {
-#                            'file:image1_filename': image1_filename,
-#                            'file:image2_filename': image2_filename,
-#                            'id_discdds': id_discdds,
-#                            'ground_truth': plan
-#                            }
-#                            ]
-#                   }
-#    pprint(description)
-#    
- 
+        f.data_rgb('y0_rgb', self.y0.get_rgb(), caption='$y_0$ (rgb)')
+        f.data_rgb('y1_rgb', self.y1.get_rgb(), caption='$y_1$ (rgb)')
+
+        f = report.figure('prediction_model', cols=4,
+                          caption="""
+        This is the prediction according to the learned model.""")
+        try:
+            discdds = get_current_config().discdds.instance(self.id_discdds)
+        except Exception as e:
+            logger.exception(e)
+        else:
+            y1p = discdds.predict(self.y0, self.true_plan)
+            f.data_rgb('y1p_rgb', y1p.get_rgb(),
+                       caption="$p^\star \cdot y_0$")
+            f.data_rgb('y1p_rgb_u', y1p.get_rgb_uncertain(),
+                       caption="Uncertainty")
+
+            d = DistanceNorm(2)
+            field = d.error_field(self.y1, y1p)
+            f.data_rgb('e_y1p_y1', scale(field),
+                       caption="Discrepancy between $y_1$ and $p^\star \cdot y_0$.")
+            
+
+
