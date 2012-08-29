@@ -16,7 +16,7 @@ import os
 @declare_command('dist-stats',
                  'dist-stats -d <distances> [logs]')
 def distances_main(config, parser): #@UnusedVariable
-    """ FPS statistics for distances """
+    
     parser.add_option("-d", "--distances", default='*',
                       help="Comma-separated list of distances. Can use *.")
     
@@ -78,6 +78,11 @@ def create_diststats_jobs(config, distances, logs, outdir, rm, maxd=10):
         report = comp(report_statistics, id_distance, stats)
         rm.add(report, 'bydistance', id_distance=id_distance)
 
+    subsets = create_subsets(distances)
+    
+    job_report(subsets, store, rm)
+    
+def create_subsets(distances):
     subsets = {}
     subsets['all'] = sorted(distances)
     
@@ -85,9 +90,8 @@ def create_diststats_jobs(config, distances, logs, outdir, rm, maxd=10):
     for initial in initials:
         which = filter(lambda x: x[0] == initial, distances)
         subsets[initial] = sorted(which)
-        
-    job_report(subsets, store, rm)
-    
+    return subsets
+
 def job_report(subsets, store, rm):
     for id_subset, which in subsets.items():
         logger.info('%s = %s' % (id_subset, which))
@@ -172,8 +176,6 @@ def report_statistics(id_sub, stats):
     return r
 
 def fancy_error_display(pylab, xs, ys, color, perc=10, label=None):
-#    gray = [0.5, 0.5, 0.5]
-    
     pylab.scatter(xs, ys, s=20, c=color, edgecolors='none', alpha=0.01)
 
     for i, x in enumerate(set(xs)):
