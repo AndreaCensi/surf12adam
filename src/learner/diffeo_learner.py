@@ -9,6 +9,7 @@ import pickle
 import yaml
 from contracts import contract
 import os
+from .diffeo_analysis import DiffeoAnalysis
 
 
 class DiffeoLearner:
@@ -50,7 +51,7 @@ class DiffeoLearner:
             self.estimators_inv[cmd_ind].update(Y1[:, :, ch], Y0[:, :, ch])
             
                             
-    def summarize(self):
+    def summarize(self, prefix=''):
         """
             Summarizes all estimators
             Output:
@@ -60,9 +61,15 @@ class DiffeoLearner:
         action_list = [] 
         
         for i in range(n):
-            diffeo = self.estimators[i].summarize()
-            diffeo_inv = self.estimators_inv[i].summarize()
             command = np.array(self.command_list[i])
+            name = prefix + str(list(command)).replace(' ', '')
+#str(command).replace(' ', '')
+            diffeo = self.estimators[i].summarize()
+            DiffeoAnalysis(self.estimators[i], name, self.estimators[i].shape,
+                           self.estimators[i].lengths).make_images()
+#            pdb.set_trace()
+#            self.estimators[i].summarize_continuous(prefix + str(command) + '.png')
+            diffeo_inv = self.estimators_inv[i].summarize()
             name = 'Uninterpreted Diffeomorphism' + str(i)
             action = DiffeoAction(name, diffeo, diffeo_inv, command)
             action_list.append(action)
