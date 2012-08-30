@@ -49,7 +49,6 @@ def generate_from_croped_image():
 #	im.show()
 
 
-#	pdb.set_trace()
 	Y0,Y1 = get_Y_pair((5,20),delta,im)
 #	Y0.show()
 #	Y1.show()
@@ -72,7 +71,7 @@ def generate_from_croped_image():
 	Image.fromarray(diffeo_to_rgb_norm(D.d)).save('diffeoimages/diffeo_to_rgb_norm_delta_'+str(delta)+'_n_'+str(n)+'.png')
 	Image.fromarray(diffeo_to_rgb_angle(D.d)).save('diffeoimages/diffeo_to_rgb_angle_delta_'+str(delta)+'_n_'+str(n)+'.png')
 #	Image.fromarray(D.variance*255).show()#.save('diffeoimages/variance_delta_'+str(delta)+'_n_'+str(n)+'.png')
-#	pdb.set_trace()
+
 	print 'diffeo_estimator_demo done'
 
 #
@@ -88,7 +87,6 @@ def ideal_diffeo_show():
 	# -d delta_x,delta_y
 	
 
-#	pdb.set_trace()
 	print 'Generating demo diffeomorphisms'
 	size = (120,160)
 	diffeo_list = [diffeo_demo.diffeo_zoomin(size,0.9), diffeo_demo.diffeo_zoomin(size,1.1),diffeo_demo.diffeo_pan(size,0.1),diffeo_demo.diffeo_pan(size,-0.1),diffeo_demo.diffeo_tilt(size,0.1),diffeo_demo.diffeo_tilt(size,-0.1)]
@@ -100,7 +98,6 @@ def ideal_diffeo_show():
 #	Image.fromarray(diffeo_to_rgb_norm(diffeo_list[d_index])).show()
 	Image.fromarray(diffeo_to_rgb_angle(diffeo_list[d_index])).show()
 
-	pdb.set_trace()
 	# Generate a sequence of images to use for learning
 	print 'Generating images'
 	im = Image.open('lighttower160.jpg')
@@ -118,7 +115,6 @@ def ideal_diffeo_show():
 		im_array_new = diffeo_apply(diffeo_list[command],im_array_new)
 		images.append(im_array_new)
 	print 'done'
-	pdb.set_trace()
 
 
 if __name__ == '__main__':
@@ -126,4 +122,3 @@ if __name__ == '__main__':
 	print sys.argv
 	ideal_diffeo_show()
 #	generate_from_croped_image()
-#	pdb.set_trace()
