@@ -46,7 +46,7 @@ class InformedPlannerHierarchy(InformedPlanner):
 
         n = len(plans)
         subnodes = [x for x in G if G.node[x]['level'] <= max_level
-                                and  G.node[x]['order'] <= frac * n]
+                                and G.node[x]['order'] <= frac * n]
         Gsub = G.subgraph(subnodes)
         f = report.figure()
         with f.data_file('tree', MIME_PNG) as filename:

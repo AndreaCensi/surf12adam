@@ -14,7 +14,7 @@ class DistanceNorm():
         distance = element_by_element_norm_scaled(diff, self.order)
         return distance
 
-    @contract(y0=UncertainImage, y1=UncertainImage, returns='array[HxW]')
+    @contract(y0=UncertainImage, y1=UncertainImage, returns='array[HxW](>=0,<=1)')
     def error_field(self, y0, y1):
         """ Returns the error per pixel. """
         v0 = y0.get_values()
@@ -23,7 +23,7 @@ class DistanceNorm():
         diff = np.abs(v0 - v1)
         # flatten if 3dim
         if diff.ndim == 3:
-            diff = diff.sum(axis=2)
+            diff = diff.mean(axis=2)
         return diff
 
     def __repr__(self):
@@ -37,13 +37,16 @@ def element_by_element_norm(x, order):
     """ Note that np.linalg.norm does something different. """
     return np.power(np.sum(np.power(np.abs(x), order)), 1.0 / order)
 
-@contract(x='array', order='int,>=1', returns='>=0,<=1')
+@contract(x='array(>=0,<=1)', order='int,>=1', returns='>=0,<=1')
 def element_by_element_norm_scaled(x, order):
     """ Normalizes the norm in [0,1], assuming that x is normalized in [0,1]. """
     n = float(x.size)
     max_norm = np.power(n, 1.0 / order)
     norm = element_by_element_norm(x, order)
-    return norm / max_norm
+    result = norm / max_norm
+    assert result <= 1
+    assert result >= 0
+    return result
 
     
     

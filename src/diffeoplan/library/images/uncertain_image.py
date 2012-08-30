@@ -1,6 +1,6 @@
 from . import contract, np
-from PIL import Image #@UnresolvedImport
 from boot_agents.diffeo import scalaruncertainty2rgb
+from diffeoplan.utils import resample_signal
 
 class UncertainImage():
     
@@ -44,16 +44,25 @@ class UncertainImage():
         """ 1: sure; 0: unknown """
         return self.scalar_uncertainty
     
+    @contract(size='seq[2](int)')
     def resize(self, size):
-        # FIXME: this assumes that the image is a uint8 with 3 channels
-        # we want to have float images fields
-        rgb = self.get_rgb()
-        rgb_resized = Image.fromarray(rgb).resize(size) # TODO: more general
-        
-        unc1 = np.array(self.scalar_uncertainty * 255).astype(np.uint8)
-        resized = Image.fromarray(unc1, 'L').resize(size)
-        var = resized.astype(np.float) / 255
-        return UncertainImage(rgb_resized, var)
+        values2 = resample_signal(self.get_values(), tuple(size))
+        unc2 = resample_signal(self.get_scalar_uncertainty(), tuple(size))
+        return UncertainImage(values2, unc2)
+
+    def crop(self, top, right, bottom, left):
+        shape = self._values.shape[:2]
+        stop = int(top * shape[0])
+        sbottom = int(bottom * shape[0])
+        sright = int(right * shape[1])
+        sleft = int(left * shape[1]) 
+
+        def cropit(x):
+            return x[sleft:-sright, stop:-sbottom]
+
+        values2 = cropit(self.get_values())
+        unc2 = cropit(self.get_scalar_uncertainty())
+        return UncertainImage(values2, unc2)
 
     @contract(returns='array[HxWx3](uint8)')
     def get_rgb(self):
@@ -78,7 +87,7 @@ class UncertainImage():
         return scalaruncertainty2rgb(self.scalar_uncertainty)        
          
     def __str__(self):
-        return ("UncertainImage(%s;y in [%s,%s];u in [%s,%s])" %
+        return ("UncertainImage(%s;y in [%s,%s];u in [%s,%s])" % 
                 (self._values.shape, self._values.min(), self._values.max(),
                  self.scalar_uncertainty.min(), self.scalar_uncertainty.max()))
                  

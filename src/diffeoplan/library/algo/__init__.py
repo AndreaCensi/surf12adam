@@ -6,7 +6,6 @@ from .diffeo_tree_search_image_greedy import *
 from .tree_connector import *
 from .planning_result import *
 from .planning_algo import * 
-from .graph_search_queue import *
 
 from .informed_search import *
 from .graphsearch_breadth import *
@@ -18,4 +17,3 @@ from .informed_planner import *
 from .informed_planner_greedy import *
 from .informed_planner_hierarchy import *
 
-from .tree import *

@@ -16,7 +16,7 @@ class DistanceNeighbor():
         neighbor_coords = [None] * nsensels
         self.neighbor_indices_flat = [None] * nsensels
     
-        flattening = Flattening.by_rows(shape)
+        flattening = Flattening.by_rows(tuple(shape))
         cmg = cmap(lengths)
         self.cmg = cmg
         for coord in coords_iterate(shape):

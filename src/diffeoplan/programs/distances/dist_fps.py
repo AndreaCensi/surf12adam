@@ -1,10 +1,10 @@
 from .. import declare_command, logger
 from bootstrapping_olympics.utils.in_a_while import InAWhile
 
-@declare_command('diststats',
-                 'diststats -d <distances> -t <testcases>')
+@declare_command('dist-fps',
+                 'dist-fps -d <distances> -t <testcases>')
 def distances_main(config, parser): #@UnusedVariable
-    
+    """ FPS statistics for distances """
     parser.add_option("-d", "--distances", default='*',
                       help="Comma-separated list of distances. Can use *.")
     

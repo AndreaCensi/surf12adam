@@ -1,7 +1,6 @@
 from diffeoplan.library.analysis import DiffeoStructure
-from diffeoplan.library.analysis.covering.diffeo_cover import DiffeoCover
+from diffeoplan.library.analysis.covering import DiffeoCover, make_hard_choices
 from diffeoplan.library.discdds import DiffeoAction
-from diffeoplan.library.analysis.covering.hard_choices import make_hard_choices
 
 class DiffeoSystemBounds:
     def __init__(self, id_dds, dds, tolerance, info_threshold, min_visibility, debug_it, max_it):

@@ -1,10 +1,10 @@
 from . import (contract, create_tables, run_planning_stats, run_planning, logger,
-    create_tables_by_sample, create_visualization_jobs, index_reports, ReportManager)
+    create_tables_by_sample, create_visualization_jobs)
 from collections import defaultdict
 from compmake import comp
 from reprep import Report
 from reprep.report_utils import StoreResults
-import os
+from reprep.report_utils import ReportManager
 
 
 def create_bench_jobs(config, algos, testcases, outdir):
@@ -85,8 +85,7 @@ def create_bench_jobs(config, algos, testcases, outdir):
     create_tables_by_sample(allruns, rm)
     create_visualization_jobs(config, allruns, rm)
     
-    index_filename = os.path.join(outdir, 'report_index.html')
-    comp(index_reports, rm.allreports, index_filename)
+    rm.create_index_job()
 
 def create_algo_init_jobs(algoinit, rm):
     """ add the initialization report for each algorithm """
