@@ -1,9 +1,9 @@
 from . import logger, read_bag
-from ... import DiffeoLearner
 from optparse import OptionParser
 import os
 import pickle
-import pdb
+import urllib
+from learner.diffeo_learner import DiffeoLearner
 
 
 def diffeo_learner_main():
@@ -23,8 +23,8 @@ def diffeo_learner_main():
                       help="Save the learner")
     options, args = parser.parse_args()
      
-    if not args:
-        raise ValueError('Required file names/.')
+#    if not args:
+#        raise ValueError('Required file names/.')
     
     if options.path is None:
         dirname = os.path.dirname(options.input)
@@ -42,8 +42,15 @@ def diffeo_learner_main():
     if learner == 'No':
         learn = DiffeoLearner(size, area)
     else:
-        learn = pickle.load(open(learner))
-    pdb.set_trace()
+        logger.info('Loading diffeomorphism estimators')
+        if learner[:4] == 'http':
+            logger.info('from online source: %s' % learner)
+            ofile = urllib.urlopen(learner)
+        else:
+            logger.info('from local source: %s' % learner)
+            ofile = open(learner)
+        learn = pickle.load(ofile)
+        logger.debug('loaded')
     
     for bagfile in args:
         i = 0
@@ -51,17 +58,21 @@ def diffeo_learner_main():
             logger.info('Iteration number %d' % i)
             i = i + 1
             learn.update(y0, u, y1)
-        
+#            if i > 15:
+#                break
+            
+    if outlearner == 'No':
+        pass
+    else:
+        logger.info('Saving learning agent to %s' % outlearner)
+        pickle.dump(learn, open(outlearner, 'wb'))
+    
         
     logger.info('Commands: %s' % learn.command_list)
-    learn.summarize()
+    learn.summarize(prefix=name)
     
     learn.diffeo_dump(dirname, name)
     learn.show_diffeomorphisms()
     
+#    pdb.set_trace()
     
-    if outlearner == 'No':
-        pass
-    else:
-        pickle.dump(learn, open(outlearner, 'wb'))
-

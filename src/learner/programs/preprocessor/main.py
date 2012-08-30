@@ -49,18 +49,39 @@ def preprocessor(args):
         
     basename = os.path.basename(bag)    
     basename = basename[:-len(input_suffix)]
-
-    output = os.path.join(outdir, basename + '.processed.bag')
-
-    logger.info('Reading from: %s' % bag)
-    logger.info('Writing to:   %s' % output)    
-    output_size = tuple(eval(options.size))
+    
+    info_list = basename.split('-')
     
     zoom = eval(options.zoom)
+
+    # if zoom is not used, then remove z* from command name
+    if zoom:
+        pass
+        #out_info = '_' + str(output_size).replace(' ', '').replace(',', 'x').replace('(', '').replace(')', '') + '_zoom'
+    else:
+        info_list[1] = info_list[1][:info_list[1].index('z')] 
+#        out_info = '_' + str(output_size).replace(' ', '').replace(',', 'x').replace('(', '').replace(')', '') + '_nozoom'
+
+    output_size = tuple(eval(options.size))
+    # prepare the size for the output name
+    info_list.append(str(output_size).strip('()').replace(', ', 'x'))
+    
+    # start build the output name
+    out_name = info_list[0]
+    # remove the robot name from list
+    info_list.remove(info_list[0])
+    
+    for part in info_list:
+        out_name += '-' + part
+    
+    output = os.path.join(outdir, out_name + '.processed.bag')
+
+    logger.info('Reading from: %s' % bag)
+    logger.info('Writing to:   %s' % output)
     
     preprocess(bag, output, output_size,
                 use_zoom=zoom,
-                min_zoom=100, max_zoom=500)
+                min_zoom=100, max_zoom=200)
     
     # pproc.validate_bag(output)
 
