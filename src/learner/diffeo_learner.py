@@ -63,10 +63,9 @@ class DiffeoLearner:
         for i in range(n):
             command = np.array(self.command_list[i])
             name = prefix + str(list(command)).replace(' ', '')
-#str(command).replace(' ', '')
             diffeo = self.estimators[i].summarize()
-            DiffeoAnalysis(self.estimators[i], name, self.estimators[i].shape,
-                           self.estimators[i].lengths).make_images()
+#            DiffeoAnalysis(self.estimators[i], name, self.estimators[i].shape,
+#                           self.estimators[i].lengths).make_images()
 #            pdb.set_trace()
 #            self.estimators[i].summarize_continuous(prefix + str(command) + '.png')
             diffeo_inv = self.estimators_inv[i].summarize()
@@ -76,6 +75,21 @@ class DiffeoLearner:
             
         name = 'Uninterpreted Diffeomorphism System'
         self.system = DiffeoSystem(name, action_list)
+    
+    def analyze(self, prefix='', folder=''):
+        """
+            Make some analysis of all estimators
+            Action: DiffeoAnalysis.make_images() for all estimators
+        """
+        n = len(self.estimators)
+        
+        for i in range(n):
+            command = np.array(self.command_list[i])
+            name = prefix + str(list(command)).replace(' ', '')
+#            diffeo = self.estimators[i].summarize()
+            DiffeoAnalysis(self.estimators[i], name, self.estimators[i].shape,
+                           self.estimators[i].lengths, folder).make_images()
+                
                 
     def diffeo_dump(self, path, name):
         '''

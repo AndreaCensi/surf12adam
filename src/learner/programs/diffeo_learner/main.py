@@ -70,9 +70,8 @@ def diffeo_learner_main():
         
     logger.info('Commands: %s' % learn.command_list)
     learn.summarize(prefix=name)
+    learn.analyze(prefix=name, folder='out/diffeo-analysis/')
     
-    learn.diffeo_dump(dirname, name)
-    learn.show_diffeomorphisms()
-    
-#    pdb.set_trace()
+#    learn.diffeo_dump(dirname, name)
+#    learn.show_diffeomorphisms()
     
