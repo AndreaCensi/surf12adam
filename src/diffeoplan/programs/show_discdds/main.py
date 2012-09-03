@@ -1,6 +1,7 @@
 from .. import declare_command, write_report_files
 from reprep import Report
 import os
+from diffeoplan.library.images import UncertainImage
 
 
 @declare_command('show-discdds',
@@ -9,7 +10,7 @@ def show_discdds(config, parser): #@UnusedVariable
     """ Displays the learned DDS """
     parser.add_option("-i", "--id_image", help="ID image.", default='lena')
     parser.add_option("-o", "--output", help="Output directory",
-                      default='out/show_dds/')
+                      default='out/dp-show-discdds/')
     options, which = parser.parse()
     
     outdir = options.output 
@@ -20,7 +21,7 @@ def show_discdds(config, parser): #@UnusedVariable
         todo = config.discdds.expand_names(which)
 
     id_image = options.id_image
-    image = config.images.instance(id_image)
+    image = UncertainImage(config.images.instance(id_image))
     
     for id_dds in todo:
         dds = config.discdds.instance(id_dds) 

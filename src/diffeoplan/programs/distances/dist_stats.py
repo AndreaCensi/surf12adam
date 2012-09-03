@@ -85,6 +85,8 @@ def create_diststats_jobs(config, distances, logs, outdir, rm, maxd=10):
 def create_subsets(distances):
     subsets = {}
     subsets['all'] = sorted(distances)
+    for d in distances:
+        subsets[d] = [d]
     
     initials = set(d[0] for d in distances)
     for initial in initials:
@@ -115,10 +117,11 @@ def report_statistics_all(id_sub, stats, perc=10, W=0.2):
     logger.info('%s: %s %s reo %s' % (id_sub, len(stats), id_distances,
                                       len(records)))
 
-    with f.plot('with_stats') as pylab:
-        colors = list(islice(cycle(['r', 'g', 'b', 'k', 'y', 'm']), 50))
-        ax = pylab.subplot(111)
+    colors = list(islice(cycle(['r', 'g', 'b', 'k', 'y', 'm']), 50))
+    
 
+    with f.plot('distance_order') as pylab:
+        ax = pylab.subplot(111)
         for i, id_d in enumerate(id_distances):
             which = records['id_distance'] == id_d
             delta = records[which]['delta']
@@ -127,7 +130,7 @@ def report_statistics_all(id_sub, stats, perc=10, W=0.2):
             order = order / float(order.size)
 
             
-            step = float(i) / (len(id_distances) - 1)
+            step = float(i) / (max(len(id_distances) - 1, 1))
             xstep = W * 2 * (step - 0.5) 
             fancy_error_display(ax, delta + xstep, order,
                                 colors[i], perc=perc, label=id_d)
@@ -139,6 +142,28 @@ def report_statistics_all(id_sub, stats, perc=10, W=0.2):
         pylab.xticks(ticks, ticks)
         pylab.yticks((0, 1), (0, 1))
         pylab.axis((0.5, 0.5 + np.max(delta), -0.024, 1.2))
+        legend_put_below(ax)
+
+    with f.plot('distance') as pylab:
+        ax = pylab.subplot(111)
+        for i, id_d in enumerate(id_distances):
+            which = records['id_distance'] == id_d
+            delta = records[which]['delta']
+            distance = records[which]['distance']
+
+            step = float(i) / max(len(id_distances) - 1, 1)
+            xstep = W * 2 * (step - 0.5) 
+            fancy_error_display(ax, delta + xstep, distance,
+                                colors[i], perc=perc, label=id_d)
+            
+        ieee_spines(pylab)    
+        ticks = sorted(list(set(list(delta))))
+        pylab.xlabel('plan length')
+        pylab.ylabel('distance')
+        pylab.xticks(ticks, ticks)
+#        pylab.yticks((0, 1), (0, 1))
+        a = pylab.axis()
+        pylab.axis((0.5, 0.5 + np.max(delta), -0.024, a[3]))
         legend_put_below(ax)
 
     return r

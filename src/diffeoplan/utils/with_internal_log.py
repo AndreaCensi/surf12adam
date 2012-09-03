@@ -1,7 +1,7 @@
 from .. import logger
 import time
 
-class WithInternalLog:
+class WithInternalLog(object):
     def __init__(self):
         self.log_lines = [] # log lines
 

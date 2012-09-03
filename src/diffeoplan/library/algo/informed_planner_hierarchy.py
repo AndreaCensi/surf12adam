@@ -13,12 +13,12 @@ class InformedPlannerHierarchy(InformedPlanner):
         This one knows that some plans are redundant
     """
     def __init__(self, diffeo_cover_params, *args, **kwargs):
-        InformedPlanner.__init__(self, *args, **kwargs)
+        super(InformedPlannerHierarchy, self).__init__(*args, **kwargs)
         self.diffeo_cover_params = diffeo_cover_params
         
     @contract(dds=DiffeoSystem)
     def init(self, id_dds, dds):
-        InformedPlanner.init(self, id_dds, dds)
+        super(InformedPlannerHierarchy, self).init(id_dds, dds)
         self.cover = DiffeoCover(id_dds, self.dds_hard, self.ds,
                                  **self.diffeo_cover_params)
         self.cover.go()
@@ -28,7 +28,7 @@ class InformedPlannerHierarchy(InformedPlanner):
     @contract(report=Report)
     def init_report(self, report):
         """ Creates a report for the initialization phase. """
-        InformedPlanner.init_report(self, report)
+        super(InformedPlannerHierarchy, self).init_report(report)
         if True:
             self.cover.draw_embeddings(report.section('embeddings'))
         

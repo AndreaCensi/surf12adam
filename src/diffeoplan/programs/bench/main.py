@@ -13,7 +13,7 @@ def bench_main(config, parser): #@UnusedVariable
     parser.add_option("-t", "--testcases", default='*',
                        help="Comma-separated list of algorithms. Can use *.")
 
-    parser.add_option("-o", "--output", default='out/planning-results',
+    parser.add_option("-o", "--output", default='out/dp-bench',
                       help="Output directory")
 
     parser.add_option("-c", "--command",

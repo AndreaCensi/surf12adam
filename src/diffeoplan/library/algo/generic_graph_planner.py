@@ -4,8 +4,9 @@ from diffeoplan.configuration import get_current_config
 from diffeoplan.library.algo import Connector, DiffeoTreeSearchImage
 from diffeoplan.library.analysis import PlanReducer
 from diffeoplan.library.discdds import (DiffeoSystem, guess_state_space,
-    plan_friendly)
+    plan_friendly, DiffeoAction)
 from matplotlib.cm import get_cmap
+from reprep import Report
 from reprep.plot_utils import turn_all_axes_off
 
  
@@ -24,7 +25,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
                  metric_goal, metric_goal_threshold,
                  metric_collapse, metric_collapse_threshold,
                  max_depth=10000, max_iterations=10000):
-        DiffeoPlanningAlgo.__init__(self)
+        super(GenericGraphPlanner, self).__init__()
         self.bidirectional = bidirectional
         config = get_current_config()
         self.metric_goal = config.distances.instance(metric_goal)        
@@ -48,9 +49,15 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
     @contract(dds=DiffeoSystem)
     def init(self, id_dds, dds):
         """ Might be redefined to add precomputation. """
-        DiffeoPlanningAlgo.init(self, id_dds, dds)
-    
-    
+        super(GenericGraphPlanner, self).init(id_dds, dds)
+        
+    @contract(report=Report)
+    def init_report(self, report):
+        """ Creates a report for the initialization phase. """
+        super(GenericGraphPlanner, self).init_report(report)
+        diffeosystem_display_products(self.dds_orig, report.section('actions_orig'), 5)
+        diffeosystem_display_products(self.dds, report.section('actions'), 5)
+
     def plan_init(self, y0, y1):
         self.y0 = y0
         self.y1 = y1
@@ -121,7 +128,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
     def log_connections_found(self, connections):
         self.info('Found %d connections' % len(connections))
         for c in connections:
-            d, p1, p2 = c
+            d, p1, p2 = c #@UnusedVariable
             self.info(' - between %s and %s' % 
                       (self.start_tree.node_friendly(p1),
                        self.goal_tree.node_friendly(p2)))
@@ -133,7 +140,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
     def log_planning_failed(self):
         self.info('Planning failed')
         
-    def log_plan_found(self, d, p1, p2, plan_red, plan):
+    def log_plan_found(self, d, p1, p2, plan_red, plan): #@UnusedVariable
         self.info('Connection between %s and %s' % 
                   (self.start_tree.node_friendly(p1),
                    self.goal_tree.node_friendly(p2)))
@@ -142,7 +149,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         
     def make_extra(self):
         """ Extra information to return about the search """
-        extra = DiffeoPlanningAlgo.make_extra(self)
+        extra = super(GenericGraphPlanner, self).make_extra()
         extra['start_tree'] = self.start_tree
         extra['goal_tree'] = self.goal_tree
         extra['connector'] = self.connector
@@ -288,3 +295,13 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
             turn_all_axes_off(pylab)
             pylab.colorbar()
         
+def diffeosystem_display_products(dds, report, nsteps):
+    # XXX: make separate
+    for i, a in enumerate(dds.actions):
+        f = report.figure('cmd%s' % i, cols=nsteps)
+        A = a
+        for k in range(nsteps):
+            A = DiffeoAction.compose(A, a)
+            rgb = A.get_diffeo2d_forward().get_rgb_info()
+            f.data_rgb('%s_%s' % (i, k), rgb)
+

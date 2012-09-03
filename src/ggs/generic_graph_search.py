@@ -7,7 +7,7 @@ EDGE_REGULAR = 'regular'
 EDGE_REDUNDANT = 'redundant'
 EDGE_EQUIV = 'equiv'
 
-class GenericGraphSearch:
+class GenericGraphSearch(object):
     
     __metaclass__ = ABCMeta
     

@@ -10,7 +10,7 @@ class DiffeoTreeSearchImageGreedy(DiffeoTreeSearchImage):
     """
     def __init__(self, metric_attractor, **kwargs):
         self.metric_attractor = metric_attractor
-        DiffeoTreeSearchImage.__init__(self, **kwargs)
+        super(DiffeoTreeSearchImageGreedy, self).__init__(**kwargs)
         
     @contract(attractor=UncertainImage)
     def set_attractor(self, attractor):
@@ -45,7 +45,7 @@ class DiffeoTreeSearchImageGreedyTree(DiffeoTreeSearchImage):
     """
     def __init__(self, metric_attractor, **kwargs):
         self.metric_attractor = metric_attractor
-        DiffeoTreeSearchImage.__init__(self, **kwargs)
+        super(DiffeoTreeSearchImageGreedyTree, self).__init__(**kwargs)
         
     @contract(other_tree=DiffeoTreeSearchImage)
     def set_other_tree(self, other_tree):

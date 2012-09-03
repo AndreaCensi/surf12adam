@@ -2,12 +2,11 @@ from . import np, contract
 from boot_agents.diffeo import Diffeomorphism2D
 from diffeoplan.library.analysis import PlanReducer
 from diffeoplan.library.discdds import (DiffeoAction, guess_state_space,
-    DiffeoSystem)
+    DiffeoSystem, plan_friendly)
 from diffeoplan.utils import WithInternalLog, memoize_instance
 from ggs import GenericGraphSearch
 import collections
 import networkx as nx
-from diffeoplan.library.discdds.plan_utils import plan_friendly
  
 
 class DiffeoTreeSearch(GenericGraphSearch, WithInternalLog):

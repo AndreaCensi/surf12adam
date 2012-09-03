@@ -37,6 +37,14 @@ class DiffeoplanConfigMaster(ConfigMaster):
         self.testcases = self.add_class('testcases', '*.tc.yaml',
                                      check_generic_code_desc,
                                      GenericCall())
+
+        self.streams = self.add_class('streams', '*.streams.yaml',
+                                     check_generic_code_desc,
+                                     GenericCall())
+        
+        self.learners = self.add_class('learners', '*.learners.yaml',
+                                     check_generic_code_desc,
+                                     GenericCall())
  
         self.sets = self.add_class('sets', '*.batch.yaml', check_valid_set)
   

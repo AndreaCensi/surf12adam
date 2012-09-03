@@ -1,36 +1,33 @@
-from . import  logger
+from . import logger, np
+from .diffeo_analysis import DiffeoAnalysis
 from PIL import Image #@UnresolvedImport
 from boot_agents.diffeo import (DiffeomorphismEstimator, diffeo_to_rgb_angle,
     diffeo_to_rgb_norm)
-from conf_tools.utils.friendly_paths import friendly_path
+from boot_agents.diffeo.learning import DiffeomorphismEstimatorFaster
 from diffeoplan.library import DiffeoAction, DiffeoSystem
-import numpy as np
-import pickle
-import yaml
-from contracts import contract
-import os
-from .diffeo_analysis import DiffeoAnalysis
+from diffeoplan.library.discdds.writing import ds_dump
 
 
 class DiffeoLearner:
     ''' Organizes a list of diffeomorphism estimators to learn the diffeomorphisms '''
     
-    @contract(size='seq[2](int)', search_area='seq[2](int)')
-    def __init__(self, size, search_area):
-        logger.info('Learner Initializing...')
+    def __init__(self, use_fast, diffeo_estimator_params):
+        '''
+        
+        :param use_fast: Use DiffeomorphismEstimatorFaster.
+        '''
         self.command_list = []
         self.estimators = []
         self.estimators_inv = []    
-        self.size = size
-        self.search_area = search_area
+        self.use_fast = use_fast
+        self.diffeo_estimator_params = diffeo_estimator_params
         
     def new_estimator(self):
-        width = self.size[0]
-        height = self.size[1]
-        s_w = float(self.search_area[0])
-        s_h = float(self.search_area[1])
-        shape = (s_h / height, s_w / width)
-        return DiffeomorphismEstimator(shape, "continuous")
+        if self.use_fast:
+            logger.warning('Using experimental diffeo estimator')
+            return DiffeomorphismEstimatorFaster(**self.diffeo_estimator_params)
+        else:
+            return DiffeomorphismEstimator(**self.diffeo_estimator_params)
     
     def command_index(self, command):
         if not command in self.command_list:    
@@ -42,10 +39,25 @@ class DiffeoLearner:
         index = self.command_list.index(command)
         return index
     
+    def merge(self, other):
+        """ Merges the values obtained by "other" with ours. """
+        for i in range(len(self.command_list)):
+            """ Note that they are not necessarily in the right order. """
+            command = self.command_list[i]
+            if not command in other.command_list:
+                logger.warning('The other does not have %s' % str(command))
+                logger.warning('Ours: %s' % self.command_list)
+                logger.warning('His:  %s' % other.command_list)
+                continue
+            j = other.command_list.index(command)
+            
+            self.estimators[i].merge(other.estimators[j])
+            self.estimators_inv[i].merge(other.estimators_inv[j])
+    
         
     def update(self, Y0, U0, Y1):
         cmd_ind = self.command_index(U0)
-        logger.info('Updating estimator %s' % str(cmd_ind))
+        #logger.info('Updating estimator %s' % str(cmd_ind))
         for ch in range(3):
             self.estimators[cmd_ind].update(Y0[:, :, ch], Y1[:, :, ch])
             self.estimators_inv[cmd_ind].update(Y1[:, :, ch], Y0[:, :, ch])
@@ -75,7 +87,19 @@ class DiffeoLearner:
             
         name = 'Uninterpreted Diffeomorphism System'
         self.system = DiffeoSystem(name, action_list)
+        return self.system
     
+    def display(self, report):        
+        for i in range(len(self.estimators)):
+#            if i >= 2:
+#                warnings.warn('quick hack') 
+#                break
+
+            logger.info('Report for %d-th action' % i)
+            self.estimators[i].display(report.section('d%s' % i))
+            self.estimators_inv[i].display(report.section('d%s-inv' % i))
+            
+        
     def analyze(self, prefix='', folder=''):
         """
             Make some analysis of all estimators
@@ -98,28 +122,9 @@ class DiffeoLearner:
             :param path: output directory
             :param name: name of this system
         '''
+        # TODO: remove this function, and remove local variable self.system
+        ds_dump(self.system, path, name, "Learned")
         
-        if not os.path.exists(path):
-            os.makedirs(path)
- 
-        basename = os.path.join(path, '%s.discdds' % name)
-        
-        pickle_file = basename + '.pickle'
-        with open(pickle_file, 'wb') as f:
-            pickle.dump(self.system, f)
-                
-        filename_yaml = basename + '.yaml'
-        description = {
-                       'id': name,
-                       'desc': 'Learned diffeomorphism',
-                       'code': ['diffeoplan.library.load_pickle',
-                                {'file:pickle': name + '.discdds.pickle'}]
-                       }
-        # XXX: repeated code
-        logger.info('Writing to %r ' % friendly_path(filename_yaml))
-        with open(filename_yaml, 'w') as f:
-            yaml.dump([description], f,
-                      default_flow_style=False, explicit_start=True)
             
     # TODO: remove
     def show_diffeomorphisms(self):

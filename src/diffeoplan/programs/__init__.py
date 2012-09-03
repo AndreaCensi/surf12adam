@@ -13,5 +13,6 @@ from .bench import *
 from .logcases import *
 from .distances import *
 from .ddsgeo import *
+from .streams import *
 
 from .main import *

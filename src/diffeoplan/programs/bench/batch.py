@@ -10,7 +10,7 @@ import os
                  'batch <sets> -c command')
 def batch_main(config, parser):
 
-    parser.add_option("-o", "--output", default='out/planning-results',
+    parser.add_option("-o", "--output", default='out/dp-batch',
                       help="Output directory")
 
     parser.add_option("-c", "--command",
@@ -27,7 +27,7 @@ def batch_main(config, parser):
         
     logger.info('Batch sets to do: %s' % todo)
     
-    outdir = os.path.join(options.output, id_comb)
+    outdir = os.path.join(options.output, 'set-%s' % id_comb)
     
     # Compmake storage for results
     storage = os.path.join(outdir, 'compmake')

@@ -1,0 +1,108 @@
+- id: n35o
+  desc: Normal learner (35% displacement)
+  code: 
+  - learner.DiffeoLearner
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      inference_method: order
+
+- id: n25o
+  desc: Normal learner (25% displacement)
+  code: 
+  - learner.DiffeoLearner
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.25, 0.25]
+      inference_method: order
+
+- id: n20o
+  desc: Normal learner (20% displacement)
+  code: 
+  - learner.DiffeoLearner
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.20, 0.20]
+      inference_method: order
+
+- id: n15o
+  desc: Normal learner (15% displacement)
+  code: 
+  - learner.DiffeoLearner
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.15, 0.15]
+      inference_method: order
+
+- id: n10o
+  desc: Normal learner (10% displacement)
+  code: 
+  - learner.DiffeoLearner
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.10, 0.10]
+      inference_method: order
+      
+- id: n05o
+  desc: Normal learner (5% displacement)
+  code: 
+  - learner.DiffeoLearner
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.05, 0.05]
+      inference_method: order
+
+
+- id: n35s
+  desc: Normal learner (35% displacement)
+  code: 
+  - learner.DiffeoLearner
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      inference_method: sim
+
+- id: n25s
+  desc: Normal learner (25% displacement)
+  code: 
+  - learner.DiffeoLearner
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.25, 0.25]
+      inference_method: sim
+
+- id: n20s
+  desc: Normal learner (20% displacement)
+  code: 
+  - learner.DiffeoLearner
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.20, 0.20]
+      inference_method: sim
+
+- id: n15s
+  desc: Normal learner (15% displacement)
+  code: 
+  - learner.DiffeoLearner
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.15, 0.15]
+      inference_method: sim
+
+- id: n10s
+  desc: Normal learner (10% displacement)
+  code: 
+  - learner.DiffeoLearner
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.10, 0.10]
+      inference_method: sim
+      
+- id: n05s
+  desc: Normal learner (5% displacement)
+  code: 
+  - learner.DiffeoLearner
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.05, 0.05]
+      inference_method: sim

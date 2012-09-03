@@ -1,9 +1,9 @@
 from . import DiffeoAction, np, contract, UncertainImage, logger
-from diffeoplan.library.discdds.diffeo_action import (
-    diffeoaction_comm_distance_L2_infow, diffeoaction_comm_distance_L2,
-    diffeoaction_anti_distance_L2_infow, diffeoaction_anti_distance_L2,
-    diffeoaction_distance_L2_infow, diffeoaction_distance_L2)
-from diffeoplan.utils.matrices import construct_matrix
+from diffeoplan.library.discdds import (diffeoaction_comm_distance_L2_infow,
+    diffeoaction_comm_distance_L2, diffeoaction_anti_distance_L2_infow,
+    diffeoaction_anti_distance_L2, diffeoaction_distance_L2_infow,
+    diffeoaction_distance_L2)
+from diffeoplan.utils import construct_matrix
 from reprep import Report
 
 class DiffeoSystem():
@@ -71,7 +71,6 @@ class DiffeoSystem():
             a = DiffeoAction.compose(a, a_i) # XXX: check
         return a
     
-    
     @contract(us='seq[N](array)', returns='list[N](int)')
     def commands_to_indices(self, us):
         """ Given the sequence of commands (e.g. [[0,0,+100], [0,100,0],...]),
@@ -101,16 +100,17 @@ class DiffeoSystem():
         """ Converts from indices to the original commands. """
         return [self.actions[x].original_cmd for x in plan]
   
-    @contract(report=Report, image=UncertainImage)
-    def display(self, report, image):
+    @contract(report=Report)#, image=UncertainImage)
+    def display(self, report, image=None):
         '''
             Displays this diffeo system in a report.
         
             :param report: instance of reprep.Report to fill.
             :param image: RGB image to use as test.
         '''
-        
+            
         overview = 'Displaying a discrete DDS with %d actions' % len(self.actions)
+        overview += '\nResolution: %s' % str(self.get_shape())
         report.text('overview', overview)
     
         for i, action in enumerate(self.actions):

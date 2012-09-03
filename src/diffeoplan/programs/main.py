@@ -42,7 +42,7 @@ def dp(arguments):
     parser.add_option("--profile", default=False, action='store_true',
                       help="Use Python profiler")
 
-    parser.add_option("-d", "--directory", default="default:.", action='store_true',
+    parser.add_option("-d", "--directory", default="default:.",
                       help="Configuration directory")
 
     (options, args) = parser.parse_args(arguments)

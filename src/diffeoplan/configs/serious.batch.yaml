@@ -98,7 +98,42 @@
   #- bnbn1_it1000
   testcases:
   - tl_orbit-pt256-80x60_000
+
+- id: test_misc7
+  desc: |
+    log=~/diffeo-data/processed-data/160x120nz/orbit-pt256z2-window.600s.processed.bag
+    dp --contracts logcases --log $log --dds orbit-pt256-160x120 -d 1 -n 1
+    dp --contracts logcases --log $log --dds orbit-pt256-160x120 -d 2 -n 1
+    dp --contracts logcases --log $log --dds orbit-pt256-160x120 -d 3 -n 1
+    dp --contracts logcases --log $log --dds orbit-pt256-160x120 -d 4 -n 1
+    dp --contracts logcases --log $log --dds orbit-pt256-160x120 -d 5 -n 1
+    dp --contracts logcases --log $log --dds orbit-pt256-160x120 -d 6 -n 1
+
+  algorithms:
+  #- gnbn1_it1000
+  #- gnbc1_it1000
+  - bnbn1_it1000
+  - bnbc1_it1000
+  - bebn1_it1000
+  - bebc1_it1000
+  #- bedc1_it1000
+  - begc1_it1000
+  - betc1_it1000
+  # - gebc1_it1000
+  #- bnbn1_it1000
+  testcases:
+  - tc_orbit-pt256-160x120_d1_000
+  - tc_orbit-pt256-160x120_d2_000
+  - tc_orbit-pt256-160x120_d3_000
+  - tc_orbit-pt256-160x120_d4_000
+  - tc_orbit-pt256-160x120_d5_000
+  - tc_orbit-pt256-160x120_d6_000
+
+
  
+ 
+
+
 
 
 - id: torus2_d10

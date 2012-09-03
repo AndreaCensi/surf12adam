@@ -10,6 +10,10 @@
     metric_collapse_threshold: -1 # no collapse
     max_iterations: "${n}"
     max_depth: &max_depth 15
+    # hard_choice_params: &hard_choice_params
+    #     use_isomorphism_heuristics: True
+    #     info_percentile: 50
+    #     info_threshold: null
 
 - id: "gnbc1_it${n}"
   desc: "One-dir search; no pre-filtering; L2w post (0.1); ${n} iterations."
@@ -20,6 +24,7 @@
     metric_goal_threshold: *metric_goal_threshold
     metric_collapse: *metric_collapse
     metric_collapse_threshold: &metric_collapse_threshold 0.001
+    # #hard_choice_params: *hard_choice_params
     max_iterations: "${n}"
     max_depth: *max_depth
 
@@ -34,10 +39,7 @@
     metric_collapse_threshold: -1 # no collapse
     max_iterations: "${n}"
     max_depth: *max_depth
-    hard_choice_params: &hard_choice_params
-        use_isomorphism_heuristics: True
-        info_percentile: 50
-        info_threshold: null
+    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: &diffeo_structure_params
         tolerance: 0.5 # threshold for two commands to be commutative, etc.
     
@@ -52,7 +54,7 @@
     metric_collapse_threshold: *metric_collapse_threshold
     max_iterations: "${n}"
     max_depth: *max_depth
-    hard_choice_params: *hard_choice_params
+    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
 
 - id: "bnbn1_it${n}"
@@ -66,6 +68,7 @@
     metric_collapse_threshold: -1 # no collapse
     max_iterations: "${n}"
     max_depth: *max_depth
+    #hard_choice_params: *hard_choice_params
 
 - id: "bnbc1_it${n}"
   desc: "Bi-dir search; no pre-filtering; L2w post (0.1); ${n} iterations."
@@ -78,6 +81,8 @@
     metric_collapse_threshold: *metric_collapse_threshold 
     max_iterations: "${n}"
     max_depth: 15
+    #hard_choice_params: *hard_choice_params
+
 
 - id: "bebn1_it${n}"
   desc: "Bi-dir search; pre-filter equiv; no post-filtering; ${n} iterations."
@@ -90,7 +95,7 @@
     metric_collapse_threshold: -1 # no collapse
     max_iterations: "${n}"
     max_depth: *max_depth
-    hard_choice_params: *hard_choice_params
+    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
     
 - id: "bebc1_it${n}"
@@ -104,7 +109,7 @@
     metric_collapse_threshold: *metric_collapse_threshold
     max_iterations: "${n}"
     max_depth: *max_depth
-    hard_choice_params: *hard_choice_params
+    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
 
 - id: "begc1_it${n}"
@@ -118,7 +123,7 @@
     metric_collapse_threshold: *metric_collapse_threshold
     max_iterations: "${n}"
     max_depth: *max_depth
-    hard_choice_params: *hard_choice_params
+    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
     metric_attractor: *metric_goal # could choose a different one in principle
 
@@ -133,7 +138,7 @@
     metric_collapse_threshold: *metric_collapse_threshold
     max_iterations: "${n}"
     max_depth: *max_depth
-    hard_choice_params: *hard_choice_params
+    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
     metric_attractor: *metric_goal # could choose a different one in principle
 
@@ -149,7 +154,7 @@
     metric_collapse_threshold: *metric_collapse_threshold
     max_iterations: "${n}"
     max_depth: *max_depth
-    hard_choice_params: *hard_choice_params
+    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
     metric_attractor: *metric_goal # could choose a different one in principle
 
@@ -164,7 +169,7 @@
     metric_collapse_threshold: *metric_collapse_threshold
     max_iterations: "${n}"
     max_depth: *max_depth
-    hard_choice_params: *hard_choice_params
+    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
     metric_attractor: *metric_goal # could choose a different one in principle
 
@@ -179,7 +184,7 @@
     metric_collapse_threshold: *metric_collapse_threshold
     max_iterations: "${n}"
     max_depth: *max_depth
-    hard_choice_params: *hard_choice_params
+    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
     metric_attractor: *metric_goal # could choose a different one in principle
 
@@ -195,7 +200,7 @@
     metric_collapse_threshold: -10
     max_iterations: "${n}"
     max_depth: *max_depth
-    hard_choice_params: *hard_choice_params
+    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
     metric_attractor: *metric_goal # could choose a different one in principle
 
@@ -210,7 +215,7 @@
     metric_collapse_threshold: *metric_collapse_threshold
     max_iterations: "${n}"
     max_depth: *max_depth
-    hard_choice_params: *hard_choice_params
+    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
     diffeo_cover_params:
         min_visibility: 0.4  # do not expand nodes with less that this

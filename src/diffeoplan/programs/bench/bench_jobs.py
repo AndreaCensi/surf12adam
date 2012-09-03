@@ -3,8 +3,8 @@ from . import (contract, create_tables, run_planning_stats, run_planning, logger
 from collections import defaultdict
 from compmake import comp
 from reprep import Report
-from reprep.report_utils import StoreResults
-from reprep.report_utils import ReportManager
+from reprep.report_utils import ReportManager, StoreResults
+from diffeoplan.library.images.uncertain_image import UncertainImage
 
 
 def create_bench_jobs(config, algos, testcases, outdir):
@@ -55,8 +55,10 @@ def create_bench_jobs(config, algos, testcases, outdir):
                 allruns[attrs] = result_stats
                 allplanning[attrs] = result
     
-    create_algo_init_jobs(algoinit, rm)
-    
+    jobs_report_algo_init(config, rm, algoinit)
+    jobs_report_tc(config, rm, testcases)
+    jobs_report_dds(config, rm, id_discdds2testcases.keys())
+        
 #    def add_report(short, stats, desc):
 #        job_id = 'report-%s' % short
 #        report = comp(report_for_stats, short, stats, desc, job_id=job_id)
@@ -87,13 +89,24 @@ def create_bench_jobs(config, algos, testcases, outdir):
     
     rm.create_index_job()
 
-def create_algo_init_jobs(algoinit, rm):
+def jobs_report_tc(config, rm, testcases):
+    for id_tc in testcases:
+        tc = config.testcases.instance(id_tc)
+        report = comp(report_tc, config, id_tc)
+        rm.add(report, 'tc', id_tc=id_tc, id_discdds=tc.id_discdds)
+
+def jobs_report_dds(config, rm, discdds):
+    for id_discdds in discdds:
+        report = comp(report_dds, config, id_discdds)
+        rm.add(report, 'dds', id_discdds=id_discdds)
+        
+def jobs_report_algo_init(config, rm, algoinit): #@UnusedVariable
     """ add the initialization report for each algorithm """
     for k, algo in algoinit.items():
         id_algo = k['id_algo'] 
         id_discdds = k['id_discdds']
         job_id = 'init-%s-%s-report' % (id_algo, id_discdds)
-        report = comp(init_algorithm_report, id_algo, id_discdds, algo, job_id=job_id)
+        report = comp(report_init_algorithm, id_algo, id_discdds, algo, job_id=job_id)
         rm.add(report, 'init', id_algo=id_algo, id_discdds=id_discdds)
         
 def init_algorithm(config, id_algo, id_discdds):
@@ -109,9 +122,26 @@ def init_algorithm(config, id_algo, id_discdds):
     return algo
 
 @contract(returns=Report)
-def init_algorithm_report(id_algo, id_discdds, algo):
+def report_init_algorithm(id_algo, id_discdds, algo):
     """ Creates a report for the initialization phase of the algorithm """
     r = Report('init-%s-%s' % (id_algo, id_discdds)) 
     algo.init_report(r)
     return r
     
+@contract(returns=Report)
+def report_tc(config, id_tc):
+    r = Report('tc-%s' % (id_tc))
+    tc = config.testcases.instance(id_tc)
+    tc.display(r)
+    return r
+
+@contract(returns=Report)
+def report_dds(config, id_discdds, image='lena'):
+    r = Report('dds-%s' % (id_discdds))
+    dds = config.discdds.instance(id_discdds)
+    image = config.images.instance(image)
+    y0 = UncertainImage(image)
+    dds.display(r, y0)
+    return r
+
+

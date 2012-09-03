@@ -7,10 +7,10 @@ class InformedPlannerGreedy(InformedPlanner):
     def __init__(self, metric_attractor, **kwargs):
         config = get_current_config()
         self.metric_attractor = config.distances.instance(metric_attractor)
-        InformedPlanner.__init__(self, **kwargs)
+        super(InformedPlannerGreedy, self).__init__(**kwargs)
         
     def plan_init(self, y0, y1):
-        InformedPlanner.plan_init(self, y0, y1)
+        super(InformedPlannerGreedy, self).plan_init(y0, y1)
         self.start_tree.set_attractor(y1)
         self.goal_tree.set_attractor(y0)
 
@@ -59,10 +59,10 @@ class InformedPlannerGreedyTree(InformedPlanner):
     def __init__(self, metric_attractor, **kwargs):
         config = get_current_config()
         self.metric_attractor = config.distances.instance(metric_attractor)
-        InformedPlanner.__init__(self, **kwargs)
+        super(InformedPlannerGreedyTree, self).__init__(**kwargs)
         
     def plan_init(self, y0, y1):
-        InformedPlanner.plan_init(self, y0, y1)
+        super(InformedPlannerGreedyTree, self).plan_init(y0, y1)
         self.start_tree.set_other_tree(self.goal_tree)
         self.goal_tree.set_other_tree(self.start_tree)
 

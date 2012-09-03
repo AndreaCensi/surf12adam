@@ -133,7 +133,7 @@ def report_predstats(id_discdds, id_subset, id_distances, records):
             distance = records[id_d]
             distance_order = scale_score(distance) / (float(distance.size) - 1)
             
-            step = float(i) / (len(id_distances) - 1)
+            step = float(i) / max(len(id_distances) - 1, 1)
             xstep = W * 2 * (step - 0.5) 
             fancy_error_display(ax, delta + xstep, distance_order,
                                 colors[i], perc=10, label=id_d)
@@ -153,7 +153,7 @@ def report_predstats(id_discdds, id_subset, id_distances, records):
         for i, id_d in enumerate(id_distances):
             distance = records[id_d]
             
-            step = float(i) / (len(id_distances) - 1)
+            step = float(i) / max(len(id_distances) - 1, 1)
             xstep = W * 2 * (step - 0.5) 
             fancy_error_display(ax, delta + xstep, distance,
                                 colors[i], perc=10, label=id_d)
@@ -161,12 +161,12 @@ def report_predstats(id_discdds, id_subset, id_distances, records):
         ieee_spines(pylab)    
         ticks = sorted(list(set(list(delta))))
         pylab.xlabel('interval length')
-        pylab.ylabel('normalized distance')
+        pylab.ylabel('distance')
         pylab.xticks(ticks, ticks)
-        pylab.yticks((0, 1), (0, 1))
-        pylab.axis((0.5, 0.5 + np.max(delta), -0.024, 1.2))
+#        pylab.yticks((0, 1), (0, 1))
+        a = pylab.axis()
+        pylab.axis((0.5, 0.5 + np.max(delta), -0.024, a[3]))
         legend_put_below(ax)
-
 
     return r
      
@@ -184,8 +184,8 @@ def compute_predstats(config, id_discdds, log, delta, id_distances):
         ds = []
         for name in id_distances:
             d = distances[name].distance(y1, py0)
-            d0 = distances[name].distance(y1, y0)
-            ds.append(d / d0)
+#            d0 = distances[name].distance(y1, y0)
+            ds.append(d)
         
         a = np.array(tuple(ds), dtype=dtype)
         results.append(a)
