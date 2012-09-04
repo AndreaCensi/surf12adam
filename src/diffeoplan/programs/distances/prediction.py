@@ -1,52 +1,56 @@
 from .. import declare_command, logger
+from boot_agents.utils import scale_score
 from compmake import (batch_command, compmake_console, comp, read_rc_files,
     use_filesystem)
-from diffeoplan.library.images import UncertainImage
-from diffeoplan.programs.logcases.makelogcases import iterate_testcases
+from diffeoplan.library import UncertainImage
+from diffeoplan.programs.distances import (fancy_error_display, legend_put_below,
+    create_subsets)
+from diffeoplan.programs.logcases import iterate_testcases
 from diffeoplan.utils import UserError
 from geometry.utils import assert_allclose
+from itertools import chain, starmap, islice, cycle
+from reprep import Report
+from reprep.plot_utils import ieee_spines
 from reprep.report_utils import StoreResults, ReportManager
 import numpy as np
 import os
-from reprep import Report
-from diffeoplan.programs.distances.dist_stats import fancy_error_display, \
-    legend_put_below, create_subsets
-from reprep.plot_utils.styles import ieee_spines
-from boot_agents.utils.nonparametric import scale_score
 
 @declare_command('pred-stats',
-                 'pred-stats [-d <distances>] -s discdds [logs]')
+                 'pred-stats -d <distances> -s <streams> --dds discdds')
 def predstats_main(config, parser): 
     
     parser.add_option("-d", "--distances", default='*',
                       help="Comma-separated list of distances. Can use *.")
     
-    parser.add_option("-s", "--dds",
-                       help="Which system to use")
+    parser.add_option("-S", "--dds",
+                       help="Comma-separated list of diffeosystems.")
+
+    parser.add_option("-s", "--streams",
+                       help="Comma-separated list of streams.")
 
     parser.add_option("-c", "--command",
                       help="Command to pass to compmake for batch mode")
     
-    options, args = parser.parse()
+    options = parser.parse_options()
     
     id_discdds = options.dds
+    
+    if not options.streams:
+        msg = 'Please specify streams using -s.'
+        raise UserError(msg)
     
     if not id_discdds:
         msg = 'Please specify which discdds to use.'
         raise UserError(msg)
     
-    logs = args
-    
-    if not logs:
-        msg = 'Specify logs.'
-        raise UserError(msg)
-    
     distances = config.distances.expand_names(options.distances)
+    streams = config.streams.expand_names(options.streams)
     
     logger.info('Using distances: %s' % distances)
+    logger.info('Using streams: %s' % streams)
     logger.info('Using discdds: %s' % id_discdds)
     
-    outdir = 'out/pred-stats/%s' % id_discdds
+    outdir = 'out/dp-pred-stats/%s' % id_discdds
     storage = os.path.join(outdir, 'compmake')
     use_filesystem(storage)
     read_rc_files()
@@ -55,7 +59,7 @@ def predstats_main(config, parser):
     
     create_predstats_jobs(config=config, distances=distances,
                           id_discdds=id_discdds,
-                          logs=logs, outdir=outdir, rm=rm)
+                          streams=streams, rm=rm, maxd=10)
     rm.create_index_job()
 
     if options.command:
@@ -64,28 +68,23 @@ def predstats_main(config, parser):
         compmake_console()
         return 0
     
-def create_predstats_jobs(config, distances, logs, outdir, id_discdds, rm, maxd=10):
+def create_predstats_jobs(config, distances, streams, id_discdds, rm, maxd):
     # Compmake storage for results
     store = StoreResults()
     
     for delta in range(1, maxd):
-        for i, log in enumerate(logs):
-            key = dict(delta=delta, log=os.path.basename(log))
+        for i, id_stream in enumerate(streams):
+            key = dict(delta=delta, id_stream=id_stream)
             job_id = 'pred-log%s-delta%s' % (i, delta)
             
             store[key] = comp(compute_predstats,
                               config, id_discdds,
-                              log, delta, distances,
+                              id_stream, delta, distances,
                               job_id=job_id)
      
-    
     subsets = create_subsets(distances)
     
     job_report(subsets, id_discdds, store, rm)
-    
-     
-from itertools import chain, starmap
-
     
 
 def job_report(subsets, id_discdds, store, rm):
@@ -100,11 +99,11 @@ def make_records(results):
      
     def make_array(key, distances):
         dtype = [('delta', 'int'),
-                 ('log', 'S64')]
+                 ('id_stream', 'S64')]
         dtype += list(distances[0].dtype.descr)
         dtype = np.dtype(dtype)
         for distance in distances:
-            fields = [key['delta'], key['log']]
+            fields = [key['delta'], key['id_stream']]
             fields += map(lambda x: float(distance[x]), distance.dtype.fields)
             
             yield np.array(tuple(fields), dtype=dtype)
@@ -114,7 +113,6 @@ def make_records(results):
     records = np.hstack(records)
     return records
 
-from itertools import islice, cycle
 
 def report_predstats(id_discdds, id_subset, id_distances, records):
     r = Report('predistats-%s-%s' % (id_discdds, id_subset))
@@ -170,13 +168,14 @@ def report_predstats(id_discdds, id_subset, id_distances, records):
 
     return r
      
-def compute_predstats(config, id_discdds, log, delta, id_distances):
+def compute_predstats(config, id_discdds, id_stream, delta, id_distances):
     dds = config.discdds.instance(id_discdds)
+    stream = config.streams.instance(id_stream)
     distances = dict(map(lambda x: (x, config.distances.instance(x)), id_distances))
     dtype = [(x, 'float32') for x in id_distances]
     
     results = []
-    for logitem in iterate_testcases(log, delta):
+    for logitem in iterate_testcases(stream.read_all(), delta):
         assert_allclose(len(logitem.u), delta)
         y0 = UncertainImage(logitem.y0)
         y1 = UncertainImage(logitem.y1)

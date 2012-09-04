@@ -1,18 +1,10 @@
 ##Code from:
 # http://nullege.com/codes/show/src%40c%40m%40cmu-ros-pkg-HEAD%40trunk%40posedetectiondb%40src%40ParseMessages.py/75/sensor_msgs.msg.Image/python
 # 
-
-#import os
-#import scipy
-#import signal
-#import string
-#import sys
-#import threading
-#import time
+ 
 import PIL.Image #@UnresolvedImport
 import numpy
 import roslib    #@UnresolvedImport @UnusedImport
-#; roslib.load_manifest(PKG)
 import rospy     #@UnresolvedImport @UnusedImport
 import sensor_msgs.msg
 import struct
@@ -65,26 +57,26 @@ def imgmsg_to_pil(rosimage, encoding_to_mode={
         if rosimage.encoding.find('rgb') >= 0 or rosimage.encoding.find('bgr') >= 0:
             channels = 3
   
-    data = struct.unpack( ('>' if rosimage.is_bigendian else '<') + '%d'%(rosimage.width*rosimage.height*channels) + conversion,rosimage.data)
+    data = struct.unpack(('>' if rosimage.is_bigendian else '<') + '%d' % (rosimage.width * rosimage.height * channels) + conversion, rosimage.data)
   
     if conversion == 'f' or conversion == 'd':
         dimsizes = [rosimage.height, rosimage.width, channels]
-        imagearr = numpy.array(255*I,dtype=numpy.uint8) #@UndefinedVariable
-        im = PIL.Image.frombuffer('RGB' if channels == 3 else 'L',dimsizes[1::-1],imagearr.tostring(), 'raw','RGB',0,1)
+        imagearr = numpy.array(255 * I, dtype=numpy.uint8) #@UndefinedVariable
+        im = PIL.Image.frombuffer('RGB' if channels == 3 else 'L', dimsizes[1::-1], imagearr.tostring(), 'raw', 'RGB', 0, 1)
         if channels == 3:
-            im = PIL.Image.merge('RGB',im.split()[-1::-1])
-        return im,data,dimsizes
+            im = PIL.Image.merge('RGB', im.split()[-1::-1])
+        return im, data, dimsizes
     else:
         mode = encoding_to_mode[rosimage.encoding]
         step_size = PILmode_channels[mode]
         dimsizes = [rosimage.height, rosimage.width, step_size]
-        im = PIL.Image.frombuffer(mode,dimsizes[1::-1], rosimage.data,'raw',mode,0,1)
+        im = PIL.Image.frombuffer(mode, dimsizes[1::-1], rosimage.data, 'raw', mode, 0, 1)
         if mode == 'RGB':
-            im = PIL.Image.merge('RGB',im.split()[-1::-1])
+            im = PIL.Image.merge('RGB', im.split()[-1::-1])
         return im, data, dimsizes
   
 def pil_to_imgmsg(image, encodingmap={'L':'mono8', 'RGB':'rgb8', 'RGBA':'rgba8', 'YCbCr':'yuv422'},
-                        PILmode_channels = { 'L' : 1, 'RGB' : 3, 'RGBA' : 4, 'YCbCr' : 3 }):
+                        PILmode_channels={ 'L' : 1, 'RGB' : 3, 'RGBA' : 4, 'YCbCr' : 3 }):
     rosimage = sensor_msgs.msg.Image()
     # adam print 'Channels image.mode: ',PILmode_channels[image.mode]
     rosimage.encoding = encodingmap[image.mode]
@@ -105,7 +97,7 @@ def numpy_to_imgmsg(image, stamp=None):
     else:
         rosimage.encoding = '32FC%d' % image.shape[2]
         rosimage.step = image.shape[2] * rosimage.width * 4
-        rosimage.data = numpy.array(image.flat,dtype=numpy.float32).tostring()
+        rosimage.data = numpy.array(image.flat, dtype=numpy.float32).tostring()
     if stamp is not None:
         rosimage.header.stamp = stamp
     return rosimage

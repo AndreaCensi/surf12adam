@@ -1,8 +1,8 @@
 from contracts import contract
-from learner.programs.diffeo_learner.bag_reader import get_image_array
 import numpy as np
 from PIL import Image #@UnresolvedImport
 from procgraph_pil.pil_operations import resize
+from diffeoplan.library.logs.rosbag.bag_reader import get_image_array
 factor = 5
 
 class Zoomer:

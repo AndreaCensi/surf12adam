@@ -10,7 +10,7 @@ import os
 def show_symdiffeo(config, parser): #@UnusedVariable
     """ Displays a symbolically-defined DDS """
     parser.add_option("-o", "--output", help="Output directory",
-                      default='out/show_symdiffeos/')
+                      default='out/dp-show-symdiffeo/')
     parser.add_option("-i", "--id_image", help="ID image.", default='lena')
     parser.add_option("-d", "--id_diffeo", help="ID diffeo.")
     parser.add_option("-r", "--resolution", default=64,

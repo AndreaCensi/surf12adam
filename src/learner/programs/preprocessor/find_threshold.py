@@ -1,7 +1,7 @@
 from . import logger
 import numpy as np
 import rosbag
-from learner.programs.diffeo_learner.bag_reader import get_image_array
+from diffeoplan.library.logs.rosbag.bag_reader import get_image_array
 
 def find_dt_threshold(bagfile, stream, distance, ignore_first=100, max_images=300):
     '''

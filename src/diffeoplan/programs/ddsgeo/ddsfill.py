@@ -10,7 +10,7 @@ from diffeoplan.programs.ddsgeo.diffeo_system_bounds import DiffeoSystemBounds
 def ddsfill(config, parser):
     """ Displays the intrinsic geometry of a learned DDS """
     parser.add_option("-o", "--output", help="Output directory",
-                      default='out/show_dds_fill/')
+                      default='out/dp-show-discdds-fill/')
     parser.add_option("-t", "--tolerance", help="Normalized tolerance",
                       default=0.3, type='float')
     parser.add_option("-i", "--info_threshold", help="Normalized tolerance",
@@ -30,7 +30,6 @@ def ddsfill(config, parser):
         todo = config.discdds.keys()  
     else:
         todo = config.discdds.expand_names(which)
-
 
     for id_dds in todo:
         dds = config.discdds.instance(id_dds) 

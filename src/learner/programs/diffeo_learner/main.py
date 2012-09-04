@@ -1,4 +1,4 @@
-from . import logger, read_bag
+from . import logger
 from bootstrapping_olympics.utils.in_a_while import InAWhile
 from diffeoplan.library.images.uncertain_image import UncertainImage
 from diffeoplan.utils.script_utils import UserError
@@ -9,6 +9,7 @@ from reprep import Report
 import os
 import pickle
 import urllib
+from diffeoplan.library.logs.rosbag.bag_reader import read_bag
 
 
 def diffeo_learner_main():

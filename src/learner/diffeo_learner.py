@@ -31,7 +31,7 @@ class DiffeoLearner:
     
     def command_index(self, command):
         if not command in self.command_list:    
-            logger.info('Adding new command to command_list: %s ' % str(command))
+            logger.info('Adding new command %s' % str(command))
             self.command_list.append(command)
             self.estimators.append(self.new_estimator())
             self.estimators_inv.append(self.new_estimator())
@@ -40,20 +40,31 @@ class DiffeoLearner:
         return index
     
     def merge(self, other):
-        """ Merges the values obtained by "other" with ours. """
+        """ Merges the values obtained by "other" with ours. 
+            Note that we don't make a deep copy of structures.
+        """
         for i in range(len(self.command_list)):
-            """ Note that they are not necessarily in the right order. """
+            # Note that they are not necessarily in the right order.
             command = self.command_list[i]
             if not command in other.command_list:
-                logger.warning('The other does not have %s' % str(command))
-                logger.warning('Ours: %s' % self.command_list)
-                logger.warning('His:  %s' % other.command_list)
+                logger.info('The other does not have %s' % str(command))
+                logger.info('Ours: %s' % self.command_list)
+                logger.info('His:  %s' % other.command_list)
                 continue
             j = other.command_list.index(command)
             
             self.estimators[i].merge(other.estimators[j])
             self.estimators_inv[i].merge(other.estimators_inv[j])
-    
+        # Now add the ones we don't have.
+        for j in range(len(other.command_list)):
+            command = other.command_list[j]
+            if command in self.command_list:
+                # Already have it
+                continue
+            logger.info('Adding command %s' % str(command))
+            self.command_list.append(command)
+            self.estimators.append(other.estimators[j])
+            self.estimators_inv.append(other.estimators_inv[j])
         
     def update(self, Y0, U0, Y1):
         cmd_ind = self.command_index(U0)
@@ -91,10 +102,6 @@ class DiffeoLearner:
     
     def display(self, report):        
         for i in range(len(self.estimators)):
-#            if i >= 2:
-#                warnings.warn('quick hack') 
-#                break
-
             logger.info('Report for %d-th action' % i)
             self.estimators[i].display(report.section('d%s' % i))
             self.estimators_inv[i].display(report.section('d%s-inv' % i))

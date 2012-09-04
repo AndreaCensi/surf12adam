@@ -110,7 +110,9 @@ class DiffeoSystem():
         '''
             
         overview = 'Displaying a discrete DDS with %d actions' % len(self.actions)
-        overview += '\nResolution: %s' % str(self.get_shape())
+        
+        if self.actions:
+            overview += '\nResolution: %s' % str(self.get_shape())
         report.text('overview', overview)
     
         for i, action in enumerate(self.actions):

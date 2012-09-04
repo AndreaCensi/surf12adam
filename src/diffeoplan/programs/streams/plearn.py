@@ -1,14 +1,13 @@
-from . import  logger
+from . import logger
 from .. import declare_command
-from compmake import (batch_command, compmake_console, comp,
-    read_rc_files, use_filesystem)
+from compmake import (batch_command, compmake_console, comp, read_rc_files,
+    use_filesystem)
+from diffeoplan.library.discdds.writing import ds_dump
+from reprep import Report
+from reprep.report_utils import ReportManager
 import itertools
 import os
-from reprep.report_utils.report_manager import ReportManager
-from reprep import Report
-from bootstrapping_olympics.utils.safe_pickle import safe_pickle_dump
-from conf_tools.load_entries import write_entries
-from diffeoplan.library.discdds.writing import ds_dump
+import warnings
 
 
 @declare_command('plearn',
@@ -60,7 +59,7 @@ def jobs_plearn(config, rm, learners, streams, outdir, nthreads):
         jobs_plearn_comb(config, rm, outdir, id_learner, id_stream, nthreads)
         
 def jobs_plearn_comb(config, rm, outdir, id_learner, id_stream, nthreads,
-                     intermediate_reports=False):
+                     intermediate_reports=True):
     partial = []
     for i in range(nthreads):
         job_id = 'learn-%s-%s-%sof%s' % (id_stream, id_learner, i + 1, nthreads)
@@ -140,7 +139,8 @@ def plearn_partial(config, id_learner, id_stream, i, n):
     learner = config.learners.instance(id_learner)
     logitems = stream.read_all()
     
-    filtered = filter_every(logitems, i, n)
+    # filtered = filter_every(logitems, i, n)
+    filtered = filter_commands(logitems, i, n)
     nrecords = 0
     for y0, u, y1 in filtered:
         learner.update(y0, u, y1)
@@ -157,3 +157,24 @@ def filter_every(it, i, n):
             yield x
         count += 1 
     
+def filter_commands(it, i, n):
+    """ Only gives the i-th % n discovered commands """
+    commands = []
+      
+    count = 0
+    count_ours = 0
+    for x in it:
+        _, u, _ = x
+        if not u in commands:
+            commands.append(u)
+        u_index = commands.index(u)
+        if u_index % n == i:
+            yield x
+            count_ours += 1
+            logger.debug('cmd %s %s/%s' % (u, count, count_ours))
+        count += 1
+        
+        if False:
+            if count_ours > 10:
+                warnings.warn('Exiting very early')
+                break

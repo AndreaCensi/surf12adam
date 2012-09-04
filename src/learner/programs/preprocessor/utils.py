@@ -1,4 +1,3 @@
-from learner.programs.diffeo_learner.bag_reader import get_image_array
 import numpy as np
 from contracts import contract
 

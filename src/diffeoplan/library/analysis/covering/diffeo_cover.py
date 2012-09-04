@@ -1,12 +1,9 @@
-from . import logger, np
-from boot_agents.diffeo.diffeomorphism2d import Diffeomorphism2D
-from contracts import contract
-from diffeoplan.library import DiffeoAction
+from . import logger, np, contract
+from boot_agents.diffeo import Diffeomorphism2D
 from diffeoplan.library.discdds import (diffeoaction_distance_L2_infow,
-    diffeoaction_distance_L2_infow_scaled, plan_friendly)
-from diffeoplan.library.discdds.visualization.guess import guess_state_space
-from diffeoplan.utils import construct_matrix, memoize_instance
-from geometry import assert_allclose, mds
+    plan_friendly, guess_state_space, DiffeoAction)
+from diffeoplan.utils import construct_matrix, memoize_instance, assert_allclose
+from geometry import mds
 from ggs import (EDGE_EQUIV, EDGE_REGULAR, EDGE_REDUNDANT, draw_node_graph,
     GenericGraphSearch)
 from networkx.algorithms.shortest_paths.dense import floyd_warshall_numpy
@@ -140,9 +137,9 @@ class DiffeoCover(GenericGraphSearch):
         return GenericGraphSearch.go(self, first)
         
     def draw_graph(self):
-        use_distance = diffeoaction_distance_L2_infow
+#        use_distance = diffeoaction_distance_L2_infow
 #        use_distance = DiffeoAction.distance_L2
-        use_distance = diffeoaction_distance_L2_infow_scaled
+#        use_distance = diffeoaction_distance_L2_infow_scaled
         
         def label_plan_length(n):
             return  len(n)

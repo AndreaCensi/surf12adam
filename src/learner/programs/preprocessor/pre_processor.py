@@ -7,7 +7,7 @@ from learner.programs.preprocessor.utils import image_distance_L1
 from learner.programs.preprocessor.zoomer import Zoomer
 import rosbag
 from PIL import Image #@UnresolvedImport
-from learner.programs.diffeo_learner.ros_conversions import pil_to_imgmsg
+from diffeoplan.library.logs.rosbag.ros_conversions import pil_to_imgmsg
 
 
 def preprocess(infile, outfile, output_size,

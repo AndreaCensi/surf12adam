@@ -3,4 +3,5 @@
   code: 
     - diffeoplan.library.discdds.HardChoiceIso
     - id_dds: "${dds}"
-      info_percentile: 50
+      norm_percentile: 10
+      factor: 0.7

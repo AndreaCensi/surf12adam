@@ -1,7 +1,5 @@
-from diffeoplan.library.analysis import DiffeoStructure
-from diffeoplan.library.analysis.covering import DiffeoCover
-from diffeoplan.library.discdds import DiffeoAction
-from diffeoplan.library.discdds.diffeo_system_transform import make_hard_choices
+from diffeoplan.library.analysis import DiffeoCover, DiffeoStructure
+from diffeoplan.library.discdds import DiffeoAction, make_hard_choices
 
 class DiffeoSystemBounds:
     def __init__(self, id_dds, dds, tolerance, info_threshold, min_visibility, debug_it, max_it):
@@ -18,7 +16,7 @@ class DiffeoSystemBounds:
         self.cover.go()
         
         
-    def display(self, report):
+    def display(self, report): #@UnusedVariable
         self.cover.draw_graph()
         
     def display_products(self, report, nsteps):

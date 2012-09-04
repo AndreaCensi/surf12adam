@@ -1,12 +1,12 @@
 from .. import declare_command, logger
 from boot_agents.utils import scale_score
+from bootstrapping_olympics.utils import natsorted
 from compmake import (batch_command, compmake_console, comp, read_rc_files,
     use_filesystem)
-from diffeoplan.library.images import UncertainImage
-from diffeoplan.programs.logcases.makelogcases import iterate_testcases
-from diffeoplan.utils import UserError
+from diffeoplan.library import UncertainImage
+from diffeoplan.programs.logcases import iterate_testcases
 from geometry.utils import assert_allclose
-from itertools import chain, starmap, islice, cycle
+from itertools import chain, starmap, islice, cycle, ifilterfalse
 from reprep import Report
 from reprep.plot_utils import ieee_spines
 from reprep.report_utils import StoreResults, ReportManager
@@ -14,11 +14,13 @@ import numpy as np
 import os
 
 @declare_command('dist-stats',
-                 'dist-stats -d <distances> [logs]')
+                 'dist-stats -d <distances> -s  <streams> ... ')
 def distances_main(config, parser): #@UnusedVariable
     
     parser.add_option("-d", "--distances", default='*',
                       help="Comma-separated list of distances. Can use *.")
+    parser.add_option("-s", "--streams", default='*',
+                      help="Comma-separated list of streams. Can use *.")
     
     parser.add_option("-r", "--repeat", default=1, type='int',
                        help="Repeat many times.")
@@ -26,27 +28,24 @@ def distances_main(config, parser): #@UnusedVariable
     parser.add_option("-c", "--command",
                       help="Command to pass to compmake for batch mode")
     
-    options, args = parser.parse()
+    options = parser.parse_options()
     
-    logs = args
-    
-    if not logs:
-        msg = 'Specify logs.'
-        raise UserError(msg)
-    
-    distances = config.distances.expand_names(options.distances)
+    distances = natsorted(config.distances.expand_names(options.distances))
+    streams = natsorted(config.streams.expand_names(options.streams))
 
     logger.info('Using distances: %s' % distances)
+    logger.info('Using streams: %s' % streams)
     
-    outdir = 'out/distances'
+    id_comb = ','.join(streams) + '-' + ','.join(distances)
+    outdir = 'out/dp-dist-stats/%s' % id_comb
     storage = os.path.join(outdir, 'compmake')
     use_filesystem(storage)
     read_rc_files()
     
     rm = ReportManager(os.path.join(outdir, "reports"))
     
-    create_diststats_jobs(config=config, distances=distances, logs=logs,
-                          outdir=outdir, rm=rm)
+    create_diststats_jobs(config=config, distances=distances, streams=streams,
+                           rm=rm, maxd=10)
     rm.create_index_job()
 
     if options.command:
@@ -55,20 +54,20 @@ def distances_main(config, parser): #@UnusedVariable
         compmake_console()
         return 0
     
-def create_diststats_jobs(config, distances, logs, outdir, rm, maxd=10):
+def create_diststats_jobs(config, distances, streams, rm, maxd):
     # Compmake storage for results
     store = StoreResults()
 
     for id_distance in distances:    
         for delta in range(1, maxd):
-            for i, log in enumerate(logs):
+            for i, id_stream in enumerate(streams):
                 key = dict(id_distance=id_distance,
                            delta=delta,
-                           log=log)
+                           stream=id_stream)
                 job_id = '%s-log%s-delta%s' % (id_distance, i, delta)
                 
                 store[key] = comp(compute_dist_stats, config, id_distance,
-                                  log, delta,
+                                  id_stream, delta,
                                   job_id=job_id)
     
     
@@ -81,6 +80,7 @@ def create_diststats_jobs(config, distances, logs, outdir, rm, maxd=10):
     subsets = create_subsets(distances)
     
     job_report(subsets, store, rm)
+
     
 def create_subsets(distances):
     subsets = {}
@@ -88,9 +88,10 @@ def create_subsets(distances):
     for d in distances:
         subsets[d] = [d]
     
-    initials = set(d[0] for d in distances)
+    prefix = lambda s: "".join(ifilterfalse(str.isdigit, s))
+    initials = set(prefix(d) for d in distances)
     for initial in initials:
-        which = filter(lambda x: x[0] == initial, distances)
+        which = filter(lambda x: prefix(x) == initial, distances)
         subsets[initial] = sorted(which)
     return subsets
 
@@ -254,11 +255,12 @@ def compute_statistics(results):
     stats['records'] = records
     return stats
 
-def compute_dist_stats(config, id_distance, log, delta):
+def compute_dist_stats(config, id_distance, id_stream, delta):
     distance = config.distances.instance(id_distance)
-    
+    stream = config.streams.instance(id_stream)
+    it = stream.read_all()
     results = []
-    for logitem in iterate_testcases(log, delta):
+    for logitem in iterate_testcases(it, delta):
         assert_allclose(len(logitem.u), delta)
         y0 = UncertainImage(logitem.y0)
         y1 = UncertainImage(logitem.y1)
@@ -266,7 +268,7 @@ def compute_dist_stats(config, id_distance, log, delta):
         results.append(d)
         
     logger.info('%s: found %d of %d steps in %s' % 
-                (id_distance, len(results), delta, log))
+                (id_distance, len(results), delta, id_stream))
     return results
         
         

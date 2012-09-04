@@ -1,8 +1,6 @@
-from . import logger, np
-from contracts import contract
-from diffeoplan.library.images.distance.distance_neighbor_eff import (
-    FlatStructure)
-from geometry.utils import assert_allclose
+from . import contract, logger, np
+from boot_agents.diffeo.plumbing import FlatStructure
+from diffeoplan.utils import assert_allclose
 
 
 class DistanceNeighborRatio():
@@ -95,7 +93,7 @@ class DistanceNeighborDist(DistanceNeighborRatio):
             
         D = fs.get_distances()
         
-        N, A = D.shape
+        N, _ = D.shape
         distance_to_closest = np.zeros(N)
         for i in range(N):
             diff_i = diff1[i, :]

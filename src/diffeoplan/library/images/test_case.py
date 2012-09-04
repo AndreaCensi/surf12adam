@@ -2,10 +2,10 @@ from . import UncertainImage, contract, logger
 from bootstrapping_olympics.utils import safe_pickle_dump
 from conf_tools.utils import friendly_path
 import os
-import yaml
 from diffeoplan.configuration import get_current_config
 from diffeoplan.library.images.distance.distance_norm import DistanceNorm
 from reprep.graphics.filter_scale import scale
+from conf_tools.load_entries import write_entries
 
 
 class TestCase():
@@ -40,10 +40,7 @@ class TestCase():
         safe_pickle_dump(self, filename_pickle)
         
         # TODO: make function in conf tools
-        logger.info('Writing to %r ' % friendly_path(filename_yaml))
-        with open(filename_yaml, 'w') as f:
-            yaml.dump([description], f,
-                      default_flow_style=False, explicit_start=True)
+        write_entries([description], filename_yaml)
             
     def display(self, report):
         report.text('summary',
@@ -54,6 +51,12 @@ class TestCase():
         f = report.figure(cols=4)
         f.data_rgb('y0_rgb', self.y0.get_rgb(), caption='$y_0$ (rgb)')
         f.data_rgb('y1_rgb', self.y1.get_rgb(), caption='$y_1$ (rgb)')
+        d = DistanceNorm(2)
+        
+        field = d.error_field(self.y1, self.y0)
+        f.data_rgb('e_y0_y1', scale(field),
+                    caption="Discrepancy between $y_0$ and $y_1.")
+
 
         f = report.figure('prediction_model', cols=4,
                           caption="""
@@ -69,7 +72,6 @@ class TestCase():
             f.data_rgb('y1p_rgb_u', y1p.get_rgb_uncertain(),
                        caption="Uncertainty")
 
-            d = DistanceNorm(2)
             field = d.error_field(self.y1, y1p)
             f.data_rgb('e_y1p_y1', scale(field),
                        caption="Discrepancy between $y_1$ and $p^\star \cdot y_0$.")

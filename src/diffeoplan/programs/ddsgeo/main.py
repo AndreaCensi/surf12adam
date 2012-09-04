@@ -9,7 +9,7 @@ from diffeoplan.library.analysis.structure.diffeo_structure import DiffeoStructu
 def ddsgeo_main(config, parser):
     """ Displays the intrinsic geometry of a learned DDS """
     parser.add_option("-o", "--output", help="Output directory",
-                      default='out/show_dds_geo/')
+                      default='out/dp-show-discdds-geo/')
     parser.add_option("-t", "--tolerance", help="Normalized tolerance",
                       default=0.3, type='float')
     options, which = parser.parse()

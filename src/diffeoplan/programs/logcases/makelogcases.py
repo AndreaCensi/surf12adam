@@ -1,16 +1,17 @@
+from . import np, contract
 from collections import deque
-from contracts import contract
 from diffeoplan.library import TestCase, UncertainImage
+from diffeoplan.library.logs import LogItem
 from itertools import ifilter
-from learner.programs.diffeo_learner.bag_reader import read_bag, LogItem
-import numpy as np
 import random
+
     
     
 @contract(delta='int,>=1', n='int,>=1')
-def make_logcases(bagfile, n, delta, id_tc_pattern, id_discdds, discdds):
-    
-    blocks = read_sequences_delta(bagfile, delta)
+def make_logcases(config, id_stream, n, delta, id_tc_pattern, id_discdds, discdds):
+    stream = config.streams.instance(id_stream)
+    stream_data = stream.read_all()
+    blocks = read_sequences_delta(stream_data, delta)
     miniplans = (make_plan(x, simplify=True) for x in blocks)
     sampled = reservoir_sample(miniplans, N=n)
     
@@ -24,8 +25,8 @@ def make_logcases(bagfile, n, delta, id_tc_pattern, id_discdds, discdds):
         yield tc
 
 
-def iterate_testcases(bagfile, delta):
-    blocks = read_sequences_delta(bagfile, delta)
+def iterate_testcases(it, delta):
+    blocks = read_sequences_delta(it, delta)
     miniplans = (make_plan(x, simplify=True) for x in blocks)
     
     def accept_right_delta(c):
@@ -93,20 +94,12 @@ def simplify_plan(plan0):
     
 
 @contract(delta='int,>=1')
-def read_sequences_delta(bagfile, delta):
+def read_sequences_delta(sequence, delta):
     """ Yields a sequence of lists of delta log records """
     maxlen = delta 
     q = deque(maxlen=maxlen)
-    for x in read_bag(bagfile):
+    for x in sequence:
         q.append(x)
         if len(q) == maxlen:
             yield list(q)
         
-#    
-#def log_length(bagfile):
-#    """ Returns the length of the stream """
-#    # Very inefficient
-#    count = 0
-#    for _ in read_bag(bagfile):
-#        count += 1 
-#    return count

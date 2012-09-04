@@ -1,7 +1,7 @@
 - id: orbit-pt256-160
   desc: "Streams for orbit, pt256, 160x120 resolution."
   code: 
-  - diffeoplan.library.logs.Stream
+  - diffeoplan.library.logs.BagStream
   - files:
     - ~/diffeo-data/processed-data/160x120nz/orbit-pt256z2-indoor.600s.processed.bag
     - ~/diffeo-data/processed-data/160x120nz/orbit-pt256z2-outdoor.600s1.processed.bag
@@ -11,7 +11,7 @@
 - id: orbit-pt256-80
   desc: "Streams for orbit, pt256, 80x60 resolution."
   code: 
-  - diffeoplan.library.logs.Stream
+  - diffeoplan.library.logs.BagStream
   - files:
     - ~/diffeo-data/processed-data/80x60nz/orbit-pt256z2-indoor.600s.processed.bag
     - ~/diffeo-data/processed-data/80x60nz/orbit-pt256z2-outdoor.600s1.processed.bag
@@ -22,7 +22,7 @@
 - id: orbit-pt256z2-160
   desc: "Streams for orbit, pt256z2, 160x120 resolution."
   code: 
-  - diffeoplan.library.logs.Stream
+  - diffeoplan.library.logs.BagStream
   - files:
     - ~/diffeo-data/processed-data/160x120/orbit-pt256z2-indoor.600s.processed.bag
     - ~/diffeo-data/processed-data/160x120/orbit-pt256z2-outdoor.600s1.processed.bag
@@ -33,7 +33,7 @@
 - id: orbit-pt64-160
   desc: "Streams for orbit, pt64, 160x120 resolution."
   code: 
-  - diffeoplan.library.logs.Stream
+  - diffeoplan.library.logs.BagStream
   - files: 
     - ~/diffeo-data/processed-data/orbit-pt64-window1-160x120.processed.bag  
     - ~/diffeo-data/processed-data/orbit-pt64-window2-160x120.processed.bag  

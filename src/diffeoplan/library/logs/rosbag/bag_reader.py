@@ -1,17 +1,14 @@
-from . import logger
-import rosbag
-import numpy as np
+from . import logger, np, rosbag
+from . import imgmsg_to_pil
+from .. import LogItem
 
-from .ros_conversions import imgmsg_to_pil
-from collections import namedtuple
 
 def get_image_array(image):
     im, _, _ = imgmsg_to_pil(image)
     pix = np.asarray(im).astype(np.uint8)
     return pix
 
-    
-LogItem = namedtuple('LogItem', 'y0 u y1')
+
     
 def read_bag(bagfile):
     """ 

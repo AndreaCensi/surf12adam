@@ -1,13 +1,13 @@
 from . import declare_command
+from .. import write_report_files
 from reprep import Report
 import os
-from .. import write_report_files
 
 @declare_command('show-tc', 'show-tc [-o <dir>] [<tc1> <tc2> ...]')
 def show_tc(config, parser): #@UnusedVariable
     """ Displays the test cases. """ 
     parser.add_option("-o", "--output", help="Output directory",
-                      default='out/show_tc/')
+                      default='out/dp-show-tc/')
     
     options, which = parser.parse()
     
