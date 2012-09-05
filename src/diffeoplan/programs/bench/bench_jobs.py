@@ -5,6 +5,8 @@ from compmake import comp
 from diffeoplan.library import UncertainImage
 from reprep import Report
 from reprep.report_utils import ReportManager, StoreResults
+from compmake.ui.ui import comp_stage_job_id
+from diffeoplan.programs.bench.tables import results2stats_dict
 
 
 def create_bench_jobs(config, algos, testcases, outdir):
@@ -78,13 +80,18 @@ def create_bench_jobs(config, algos, testcases, outdir):
 #            stats = list(this_algo.select(id_discdds=id_discdds).values())
 #            add_report('%s-%s' % (id_algo, id_discdds), stats,
 #                       'All runs of algorithm %s on %s' % (id_algo, id_discdds))
-   
+    allstats = StoreResults()
+    for key in allruns:
+        run = allruns[key]
+        job_id = comp_stage_job_id(run, 'statsdict')
+        allstats[key] = comp(results2stats_dict, run, job_id=job_id)
+
     if False:     
-        create_tables(allruns, rm)
+        create_tables(allstats, rm)
     else:
         logger.warning('Temporarely disabled table jobs.')
     
-    create_tables_by_sample(allruns, rm)
+    create_tables_by_sample(allstats, rm)
     jobs_visualization(config, allruns, rm)
     
     rm.create_index_job()

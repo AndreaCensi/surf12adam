@@ -138,9 +138,9 @@
   algorithms:
   #- gnbn1_it1000
   #- gnbc1_it1000
-  - bnbn1_it1000 
-  - bnbc1_it1000
-  - bebn1_it1000
+  # - bnbn1_it1000 
+  # - bnbc1_it1000
+  # - bebn1_it1000
   - bebc1_it1000
   #- bedc1_it1000
   - begc1_it1000
@@ -148,18 +148,18 @@
   # - gebc1_it1000
   #- bnbn1_it1000
   testcases:
-  - tc_h1orbit-pt256-80-n35s_d1_000
-  - tc_h1orbit-pt256-80-n35s_d2_000
-  - tc_h1orbit-pt256-80-n35s_d3_000
-  - tc_h1orbit-pt256-80-n35s_d4_000
-  - tc_h1orbit-pt256-80-n35s_d5_000
-  - tc_h1orbit-pt256-80-n35s_d6_000
-  - tc_h1orbit-pt256-80-n35s_d7_000
-  - tc_h1orbit-pt256-80-n35s_d8_000
-  - tc_h1orbit-pt256-80-n35s_d9_000
-  - tc_h1orbit-pt256-80-n35s_d10_000
-  - tc_h1orbit-pt256-80-n35s_d11_000
-  - tc_h1orbit-pt256-80-n35s_d12_000
+  - tc_h1orbit-pt256-80-n35s_d1_*
+  - tc_h1orbit-pt256-80-n35s_d2_*
+  - tc_h1orbit-pt256-80-n35s_d3_*
+  - tc_h1orbit-pt256-80-n35s_d4_*
+  - tc_h1orbit-pt256-80-n35s_d5_*
+  - tc_h1orbit-pt256-80-n35s_d6_*
+  - tc_h1orbit-pt256-80-n35s_d7_*
+  - tc_h1orbit-pt256-80-n35s_d8_*
+  - tc_h1orbit-pt256-80-n35s_d9_*
+  - tc_h1orbit-pt256-80-n35s_d10_*
+  - tc_h1orbit-pt256-80-n35s_d11_*
+  - tc_h1orbit-pt256-80-n35s_d12_*
   
 
 

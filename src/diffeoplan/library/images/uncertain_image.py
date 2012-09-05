@@ -2,7 +2,7 @@ from . import contract, np
 from boot_agents.diffeo import scalaruncertainty2rgb
 from diffeoplan.utils import resample_signal
 
-class UncertainImage():
+class UncertainImage(object):
     
     @contract(values='array[HxWx3](uint8)|array[HxWx...]((float32|float64),>=0,<=1)',
               scalar_uncertainty='None|array[HxW]')
@@ -36,6 +36,15 @@ class UncertainImage():
         self._values.setflags(write=False)
         self.scalar_uncertainty.setflags(write=False)
     
+    def __sizeof__(self):
+        """ Returns approximate memory usage in bytes. """
+        def sizeof_array(a):
+            return a.size * a.itemsize
+        m = 0
+        m += sizeof_array(self._values)
+        m += sizeof_array(self.scalar_uncertainty)
+        return m
+
     @contract(returns='array[HxW](float32,>=0,<=1)|array[HxWxN](float32,>=0,<=1)')
     def get_values(self):
         return self._values

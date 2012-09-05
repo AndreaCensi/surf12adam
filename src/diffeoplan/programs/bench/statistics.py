@@ -101,7 +101,7 @@ def plan_length(stats):
 @add_statistics
 def goal_threshold(stats): 
     """ d_{\\text{goal}} := Threshold to goal. """  
-    return stats['algo'].goal_threshold
+    return stats['algo'].metric_goal_threshold
     
 @add_statistics
 def num_start_closed(stats): 

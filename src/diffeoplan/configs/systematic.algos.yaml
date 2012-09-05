@@ -5,15 +5,10 @@
   - diffeoplan.library.GenericGraphPlanner
   - bidirectional: False
     metric_goal: &metric_goal L2w
-    #metric_goal_threshold: &metric_goal_threshold 0.001
     metric_collapse: &metric_collapse L2w
     metric_collapse_threshold: -1 # no collapse
     max_iterations: "${n}"
     max_depth: &max_depth 15
-    # hard_choice_params: &hard_choice_params
-    #     use_isomorphism_heuristics: True
-    #     info_percentile: 50
-    #     info_threshold: null
 
 - id: "gnbc1_it${n}"
   desc: "One-dir search; no pre-filtering; L2w post (0.1); ${n} iterations."
@@ -21,10 +16,8 @@
   - diffeoplan.library.GenericGraphPlanner
   - bidirectional: False
     metric_goal: *metric_goal
-    #metric_goal_threshold: *metric_goal_threshold
     metric_collapse: *metric_collapse
     metric_collapse_threshold: &metric_collapse_threshold 0.001
-    # #hard_choice_params: *hard_choice_params
     max_iterations: "${n}"
     max_depth: *max_depth
 
@@ -34,12 +27,10 @@
   - diffeoplan.library.InformedPlanner
   - bidirectional: False
     metric_goal: *metric_goal
-    #metric_goal_threshold: *metric_goal_threshold
     metric_collapse: *metric_collapse
     metric_collapse_threshold: -1 # no collapse
     max_iterations: "${n}"
     max_depth: *max_depth
-    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: &diffeo_structure_params
         tolerance: 0.5 # threshold for two commands to be commutative, etc.
     
@@ -49,12 +40,10 @@
   - diffeoplan.library.InformedPlanner
   - bidirectional: False
     metric_goal: *metric_goal
-    #metric_goal_threshold: *metric_goal_threshold
     metric_collapse: *metric_collapse
     metric_collapse_threshold: *metric_collapse_threshold
     max_iterations: "${n}"
     max_depth: *max_depth
-    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
 
 - id: "bnbn1_it${n}"
@@ -63,12 +52,10 @@
   - diffeoplan.library.GenericGraphPlanner
   - bidirectional: True
     metric_goal: *metric_goal
-    #metric_goal_threshold: *metric_goal_threshold
     metric_collapse: *metric_collapse
     metric_collapse_threshold: -1 # no collapse
     max_iterations: "${n}"
     max_depth: *max_depth
-    #hard_choice_params: *hard_choice_params
 
 - id: "bnbc1_it${n}"
   desc: "Bi-dir search; no pre-filtering; L2w post (0.1); ${n} iterations."
@@ -76,12 +63,10 @@
   - diffeoplan.library.GenericGraphPlanner
   - bidirectional: True
     metric_goal: *metric_goal
-    #metric_goal_threshold: *metric_goal_threshold
     metric_collapse: *metric_collapse
     metric_collapse_threshold: *metric_collapse_threshold 
     max_iterations: "${n}"
     max_depth: 15
-    #hard_choice_params: *hard_choice_params
 
 
 - id: "bebn1_it${n}"
@@ -90,7 +75,6 @@
   - diffeoplan.library.InformedPlanner
   - bidirectional: True
     metric_goal: *metric_goal
-    #metric_goal_threshold: *metric_goal_threshold
     metric_collapse: *metric_collapse
     metric_collapse_threshold: -1 # no collapse
     max_iterations: "${n}"

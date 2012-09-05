@@ -5,6 +5,7 @@ from contracts import contract
 from diffeoplan.programs.bench.statistics import Stats
 from reprep import Report
 from reprep.report_utils.store_results import StoreResults
+from compmake.ui.ui import comp_stage_job_id
 
 def create_table_algos_discdds(allruns, id_table):
     algos = list(set(allruns.field('id_algo')))
@@ -21,14 +22,21 @@ def create_table_algos_discdds(allruns, id_table):
     r = Report(id_table)
     r.table(id_table, data=data, cols=discdds, rows=algos, caption=id_table)
     return r
+
+def results2stats_dict(results):
+    """ Applies all possible statistics to the results dictionary. """
+    res = {}
+    for x in Stats.statistics:
+        res[x] = Stats.statistics[x].function(results)
+    return res
                                     
-def create_tables(allruns, rm):
+def create_tables(allstats, rm):
     for id_table in Stats.tables: 
         job_id = 'table-%s' % id_table
-        report = comp(create_table_algos_discdds, allruns, id_table, job_id=job_id)
+        report = comp(create_table_algos_discdds, allstats, id_table, job_id=job_id)
         rm.add(report, 'table', id_table=id_table)
     
-def create_tables_by_sample(allruns, rm):
+def create_tables_by_sample(allstats, rm):
     for id_statstable in Stats.statstables:
         if len(Stats.statstables[id_statstable]) == 0:
             raise ValueError(Stats.statstables)
@@ -36,19 +44,18 @@ def create_tables_by_sample(allruns, rm):
             if not id_stats in Stats.statistics:
                 raise_x_not_found('statistic', id_stats, Stats.statistics)
 
-
     for id_statstable in Stats.statstables:
         stats = Stats.statstables[id_statstable]
         job_id = 'bysample-all-%s' % id_statstable
         report = comp(create_tables_by_samples,
                       id_statstable, stats,
-                      allruns, job_id=job_id)
+                      allstats, job_id=job_id)
         rm.add(report, 'bysample-all', id_statstable=id_statstable)
         
     
-        testcases = list(set(allruns.field('id_tc')))
+        testcases = list(set(allstats.field('id_tc')))
         for id_tc in testcases:
-            tcruns = allruns.select(id_tc=id_tc)
+            tcruns = allstats.select(id_tc=id_tc)
             
             job_id = 'bysample-%s-%s' % (id_tc, id_statstable)
             r = comp(create_table_for_sample, id_tc, id_statstable, stats, tcruns,
@@ -85,7 +92,8 @@ def create_table_for_sample(id_tc, id_stats, stats, tcruns):
         for id_stats in stats:
             s = list(tcruns.select(id_algo=id_algo).values())
             assert len(s) == 1
-            value = Stats.statistics[id_stats].function(s[0])
+#            value = Stats.statistics[id_stats].function(s[0])
+            value = s[0][id_stats]
             row.append(value)
         data.append(row)
     r.table(id_tc, data=data, cols=cols, rows=rows, fmt='%g')

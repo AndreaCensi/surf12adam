@@ -3,10 +3,11 @@ from boot_agents.diffeo import Diffeomorphism2D
 from diffeoplan.library.analysis import PlanReducer
 from diffeoplan.library.discdds import (DiffeoAction, guess_state_space,
     DiffeoSystem, plan_friendly)
-from diffeoplan.utils import WithInternalLog, memoize_instance
+from diffeoplan.utils import WithInternalLog
 from ggs import GenericGraphSearch
 import collections
 import networkx as nx
+from diffeoplan.library.algo.memoize_strategy import dp_memoize_instance
  
 __all__ = ['DiffeoTreeSearch']
 
@@ -50,7 +51,7 @@ class DiffeoTreeSearch(GenericGraphSearch, WithInternalLog):
         nactions = len(self.dds.actions)
         return range(nactions)
     
-    #@memoize_instance
+    @dp_memoize_instance
     @contract(plan='tuple', returns=DiffeoAction)
     def plan2action(self, plan):
         if len(plan) == 0:
@@ -65,7 +66,7 @@ class DiffeoTreeSearch(GenericGraphSearch, WithInternalLog):
             rest = self.plan2action(plan[:-1])
             return DiffeoAction.compose(last, rest)
          
-    @memoize_instance
+    @dp_memoize_instance
     @contract(plan='tuple', returns=Diffeomorphism2D)
     def compute_diffeomorphism(self, plan):
         action = self.compute_action(plan)
@@ -115,9 +116,11 @@ class DiffeoTreeSearch(GenericGraphSearch, WithInternalLog):
                         node_color=node_color, cmap=cmap)
     
     def log_chosen(self, node):
-        pass
-        #self.info('chosen %s' % self.node_friendly(node))
-
+        self.info('%6d closed %6d open | chosen %s' % 
+                  (self.get_num_closed(),
+                   self.get_num_open(),
+                   self.node_friendly(node)))
+    
     def log_actionless_node(self, node):
         self.info('No actions available for %s' % self.node_friendly(node))
 

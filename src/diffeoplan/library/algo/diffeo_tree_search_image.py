@@ -1,6 +1,7 @@
 from . import DiffeoTreeSearch, contract
 from diffeoplan.library.images import UncertainImage
 from diffeoplan.utils import memoize_instance
+from diffeoplan.library.algo.memoize_strategy import dp_memoize_instance
 
 __all__ = ['DiffeoTreeSearchImage']
 
@@ -22,7 +23,7 @@ class DiffeoTreeSearchImage(DiffeoTreeSearch):
     def __str__(self):
         return 'DiffeoTreeSearchImage'
 
-    @memoize_instance
+    @dp_memoize_instance
     @contract(plan='seq(int)', returns=UncertainImage)
     def plan2image(self, plan):
         action = self.plan2action(plan)

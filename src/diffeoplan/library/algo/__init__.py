@@ -1,4 +1,6 @@
 from .. import contract, np, logger
+from .memoize_strategy import *
+
 from .diffeo_tree_search import *
 from .diffeo_tree_search_image import *
 from .diffeo_tree_search_image_greedy import *

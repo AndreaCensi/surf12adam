@@ -1,3 +1,4 @@
 # good for lots of small processes
 config min_proc_interval 0
 config autobal_after 100
+config max_mem_load 50

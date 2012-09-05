@@ -58,7 +58,6 @@ def run_planning_stats(config, results):
     result = results['result']
     id_discdds = results['id_discdds']
     id_tc = results['id_tc'] 
-#    tc = results['tc']
     tc = config.testcases.instance(id_tc)
     # this is the planned plan
     plan = result.plan

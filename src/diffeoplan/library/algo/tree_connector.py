@@ -2,6 +2,7 @@ from . import np
 from diffeoplan.utils import (WithInternalLog, assert_allclose,
     construct_matrix_iterators, memoize_instance)
 import itertools
+from diffeoplan.library.algo.memoize_strategy import dp_memoize_instance
 
 __all__ = ['Connector']
 
@@ -44,12 +45,12 @@ class Connector(WithInternalLog):
     def close_enough(self, node1, node2):
         return self.distance(node1, node2) <= self.threshold
         
-    @memoize_instance
+    @dp_memoize_instance
     def value1(self, node1):
         #assert node1 in self.tree1.G
         return self.tree1.plan2image(node1)
     
-    @memoize_instance
+    @dp_memoize_instance
     def value2(self, node2):
         #assert node2 in self.tree2.G
         return self.tree2.plan2image(node2)

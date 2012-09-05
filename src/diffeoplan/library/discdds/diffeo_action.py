@@ -32,6 +32,13 @@ class DiffeoAction():
         cmd = -self.original_cmd # XXX
         return DiffeoAction(label, diffeo, diffeo_inv, cmd)
     
+    def __sizeof__(self):
+        """ Returns approximate size in bytes. """
+        m = 0
+        m += self.diffeo.__sizeof__()
+        m += self.diffeo_inv.__sizeof__()
+        return m
+
     @staticmethod
     def identity(label, shape, original_cmd):
         """ Constructs the identity action of the given shape. """
