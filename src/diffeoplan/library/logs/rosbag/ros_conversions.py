@@ -1,3 +1,4 @@
+#@PydevCodeAnalysisIgnore
 ##Code from:
 # http://nullege.com/codes/show/src%40c%40m%40cmu-ros-pkg-HEAD%40trunk%40posedetectiondb%40src%40ParseMessages.py/75/sensor_msgs.msg.Image/python
 # 

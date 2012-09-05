@@ -1,8 +1,7 @@
 from . import create_bench_jobs
 from .. import declare_command, logger
 from compmake import (batch_command, compmake_console, use_filesystem,
-    comp_prefix)
-from compmake.scripts.master import read_rc_files
+    comp_prefix, read_rc_files)
 from pprint import pformat
 import os
 

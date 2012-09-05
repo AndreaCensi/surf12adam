@@ -1,8 +1,8 @@
-from . import DiffeoPlanningAlgo, PlanningResult, contract
-from .. import  UncertainImage
-import numpy as np
+from . import DiffeoPlanningAlgo, PlanningResult, contract, np
+from diffeoplan.library import UncertainImage
 import time
 
+__all__ = ['RandomGuess']
 
 class RandomGuess(DiffeoPlanningAlgo):
     """ 
@@ -20,7 +20,7 @@ class RandomGuess(DiffeoPlanningAlgo):
         self.max_cpu_time = max_cpu_time
         
     @contract(y0=UncertainImage, y1=UncertainImage, returns=PlanningResult)
-    def plan(self, y0, y1): #@UnusedVariable
+    def plan(self, y0, y1, precision): #@UnusedVariable
         guess = self.get_dds().get_random_plan(self.nsteps)
         wait = np.random.rand() * self.max_cpu_time
         print('Sleeping %f seconds' % wait)

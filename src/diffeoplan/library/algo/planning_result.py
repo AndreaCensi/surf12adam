@@ -1,5 +1,8 @@
 from . import contract
 
+__all__ = ['PlanningResult']
+
+
 class PlanningResult:
     """ Results of planning. (more fields might be added in the future) """
     

@@ -11,7 +11,7 @@ def maketestcases_display_main(config, parser): #@UnusedVariable
     parser.add_option("-l", '--length',
                       help='Length of randomly-generated plan', default=2,
                       type='int')
-    parser.add_option("-o", "--output", default='out/generated-testcases',
+    parser.add_option("-o", "--output", default='out/dp-gentests',
                       help="Output directory")
     
     options, which = parser.parse()

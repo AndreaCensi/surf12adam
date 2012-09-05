@@ -1,9 +1,10 @@
-from . import (
-    get_visualization_distances, visualization_images)
+from . import get_visualization_distances, visualization_images, logger
 from reprep.report_utils import StoreResults
 import itertools
 import time
- 
+
+__all__ = ['run_planning', 'run_planning_stats']
+
 
 def run_planning(config, id_algo, id_tc, algo):
     '''
@@ -21,10 +22,21 @@ def run_planning(config, id_algo, id_tc, algo):
     y0 = testcase.y0
     y1 = testcase.y1
     
+    # compute achievable precision using the model
+    dds = algo.get_dds()
+    metric = algo.metric_goal
+    y1p = dds.predict(y0, testcase.true_plan)
+    d = metric.distance(y1, y1p)
+    precision = d * 1.01
+    logger.info('Using model and algo metric, the reachable distance is %s. '
+                'Treshold: %s' % (d, precision))
+    
+    
     # TODO: add computation time
     t0 = time.clock()
     # Run the planning
-    planning_result = algo.plan(y0, y1)
+    planning_result = algo.plan(y0, y1, precision)
+    
     plan_time = time.clock() - t0
     
     results = {}
@@ -34,7 +46,6 @@ def run_planning(config, id_algo, id_tc, algo):
     results['id_algo'] = id_algo
     results['algo'] = algo
     results['result'] = planning_result
-    #results['init_time'] = init_time
     results['plan_time'] = plan_time
     return results
 

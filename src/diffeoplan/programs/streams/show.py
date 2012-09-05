@@ -7,9 +7,10 @@ def show_stream(config, parser): #@UnusedVariable
     """ Displays the learned DDS """
     #parser.add_option("-i", "--id_image", help="ID image.", default='lena')
     parser.add_option("-o", "--output", help="Output directory",
-                      default='out/show_stream/')
+                      default='out/dp-show-stream/')
     options, which = parser.parse()
-    
+  
+    # TODO: compute and display statistics  
     outdir = options.output 
   
     if not which:

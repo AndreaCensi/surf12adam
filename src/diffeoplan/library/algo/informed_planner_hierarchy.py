@@ -4,9 +4,10 @@ from diffeoplan.library.analysis import (DiffeoCover, get_embedding_mds,
     plot_3d_graph, plot_2d_graph, make_distancetree)
 from diffeoplan.library.discdds import DiffeoSystem
 from ggs.drawing import draw_node_graph
+from ggs.utils import copy_nodes_attrs
 from reprep import MIME_PNG, Report
-from ggs.utils.graph_manipulation import copy_nodes_attrs
 
+__all__ = ['InformedPlannerHierarchy']
 
 class InformedPlannerHierarchy(InformedPlanner):
     """

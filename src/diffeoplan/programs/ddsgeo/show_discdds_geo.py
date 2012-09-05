@@ -6,7 +6,7 @@ from diffeoplan.library.analysis.structure.diffeo_structure import DiffeoStructu
 
 @declare_command('show-discdds-geo',
                  'show-discdds-geo [<discdds1> <discdds2> ...]')
-def ddsgeo_main(config, parser):
+def show_discdds_geo_main(config, parser):
     """ Displays the intrinsic geometry of a learned DDS """
     parser.add_option("-o", "--output", help="Output directory",
                       default='out/dp-show-discdds-geo/')
@@ -25,7 +25,6 @@ def ddsgeo_main(config, parser):
     for id_dds in todo:
         dds = config.discdds.instance(id_dds) 
         report = Report(id_dds)
-        
         
         show_diffeo_structure(dds, report, tolerance=options.tolerance)    
         

@@ -3,7 +3,7 @@ from . import (SquareDomain, diffeo_from_function_viewport, logger, np,
 from .. import DiffeoAction, DiffeoSystem
 from boot_agents.diffeo import Diffeomorphism2D
 
-def DDSFromSymbolic(resolution, actions, topology=None):
+def DDSFromSymbolic(resolution, actions, topology=None): #@UnusedVariable
     """ 
         Creates a DiffeoSystem from synthetic diffeomorphisms. 
     """  

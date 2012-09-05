@@ -1,8 +1,9 @@
 from . import np
-from diffeoplan.utils import construct_matrix_iterators, memoize_instance
+from diffeoplan.utils import (WithInternalLog, assert_allclose,
+    construct_matrix_iterators, memoize_instance)
 import itertools
-from geometry.utils.numpy_backport import assert_allclose
-from diffeoplan.utils.with_internal_log import WithInternalLog
+
+__all__ = ['Connector']
 
 class Connector(WithInternalLog):
     
@@ -18,6 +19,9 @@ class Connector(WithInternalLog):
         self.metric = metric
         self.threshold = threshold
         WithInternalLog.__init__(self)
+        
+        # no output
+        self.set_log_output(False)
         
     def __str__(self):
         return "Connector(%s<=%s)" % (self.metric, self.threshold)

@@ -1,9 +1,6 @@
-
 from . import np, logger
 from collections import namedtuple
-from diffeoplan.library.discdds import plan_friendly
-from diffeoplan.library.images.distance import (DistanceNormWeighted,
-    DistanceNorm)
+from diffeoplan.library import DistanceNormWeighted, DistanceNorm, plan_friendly
 from reprep.report_utils import frozendict
 from scipy.stats.stats import nanstd, nanmean
 import itertools
@@ -27,10 +24,10 @@ Stats.reductions['stddev'] = nanstd
 visualization_images = {
     'y0': ('Start image', 'y_0'),
     'y1': ('Goal image', 'y_1'),
-    'py0': ('Predicted start using plan', 'p\cdot y_1'),
+    'py0': ('Predicted start using plan', 'p\cdot y_0'),
     'ipy1': ('Predicted goal using plan inverse', 'p^{-1}\cdot y_1'),
-    'ty0': ('Predicted start using true plan', 'p\cdot y_1'),
-    'ity1': ('Predicted goal using true plan inverse', 'p^{-1}\cdot y_1'),
+    'ty0': ('Predicted start using true plan', 't\cdot y_0'),
+    'ity1': ('Predicted goal using true plan inverse', 't^{-1}\cdot y_0'),
 }
         
 
@@ -76,27 +73,35 @@ def add_statistics(f):
  
 @add_statistics
 def plan_time(stats):
+    """ T := planning time """
     return stats['plan_time']
 
 @add_statistics
 def plan_found(stats):
+    """ \\text{succ} := Success """
     return stats['result'].plan is not None
 
 @add_statistics
 def plan_string(stats):
+    """ p := Plan """
     plan = stats['result'].plan 
     if plan is None:
         return None
     else:
         return plan_friendly(plan)
     
-
 @add_statistics
 def plan_length(stats):
+    """ |p| := Plan length """
     if plan_found(stats):
         return len(stats['result'].plan)
     else:
         return np.nan
+
+@add_statistics
+def goal_threshold(stats): 
+    """ d_{\\text{goal}} := Threshold to goal. """  
+    return stats['algo'].goal_threshold
     
 @add_statistics
 def num_start_closed(stats): 
@@ -210,40 +215,52 @@ for a, b in itertools.product(Stats.statistics, Stats.reductions):
             return f(stats, a, b)
         return func
     Stats.tables['%s-%s' % (a, b)] = funcC(a, b)
-    
-
 
 
 Stats.statstables = {
     'all': list(Stats.statistics.keys()),
     'graph': [
-              'plan_found',
-              'd_L2_py0_y1',
-              'plan_string',
-              'num_states_evaluated',
-              'num_closed',
-              'num_open',
-              'num_created',
-              'num_redundant',
-              'num_collapsed',
+        'plan_found',
+        'plan_string',
+        'd_L2_py0_y1',
+        'plan_time',
+        'num_states_evaluated',
+        'num_closed',
+        'num_open',
+        'num_created',
+        'num_redundant',
+        'num_collapsed',
+    ],
+    'distances': [
+        'plan_found',
+        'plan_string',
+        'd_L2_py0_y1',
+        'goal_threshold',
+        'plan_time',
+        'num_states_evaluated',
+        'num_closed',
+        'num_open',
+        'num_created',
+        'num_redundant',
+        'num_collapsed',
     ],
     'graph_details': [
-                      'plan_found',
-                      'num_states_evaluated',
-                      'num_closed',
-                      'num_open',
-                      'num_created',
-                      'num_redundant',
-                      'num_collapsed',
-                      'num_start_closed',
-                      'num_start_open',
-                      'num_start_created',
-                      'num_start_redundant',
-                      'num_start_collapsed',
-                      'num_goal_closed',
-                      'num_goal_open',
-                      'num_goal_created',
-                      'num_goal_redundant',
-                      'num_goal_collapsed',
-                      ]
+        'plan_found',
+        'num_states_evaluated',
+        'num_closed',
+        'num_open',
+        'num_created',
+        'num_redundant',
+        'num_collapsed',
+        'num_start_closed',
+        'num_start_open',
+        'num_start_created',
+        'num_start_redundant',
+        'num_start_collapsed',
+        'num_goal_closed',
+        'num_goal_open',
+        'num_goal_created',
+        'num_goal_redundant',
+        'num_goal_collapsed',
+    ]
 }

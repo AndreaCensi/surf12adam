@@ -8,6 +8,7 @@ from ggs import GenericGraphSearch
 import collections
 import networkx as nx
  
+__all__ = ['DiffeoTreeSearch']
 
 class DiffeoTreeSearch(GenericGraphSearch, WithInternalLog):
     """

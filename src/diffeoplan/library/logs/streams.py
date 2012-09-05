@@ -1,11 +1,16 @@
 from abc import abstractmethod, ABCMeta
 
 class Stream(object):
-    """ A Stream is a set of log files which have the same configuration. """
+    """ 
+        Abstracts away the source of the data. 
+        
+        Implement your own if you want to use different log formats.
+         
+    """
     
     __metaclass__ = ABCMeta
         
     @abstractmethod        
     def read_all(self):
-        """ Yields y0, u, y1 as numpy array over all files. """
+        """ Yields a LogItem sequence. """
     

@@ -1,9 +1,8 @@
+from . import TestCase
+from .. import UncertainImage
+from boot_agents.diffeo.analysis import resize # XXX
 from diffeoplan.configuration import get_current_config
-from diffeoplan.library.images.test_case import TestCase
-from diffeoplan.library.images.uncertain_image import UncertainImage
-from boot_agents.diffeo.analysis import resize
-from geometry.utils.numpy_backport import assert_allclose
-
+from diffeoplan.utils import assert_allclose
 
 
 def ManualMotion(tcname, id_discdds, id_image, planstring):

@@ -1,7 +1,9 @@
 from . import PlanningResult, contract
 from .. import DiffeoSystem, UncertainImage
+from diffeoplan.utils import WithInternalLog
 from reprep import Report
-from diffeoplan.utils.with_internal_log import WithInternalLog
+
+__all__ = ['DiffeoPlanningAlgo']
 
 class DiffeoPlanningAlgo(WithInternalLog):
     """ Interface for a generic planning algorithm. """
@@ -25,15 +27,18 @@ class DiffeoPlanningAlgo(WithInternalLog):
         """ Returns the system that we want to plan on. """
         return self._dds
         
-    @contract(y0=UncertainImage, y1=UncertainImage, returns=PlanningResult)
-    def plan(self, y0, y1): #@UnusedVariable
-        """ Must be redefined by subclasses. 
+    @contract(y0=UncertainImage, y1=UncertainImage, precision='>=0',
+              returns=PlanningResult)
+    def plan(self, y0, y1, precision): #@UnusedVariable
+        """ 
+            Must be redefined by subclasses. 
         
             This must return an instance of PlanningResult.
         """
         return PlanningResult(success=False, plan=None, status='Not implemented')
 
-    def plan_report(self, report):
+    @contract(report=Report)
+    def plan_report(self, report, result, tc): #@UnusedVariable
         """ Report after planning (using own data structures) """
         report.text('warning', 'plan_report() not implemented for this class.')
     
@@ -42,5 +47,7 @@ class DiffeoPlanningAlgo(WithInternalLog):
             Returns the dictionary that we can send as part of PlanningResults. 
             Overload to add more fields. 
         """
-        extra = {'log_lines': self.log_lines}
+        extra = {}
+        extra['log_lines'] = self.get_raw_log_lines()
         return extra
+    

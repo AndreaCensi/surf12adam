@@ -1,11 +1,13 @@
+from . import logger, np, contract
 from boot_agents.misc_utils import iterate_indices
 from collections import deque
-from contracts import contract
 from diffeoplan.utils import memoize_instance as memoize
-from geometry import printm
-import numpy as np
+from geometry import formatm
 
-class PlanReducer:
+__all__ = ['PlanReducer']
+
+
+class PlanReducer(object):
     
     def __init__(self):
         self._null = set() # a
@@ -60,10 +62,8 @@ class PlanReducer:
               inverse='array[NxN](bool)',
               same='array[NxN](bool)')
     def from_matrices(labels, commute, inverse, same):
-        print('in from_matrices')
-        printm('same', commute,
-               'oppo', inverse,
-               'swap', same)
+        logger.info('Creating PlanReducer from matrices:\n' + 
+                    formatm('same', same, 'oppo', inverse, 'swap', commute))
         pr = PlanReducer()
         for i, j in iterate_indices(commute.shape):
             li = labels[i]

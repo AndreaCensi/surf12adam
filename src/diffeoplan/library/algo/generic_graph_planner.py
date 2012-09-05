@@ -1,45 +1,33 @@
-from . import DiffeoPlanningAlgo, PlanningResult, contract
-from .. import UncertainImage
-from diffeoplan.configuration import get_current_config
-from diffeoplan.library.algo import Connector, DiffeoTreeSearchImage
-from diffeoplan.library.analysis import PlanReducer
-from diffeoplan.library.discdds import (DiffeoSystem, guess_state_space,
-    plan_friendly, DiffeoAction)
+from . import DiffeoPlanningAlgo, PlanningResult, contract, Connector, DiffeoTreeSearchImage
+from diffeoplan import get_current_config
+from diffeoplan.library import (DiffeoSystem, guess_state_space, plan_friendly,
+    DiffeoAction, PlanReducer, UncertainImage)
 from matplotlib.cm import get_cmap
 from reprep import Report
 from reprep.plot_utils import turn_all_axes_off
+from diffeoplan.library.discdds.plan_utils import plan_steps
 
+__all__ = ['GenericGraphPlanner']
  
 class GenericGraphPlanner(DiffeoPlanningAlgo):
-    """ 
-        This is an algorithm that returns the best plan
-        after trying all possible plans of exact length <nsteps> 
-        
-        Pieces:
-        - metric
-        - expand_start_tree
-        - expand_goal_tree
-    """
     
     def __init__(self, bidirectional,
-                 metric_goal, metric_goal_threshold,
+                 metric_goal,
                  metric_collapse, metric_collapse_threshold,
                  max_depth=10000, max_iterations=10000):
         super(GenericGraphPlanner, self).__init__()
         self.bidirectional = bidirectional
         config = get_current_config()
         self.metric_goal = config.distances.instance(metric_goal)        
-        self.metric_goal_threshold = metric_goal_threshold
         self.metric_collapse = config.distances.instance(metric_collapse)        
         self.metric_collapse_threshold = metric_collapse_threshold
         self.max_iterations = max_iterations
         self.max_depth = max_depth
         
     def __strparams__(self):
-        return ("%s;g:%s<=%s;c:%s<=%s" % 
+        return ("%s;g:%s;c:%s<=%s" % 
                 ('1' if self.bidirectional else '2',
                  self.metric_goal,
-                 self.metric_goal_threshold,
                  self.metric_collapse,
                  self.metric_collapse_threshold))
 
@@ -55,24 +43,29 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
     def init_report(self, report):
         """ Creates a report for the initialization phase. """
         super(GenericGraphPlanner, self).init_report(report)
-        diffeosystem_display_products(self.dds_orig, report.section('actions_orig'), 5)
-        diffeosystem_display_products(self.dds, report.section('actions'), 5)
+        diffeosystem_display_products(self.get_dds(), report.section('actions'), 5)
 
     def plan_init(self, y0, y1):
         self.y0 = y0
         self.y1 = y1
         self.start_tree = self.init_start_tree(y0)
         self.goal_tree = self.init_goal_tree(y1)
+                
         plan0 = ()
         self.start_tree.init_search(plan0)
         self.goal_tree.init_search(plan0)
 
         self.connector = self.init_connector(self.start_tree, self.goal_tree)
-        
+
+        self.log_add_child('start_tree', self.start_tree)
+        self.log_add_child('goal_tree', self.goal_tree)
+        self.log_add_child('connector', self.connector)
+
         self.log_planning_init()
 
     @contract(y0=UncertainImage, y1=UncertainImage, returns=PlanningResult)
-    def plan(self, y0, y1):
+    def plan(self, y0, y1, precision):
+        self.metric_goal_threshold = precision
         self.plan_init(y0, y1)
         
         while self.start_tree.has_next() or self.goal_tree.has_next():
@@ -129,9 +122,9 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         self.info('Found %d connections' % len(connections))
         for c in connections:
             d, p1, p2 = c #@UnusedVariable
-            self.info(' - between %s and %s' % 
+            self.info(' - between %s and %s dist %s' % 
                       (self.start_tree.node_friendly(p1),
-                       self.goal_tree.node_friendly(p2)))
+                       self.goal_tree.node_friendly(p2), d))
             
     def log_planning_init(self):
         self.info('Planning started')
@@ -141,19 +134,19 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         self.info('Planning failed')
         
     def log_plan_found(self, d, p1, p2, plan_red, plan): #@UnusedVariable
-        self.info('Connection between %s and %s' % 
+        self.info('Connection between %s and %s of distance %s' % 
                   (self.start_tree.node_friendly(p1),
-                   self.goal_tree.node_friendly(p2)))
+                   self.goal_tree.node_friendly(p2), d))
         self.info(' concat: %s' % plan_friendly(plan_red))
         self.info('reduced: %s' % plan_friendly(plan))
-        
-    def make_extra(self):
-        """ Extra information to return about the search """
-        extra = super(GenericGraphPlanner, self).make_extra()
-        extra['start_tree'] = self.start_tree
-        extra['goal_tree'] = self.goal_tree
-        extra['connector'] = self.connector
-        return extra
+#        
+#    def make_extra(self):
+#        """ Extra information to return about the search """
+#        extra = super(GenericGraphPlanner, self).make_extra()
+#        extra['start_tree'] = self.start_tree
+#        extra['goal_tree'] = self.goal_tree
+#        extra['connector'] = self.connector
+#        return extra
 
     def init_connector(self, start_tree, end_tree):
         connector = Connector(start_tree, end_tree,
@@ -203,7 +196,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
                         metric_collapse_threshold=self.metric_collapse_threshold)
         return dts
     
-    def plan_report(self, report, tc):
+    def plan_report(self, report, result, tc):
         """
             We pass the testcase structure, so we can use the ground
             truth (if available) to make a nicer visualization.
@@ -222,6 +215,19 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         goal_dist_y0 = partial(distance_to, self.goal_tree, self.y0)
         start_dist_y1 = partial(distance_to, self.start_tree, self.y1)
         goal_dist_y1 = partial(distance_to, self.goal_tree, self.y1)
+        
+        if result.success:
+            # Plot the distance as a function of step
+            steps = plan_steps(result.plan) # (), (0,) (0, 1), etc.
+            distance_to_y0 = map(start_dist_y0, steps) 
+            distance_to_y1 = map(start_dist_y1, steps)
+            with f.plot('distances_along_path') as pylab:
+                lenghts = map(len, steps) 
+                pylab.plot(lenghts, distance_to_y0, 'r-', label='to $y_0$')
+                pylab.plot(lenghts, distance_to_y1, 'b-', label='to $y_1$')
+                pylab.xlabel('subplan length')
+                pylab.legend()
+                
         
         with f.plot('start_tree') as pylab:
             self.start_tree.plot_graph_using_guessed_statespace(
@@ -294,6 +300,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
                 pylab, plan2color=goal_dist_y1, cmap=cmap_goal, origin=origin)
             turn_all_axes_off(pylab)
             pylab.colorbar()
+        
         
 def diffeosystem_display_products(dds, report, nsteps):
     # XXX: make separate

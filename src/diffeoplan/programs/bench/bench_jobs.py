@@ -1,10 +1,10 @@
 from . import (contract, create_tables, run_planning_stats, run_planning, logger,
-    create_tables_by_sample, create_visualization_jobs)
+    create_tables_by_sample, jobs_visualization)
 from collections import defaultdict
 from compmake import comp
+from diffeoplan.library import UncertainImage
 from reprep import Report
 from reprep.report_utils import ReportManager, StoreResults
-from diffeoplan.library.images.uncertain_image import UncertainImage
 
 
 def create_bench_jobs(config, algos, testcases, outdir):
@@ -85,7 +85,7 @@ def create_bench_jobs(config, algos, testcases, outdir):
         logger.warning('Temporarely disabled table jobs.')
     
     create_tables_by_sample(allruns, rm)
-    create_visualization_jobs(config, allruns, rm)
+    jobs_visualization(config, allruns, rm)
     
     rm.create_index_job()
 
@@ -117,6 +117,7 @@ def init_algorithm(config, id_algo, id_discdds):
     discdds = config.discdds.instance(id_discdds)
     # TODO: add computation time
     #t0 = time.clock()
+    algo.set_name_for_log(id_algo)
     algo.init(id_discdds, discdds) 
     #init_time = time.clock() - t0
     return algo

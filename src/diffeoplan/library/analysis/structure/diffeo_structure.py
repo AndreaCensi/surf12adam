@@ -4,6 +4,7 @@ from boot_agents.diffeo import (diffeo_to_rgb_angle, diffeo_to_rgb_norm,
 from boot_agents.misc_utils import iterate_indices
 from diffeoplan.library.discdds import DiffeoAction, plans_of_max_length
 
+__all__ = ['DiffeoStructure']
 
 class DiffeoStructure():
     """ 
@@ -99,8 +100,8 @@ class DiffeoStructure():
             nsteps.append(n)
             plans = plans_of_max_length(ncmd=K, maxsteps=n)
             cplans, _ = self.get_minimal_equiv_set(plans)
-            print('%3d steps: from %5d to %5d' % 
-                  (n, len(plans), len(cplans)))
+            #print('%3d steps: from %5d to %5d' % 
+            #      (n, len(plans), len(cplans)))
             nplans.append(len(plans))
             ncplans.append(len(cplans))
         return nsteps, nplans, ncplans

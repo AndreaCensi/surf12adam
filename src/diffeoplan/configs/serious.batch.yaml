@@ -102,7 +102,7 @@
 - id: test_misc7
   desc: |
     log=~/diffeo-data/processed-data/160x120nz/orbit-pt256z2-window.600s.processed.bag
-    dp --contracts logcases --log $log --dds orbit-pt256-160x120 -d 1 -n 1
+    dp --contracts logcases ---log $log --dds orbit-pt256-160x120 -d 1 -n 1
     dp --contracts logcases --log $log --dds orbit-pt256-160x120 -d 2 -n 1
     dp --contracts logcases --log $log --dds orbit-pt256-160x120 -d 3 -n 1
     dp --contracts logcases --log $log --dds orbit-pt256-160x120 -d 4 -n 1
@@ -134,17 +134,11 @@
   
 - id: test_misc8
   desc: |
-    dp --contracts logcases -s orbit-pt256-80 --dds h1orbit-pt256-80-n35s -d 1 -n 1
-    dp --contracts logcases -s orbit-pt256-80 --dds h1orbit-pt256-80-n35s -d 2 -n 1
-    dp --contracts logcases -s orbit-pt256-80 --dds h1orbit-pt256-80-n35s -d 3 -n 1
-    dp --contracts logcases -s orbit-pt256-80 --dds h1orbit-pt256-80-n35s -d 4 -n 1
-    dp --contracts logcases -s orbit-pt256-80 --dds h1orbit-pt256-80-n35s -d 5 -n 1
-    dp --contracts logcases -s orbit-pt256-80 --dds h1orbit-pt256-80-n35s -d 6 -n 1
-
+    "for a in 1 2 3 4 5 6 7 8; dp logcases --seed 42 -s orbit-pt256-80 --dds h1orbit-pt256-80-n35s -d $a -n 1"
   algorithms:
   #- gnbn1_it1000
   #- gnbc1_it1000
-  - bnbn1_it1000
+  - bnbn1_it1000 
   - bnbc1_it1000
   - bebn1_it1000
   - bebc1_it1000
@@ -154,13 +148,19 @@
   # - gebc1_it1000
   #- bnbn1_it1000
   testcases:
-  - tc_orbit-pt256-160x120_d1_000
-  - tc_orbit-pt256-160x120_d2_000
-  - tc_orbit-pt256-160x120_d3_000
-  - tc_orbit-pt256-160x120_d4_000
-  - tc_orbit-pt256-160x120_d5_000
-  - tc_orbit-pt256-160x120_d6_000
-
+  - tc_h1orbit-pt256-80-n35s_d1_000
+  - tc_h1orbit-pt256-80-n35s_d2_000
+  - tc_h1orbit-pt256-80-n35s_d3_000
+  - tc_h1orbit-pt256-80-n35s_d4_000
+  - tc_h1orbit-pt256-80-n35s_d5_000
+  - tc_h1orbit-pt256-80-n35s_d6_000
+  - tc_h1orbit-pt256-80-n35s_d7_000
+  - tc_h1orbit-pt256-80-n35s_d8_000
+  - tc_h1orbit-pt256-80-n35s_d9_000
+  - tc_h1orbit-pt256-80-n35s_d10_000
+  - tc_h1orbit-pt256-80-n35s_d11_000
+  - tc_h1orbit-pt256-80-n35s_d12_000
+  
 
 
 

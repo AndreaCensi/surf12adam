@@ -2,6 +2,8 @@ from . import DiffeoTreeSearch, contract
 from diffeoplan.library.images import UncertainImage
 from diffeoplan.utils import memoize_instance
 
+__all__ = ['DiffeoTreeSearchImage']
+
 class DiffeoTreeSearchImage(DiffeoTreeSearch):
     """
         It also knows that:

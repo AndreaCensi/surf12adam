@@ -1,3 +1,3 @@
 from .. import logger, np, contract
 from .makelogcases import *
-from .main import *
+from .dp_logcases import *

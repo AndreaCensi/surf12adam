@@ -1,4 +1,4 @@
-from . import  np
+from . import np
 from bootstrapping_olympics.utils.not_found import raise_x_not_found
 from compmake import comp
 from contracts import contract
@@ -51,7 +51,7 @@ def create_tables_by_sample(allruns, rm):
             tcruns = allruns.select(id_tc=id_tc)
             
             job_id = 'bysample-%s-%s' % (id_tc, id_statstable)
-            r = comp(create_table_for_sample, id_tc, id_stats, stats, tcruns,
+            r = comp(create_table_for_sample, id_tc, id_statstable, stats, tcruns,
                      job_id=job_id)
 
             rm.add(r, 'bysample-single', id_tc=id_tc, id_statstable=id_statstable)

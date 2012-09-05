@@ -46,3 +46,17 @@ def plan_group(plan):
             else:
                 break
         yield (first, n)
+
+
+@contract(plan='seq[N]', returns='seq[N+1](seq[<=N])')
+def plan_steps(plan):
+    """
+        From a given plan (a,b,c,...), returns the 
+        sequence of sub-plans [(),(a,),(a,b),...],
+        including the empty plan at the beginning.
+    """
+    sub_plan = lambda i: plan[:i]
+    return map(sub_plan, range(len(plan) + 1))
+    
+    
+

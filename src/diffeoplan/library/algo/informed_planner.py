@@ -3,6 +3,7 @@ from diffeoplan.library.analysis import DiffeoStructure
 from diffeoplan.library.discdds import DiffeoSystem
 from reprep import Report
 
+__all__ = ['InformedPlanner']
 
 class InformedPlanner(GenericGraphPlanner):
     """

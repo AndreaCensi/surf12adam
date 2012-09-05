@@ -1,13 +1,13 @@
 from .. import declare_command
+from . import DiffeoSystemBounds
+from diffeoplan.programs.utils import write_report_files
 from reprep import Report
 import os
-from diffeoplan.programs.utils import write_report_files
-from diffeoplan.programs.ddsgeo.diffeo_system_bounds import DiffeoSystemBounds
 
 
 @declare_command('show-discdds-fill',
                  'show-discdds-fill [<discdds1> <discdds2> ...]')
-def ddsfill(config, parser):
+def show_discdds_fill_main(config, parser):
     """ Displays the intrinsic geometry of a learned DDS """
     parser.add_option("-o", "--output", help="Output directory",
                       default='out/dp-show-discdds-fill/')

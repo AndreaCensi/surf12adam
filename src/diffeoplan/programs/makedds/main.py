@@ -11,7 +11,7 @@ import yaml
                  'makedds [<dds1> <dds2> ...]')
 def symdds_make_main(config, parser): #@UnusedVariable
     """ Creates synthetic DDS from the functions symbolically defined. """
-    parser.add_option("-o", "--output", default='out/dds-generated',
+    parser.add_option("-o", "--output", default='out/dp-makedds',
                       help="Output directory")
     options, which = parser.parse()
     

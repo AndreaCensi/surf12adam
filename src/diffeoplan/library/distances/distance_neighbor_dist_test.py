@@ -1,9 +1,7 @@
-import numpy as np
-from diffeoplan.library.images.distance.distance_neighbor_dist import DistanceNeighborDist
-from diffeoplan.library.images.uncertain_image import UncertainImage
-from diffeoplan.library.images.distance.distance_neighbor_eff import FlatStructure
-from geometry.utils.numpy_backport import assert_allclose
-from diffeoplan.library.images.distance.distance_norm import DistanceNorm
+from . import DistanceNeighborDist, np, DistanceNorm
+from .. import UncertainImage
+from boot_agents.diffeo.plumbing import FlatStructure # TODO
+from diffeoplan.utils import assert_allclose
 
 def test_distance_neighbor_dist1():
     gs = FlatStructure((100, 100), (1, 1))
@@ -77,8 +75,7 @@ def test_distance_neighbor_dist2_repeated():
         A.append(a[i:i + w, 0:0 + w, ...])
     print()
     areas = [0.01, 0.03, 0.05, 0.07]
-    Ds = [DistanceNeighborDist((a, a)) for a in areas
-          ]
+    Ds = [DistanceNeighborDist((a, a)) for a in areas]
     L2 = DistanceNorm(2)
     for i in range(N):
         y0 = UncertainImage(A[0])
