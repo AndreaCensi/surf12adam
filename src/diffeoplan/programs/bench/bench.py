@@ -1,7 +1,8 @@
-from . import get_visualization_distances, visualization_images, logger
+from . import get_visualization_distances, logger
 from reprep.report_utils import StoreResults
 import itertools
 import time
+from diffeoplan.programs.bench.statistics import Stats
 
 __all__ = ['run_planning', 'run_planning_stats']
 
@@ -86,7 +87,7 @@ def run_planning_stats(config, results):
         images['ity1'] = idiscdds.predict(y1, itrue_plan)
     
     distances = results['distances'] = StoreResults()
-    for i1, i2 in itertools.combinations(visualization_images, 2):
+    for i1, i2 in itertools.combinations(Stats.get_images(), 2):
         if i1 == i2:
             continue
         

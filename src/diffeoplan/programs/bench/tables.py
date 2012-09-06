@@ -1,106 +1,119 @@
-from . import np
-from bootstrapping_olympics.utils.not_found import raise_x_not_found
+from . import Stats, contract
 from compmake import comp
-from contracts import contract
-from diffeoplan.programs.bench.statistics import Stats
-from reprep import Report
-from reprep.report_utils.store_results import StoreResults
-from compmake.ui.ui import comp_stage_job_id
+from itertools import product
+from reprep.report_utils import ReportManager, StoreResults, table_by_rows
 
-def create_table_algos_discdds(allruns, id_table):
-    algos = list(set(allruns.field('id_algo')))
-    discdds = list(set(allruns.field('id_discdds')))
-    
-    data = np.zeros((len(algos), len(discdds)), dtype='S64')
-    
-    for i, id_algo in enumerate(algos):
-        for j, id_discdds in enumerate(discdds):
-            stats = allruns.select(id_algo=id_algo, id_discdds=id_discdds).values()
-            value = Stats.tables[id_table](stats)
-            data[i, j] = '%g' % value
-             
-    r = Report(id_table)
-    r.table(id_table, data=data, cols=discdds, rows=algos, caption=id_table)
-    return r
 
 def results2stats_dict(results):
-    """ Applies all possible statistics to the results dictionary. """
+    """ Applies all possible statistics to the results (output of run_planning_stats). """
     res = {}
     for x in Stats.statistics:
         res[x] = Stats.statistics[x].function(results)
     return res
-                                    
-def create_tables(allstats, rm):
-    for id_table in Stats.tables: 
-        job_id = 'table-%s' % id_table
-        report = comp(create_table_algos_discdds, allstats, id_table, job_id=job_id)
-        rm.add(report, 'table', id_table=id_table)
-    
-def create_tables_by_sample(allstats, rm):
-    for id_statstable in Stats.statstables:
-        if len(Stats.statstables[id_statstable]) == 0:
-            raise ValueError(Stats.statstables)
-        for id_stats in Stats.statstables[id_statstable]:
-            if not id_stats in Stats.statistics:
-                raise_x_not_found('statistic', id_stats, Stats.statistics)
 
-    for id_statstable in Stats.statstables:
-        stats = Stats.statstables[id_statstable]
-        job_id = 'bysample-all-%s' % id_statstable
-        report = comp(create_tables_by_samples,
-                      id_statstable, stats,
-                      allstats, job_id=job_id)
-        rm.add(report, 'bysample-all', id_statstable=id_statstable)
-        
+def make_samples_groups(allstats):
+    """ Creates lists of samples. Also supports single samples. 
     
-        testcases = list(set(allstats.field('id_tc')))
-        for id_tc in testcases:
-            tcruns = allstats.select(id_tc=id_tc)
-            
+        Return a dictionary str -> StoreResults.
+    """
+    sample_groups = {}
+    sample_groups['all'] = allstats
+    
+    # First we create samples by deltas
+    for delta, samples in allstats.groups_by_field_value('true_plan_length'):
+        sample_groups['true_plan_length=%s' % delta] = samples
+    
+    # TODO: group by discdds
+
+    # TODO: then we make all single samples
+    print sample_groups.keys()
+    return sample_groups
+
+def jobs_tables(allstats, rm):
+    # Reports per-t
+    jobs_tables_by_sample_rows_algo(allstats, rm, Stats.tables_for_single_sample)
+    jobs_tables_by_algo_rows_samples(allstats, rm, Stats.tables_for_single_sample)
+    
+    samples_groups = make_samples_groups(allstats)
+    jobs_tables_by_sample_groups(samples_groups, rm,
+                                 Stats.tables_for_multi_sample)
+    
+    jobs_tables_by_algo_rows_sample_groups(samples_groups, rm, Stats.tables_for_multi_sample)
+        
+def jobs_tables_by_sample_groups(samples_groups, rm, tables):
+    # Tables grouping by algorithm
+    for g, s in product(samples_groups.items(), tables.items()):
+        id_sample_group, samples = g
+        id_statstable, stats = s
+        
+        table_key = dict(id_sample_group=id_sample_group,
+                         id_stats_table=id_statstable,
+                         id_reduction='mean_std')
+        
+        r = comp(table_by_rows,
+                 samples=samples,
+                 rows_field='id_algo', # group by algorithm
+                 cols_fields=stats, # which statistics for each col
+                 source_descs=Stats.all_descriptions())
+        
+        rm.add(r, 'bysamplegroups', **table_key)
+        
+@contract(allstats=StoreResults, rm=ReportManager,
+          tables='dict(str:list(str))')
+def jobs_tables_by_sample_rows_algo(allstats, rm, tables):
+    for id_statstable, stats in tables.items():
+        for id_tc, tcruns in allstats.groups_by_field_value('id_tc'):
             job_id = 'bysample-%s-%s' % (id_tc, id_statstable)
-            r = comp(create_table_for_sample, id_tc, id_statstable, stats, tcruns,
+
+            r = comp(table_by_rows,
+                     samples=tcruns,
+                     rows_field='id_algo', # group by algorithm
+                     cols_fields=stats, # which statistics for each col
+                     source_descs=Stats.all_descriptions(),
                      job_id=job_id)
 
-            rm.add(r, 'bysample-single', id_tc=id_tc, id_statstable=id_statstable)
+            rm.add(r, 'bysample', id_tc=id_tc, id_statstable=id_statstable)
             
+@contract(allstats=StoreResults, rm=ReportManager,
+          tables='dict(str:list(str))')
+def jobs_tables_by_algo_rows_samples(allstats, rm, tables):
+    """ One table for each algo, where rows are test cases. """
+    for id_statstable, stats in tables.items():
+        for id_algo, samples in allstats.groups_by_field_value('id_algo'):
+            job_id = 'byalgo-%s-%s' % (id_algo, id_statstable)
 
+            r = comp(table_by_rows,
+                     samples=samples,
+                     rows_field='id_tc', # rows = tc
+                     cols_fields=stats, # which statistics for each col
+                     source_descs=Stats.all_descriptions(),
+                     job_id=job_id)
 
-@contract(id_stats='str', stats='list[>=1](str)', allruns=StoreResults)
-def create_tables_by_samples(id_stats, stats, allruns):
-    '''
+            rm.add(r, 'byalgo-rows-sample',
+                   id_algo=id_algo, id_statstable=id_statstable)
+ 
+@contract(samples_groups='dict(str:StoreResults)', rm=ReportManager,
+          tables='dict(str:list(str))')
+def jobs_tables_by_algo_rows_sample_groups(samples_groups, rm, tables):
     
-    :param id_stats: name of this set
-    :param stats: list of string corresponding to functions in statistics
-    :param allruns: 
-    '''
-    r = Report(id_stats)
-    testcases = sorted(list(set(allruns.field('id_tc'))))
-    for id_tc in testcases:
-        tcruns = allruns.select(id_tc=id_tc)
-        rt = create_table_for_sample(id_tc, id_stats, stats, tcruns)
-        r.add_child(rt)
-    return  r
+    # Crate a new store, add the key "group"
+    allstats = StoreResults()
+    for id_group, samples in samples_groups.items():
+        for key, value in samples.items():
+            nkey = dict(id_group=id_group, **key)
+            allstats[nkey] = value
     
-def create_table_for_sample(id_tc, id_stats, stats, tcruns):
-    r = Report('%s-%s' % (id_stats, id_tc))
-    algos = sorted(list(set(tcruns.field('id_algo'))))
-    rows = algos
-    cols = ["$%s$" % s.symbol for s in map(Stats.statistics.__getitem__, stats)]
-    data = []
-    for id_algo in algos:
-        row = []
-        for id_stats in stats:
-            s = list(tcruns.select(id_algo=id_algo).values())
-            assert len(s) == 1
-#            value = Stats.statistics[id_stats].function(s[0])
-            value = s[0][id_stats]
-            row.append(value)
-        data.append(row)
-    r.table(id_tc, data=data, cols=cols, rows=rows, fmt='%g')
-    return  r
-        
+    for id_statstable, stats in tables.items():
+        for id_algo, samples in allstats.groups_by_field_value('id_algo'):
+            job_id = 'byalgo-%s-%s' % (id_algo, id_statstable)
 
-    
+            r = comp(table_by_rows,
+                     samples=samples,
+                     rows_field='id_group', # rows = tc
+                     cols_fields=stats, # which statistics for each col
+                     source_descs=Stats.all_descriptions(),
+                     job_id=job_id)
 
-        
-        
+            rm.add(r, 'byalgo-rows-sample-groups',
+                   id_algo=id_algo, id_statstable=id_statstable)
+ 

@@ -1,6 +1,6 @@
 
 - id: "gnbn1_it${n}"
-  desc: "One-dir search; no pre-filtering; no post-filtering; ${n} iterations."
+  desc: "GNBN1 := One-dir search; no pre-filtering; no post-filtering; ${n} iterations."
   code:
   - diffeoplan.library.GenericGraphPlanner
   - bidirectional: False
@@ -11,7 +11,7 @@
     max_depth: &max_depth 15
 
 - id: "gnbc1_it${n}"
-  desc: "One-dir search; no pre-filtering; L2w post (0.1); ${n} iterations."
+  desc: "GNBC1 := One-dir search; no pre-filtering; L2w post (0.1); ${n} iterations."
   code:
   - diffeoplan.library.GenericGraphPlanner
   - bidirectional: False
@@ -79,7 +79,6 @@
     metric_collapse_threshold: -1 # no collapse
     max_iterations: "${n}"
     max_depth: *max_depth
-    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
     
 - id: "bebc1_it${n}"
@@ -88,41 +87,35 @@
   - diffeoplan.library.InformedPlanner
   - bidirectional: True
     metric_goal: *metric_goal
-    #metric_goal_threshold: *metric_goal_threshold
     metric_collapse: *metric_collapse
     metric_collapse_threshold: *metric_collapse_threshold
     max_iterations: "${n}"
     max_depth: *max_depth
-    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
 
 - id: "begc1_it${n}"
-  desc: "Bi-dir search; pre-filter equiv; greedy; L2W collapse; ${n} iterations."
+  desc: "BEGC1 := Bi-dir search; pre-filter equiv; greedy; L2W collapse; ${n} iterations."
   code:
   - diffeoplan.library.InformedPlannerGreedy
   - bidirectional: True
     metric_goal: *metric_goal
-    #metric_goal_threshold: *metric_goal_threshold
     metric_collapse: *metric_collapse
     metric_collapse_threshold: *metric_collapse_threshold
     max_iterations: "${n}"
     max_depth: *max_depth
-    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
     metric_attractor: *metric_goal # could choose a different one in principle
 
 - id: "betc1_it${n}"
-  desc: "Bi-dir search; pre-filter equiv; greedy-tree; L2W collapse; ${n} iterations."
+  desc: "BETC1 := Bi-dir search; pre-filter equiv; greedy-tree; L2W collapse; ${n} iterations."
   code:
   - diffeoplan.library.InformedPlannerGreedyTree
   - bidirectional: True
     metric_goal: *metric_goal
-    #metric_goal_threshold: *metric_goal_threshold
     metric_collapse: *metric_collapse
     metric_collapse_threshold: *metric_collapse_threshold
     max_iterations: "${n}"
     max_depth: *max_depth
-    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
     metric_attractor: *metric_goal # could choose a different one in principle
 
@@ -133,12 +126,10 @@
   - diffeoplan.library.InformedPlannerGreedyTree
   - bidirectional: True
     metric_goal: L2
-    #metric_goal_threshold: *metric_goal_threshold
     metric_collapse: L2
     metric_collapse_threshold: *metric_collapse_threshold
     max_iterations: "${n}"
     max_depth: *max_depth
-    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
     metric_attractor: *metric_goal # could choose a different one in principle
 
@@ -148,12 +139,10 @@
   - diffeoplan.library.InformedPlannerGreedy
   - bidirectional: True
     metric_goal: L2
-    #metric_goal_threshold: *metric_goal_threshold
     metric_collapse: L2
     metric_collapse_threshold: *metric_collapse_threshold
     max_iterations: "${n}"
     max_depth: *max_depth
-    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
     metric_attractor: *metric_goal # could choose a different one in principle
 
@@ -163,12 +152,10 @@
   - diffeoplan.library.InformedPlannerGreedy
   - bidirectional: False
     metric_goal: L2
-    #metric_goal_threshold: *metric_goal_threshold
     metric_collapse: L2
     metric_collapse_threshold: *metric_collapse_threshold
     max_iterations: "${n}"
     max_depth: *max_depth
-    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
     metric_attractor: *metric_goal # could choose a different one in principle
 
@@ -179,12 +166,10 @@
   - diffeoplan.library.InformedPlannerGreedy
   - bidirectional: False
     metric_goal: L2
-    #metric_goal_threshold: *metric_goal_threshold
     metric_collapse: L2
     metric_collapse_threshold: -10
     max_iterations: "${n}"
     max_depth: *max_depth
-    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
     metric_attractor: *metric_goal # could choose a different one in principle
 
@@ -194,12 +179,10 @@
   - diffeoplan.library.InformedPlannerHierarchy
   - bidirectional: False
     metric_goal: *metric_goal
-    #metric_goal_threshold: *metric_goal_threshold
     metric_collapse: *metric_collapse
     metric_collapse_threshold: *metric_collapse_threshold
     max_iterations: "${n}"
     max_depth: *max_depth
-    #hard_choice_params: *hard_choice_params
     diffeo_structure_params: *diffeo_structure_params
     diffeo_cover_params:
         min_visibility: 0.4  # do not expand nodes with less that this
@@ -207,3 +190,16 @@
         debug_it: 100 # debug graph written every debug_it iterations
         max_it: 1000 # maximum number of iterations
     
+# Add some defaults available
+# (this helps in defining symbols)
+- id: gnbn1_it1000
+- id: gnbc1_it1000
+- id: bnbn1_it1000
+- id: bnbc1_it1000
+- id: bebn1_it1000
+- id: bebc1_it1000
+- id: begc1_it1000
+- id: betc1_it1000
+- id: gebc1_it1000
+
+

@@ -1,34 +1,67 @@
-from . import np, logger
-from collections import namedtuple
+from . import np, logger, contract
+from diffeoplan.configuration import get_current_config
 from diffeoplan.library import DistanceNormWeighted, DistanceNorm, plan_friendly
-from reprep.report_utils import frozendict
-from scipy.stats.stats import nanstd, nanmean
+from itertools import chain
+from reprep.report_utils import (FunctionWithDescription, WithDescription,
+    symbol_desc_from_docstring, frozendict, symbol_desc_from_string)
 import itertools
 
-Statistic = namedtuple('Statistic', 'name function symbol desc')
+class Statistic(FunctionWithDescription):
+    pass
 
 class Stats:
     statistics = {}
-    reductions = {}
-    tables = {}
-    statstables = {}
     
-
-Stats.reductions = {}
-Stats.reductions['min'] = np.nanmin
-Stats.reductions['max'] = np.nanmax
-Stats.reductions['mean'] = nanmean
-Stats.reductions['stddev'] = nanstd 
+    tables_for_single_sample = {}
+    tables_for_multi_sample = {}
     
+    images = {}
+    distances = {}
+    
+    @staticmethod
+    @contract(returns='dict(str:WithDescription)')
+    def all_descriptions():
+        """ Returns descriptions for all objects defined here. """
+        s = dict()
+        items = chain(Stats.statistics.items())
+        
+        for k, v in items:
+            s[k] = WithDescription(name=v.get_name(),
+                                   desc=v.get_desc(),
+                                   symbol=v.get_symbol())
+            
+        
+        config = get_current_config()
+        
+        for objspec in config.specs.values():
+            if not objspec:
+                logger.warning('Something is not right...s')
+            for k, v in objspec.items():
+                symbol, desc = symbol_desc_from_string(v['desc'])
+                if desc is None:
+                    logger.warning('No description entry %r.' % k)
+                s[k] = WithDescription(name=k, desc=desc, symbol=symbol)
+                #print k, s[k]            
+        return s
+        
+    @staticmethod
+    def describe_image(name, desc, symbol):
+        s = WithDescription(name=name, desc=desc, symbol=symbol)
+        Stats.images[name] = s
+        
+    @staticmethod
+    def get_images():
+        return Stats.images
+     
+    
+Stats.describe_image('y0', 'Start image', 'y_0')
+Stats.describe_image('y1', 'Goal image', 'y_1')
+Stats.describe_image('py0', 'Predicted start using plan', 'p\cdot y_0')
+Stats.describe_image('ipy1', 'Predicted goal using plan inverse', 'p^{-1}\cdot y_1')
+Stats.describe_image('ty0', 'Predicted start using true plan', 't\cdot y_0')
+Stats.describe_image('ty0', 'Predicted start using true plan', 't\cdot y_0')
+Stats.describe_image('ity1', 'Predicted goal using true plan inverse', 't^{-1}\cdot y_0')
 
-visualization_images = {
-    'y0': ('Start image', 'y_0'),
-    'y1': ('Goal image', 'y_1'),
-    'py0': ('Predicted start using plan', 'p\cdot y_0'),
-    'ipy1': ('Predicted goal using plan inverse', 'p^{-1}\cdot y_1'),
-    'ty0': ('Predicted start using true plan', 't\cdot y_0'),
-    'ity1': ('Predicted goal using true plan inverse', 't^{-1}\cdot y_0'),
-}
         
 
 def get_visualization_distances():
@@ -44,31 +77,21 @@ def get_visualization_distances():
 def get_combination_desc(i1, i2, d):
     alld = get_visualization_distances()
     sd = alld[d]['symbol']
-    desc1 = visualization_images[i1][0]
-    desc2 = visualization_images[i2][0]
-    s1 = visualization_images[i1][1]
-    s2 = visualization_images[i2][1]
+    visualization_images = Stats.get_images()
+    desc1 = visualization_images[i1].get_desc()
+    desc2 = visualization_images[i2].get_desc()
+    s1 = visualization_images[i1].get_symbol()
+    s2 = visualization_images[i2].get_symbol()
     symbol = 'd_{%s}(%s,%s)' % (sd, s1, s2)
     desc = 'Distance %s between %s and %s' % (d, desc1, desc2)
     return dict(symbol=symbol, desc=desc)
 
 
 def add_statistics(f):
-    doc = f.__doc__
-    if doc is None:
-        logger.warning('No description for %s' % f)
-        doc = "(missing description)"
-    doc = doc.strip()
-    if ':=' in doc:
-        tokens = doc.split(':=')
-        symbol = tokens[0]
-        desc = "".join(tokens[1:])
-    else:
-        symbol = '\\text{%s}' % f.__name__  
-        desc = doc
-        
-    Stats.statistics[f.__name__] = Statistic(name=f.__name__, function=f,
-                                             symbol=symbol, desc=desc)
+    symbol, desc = symbol_desc_from_docstring(f)    
+    Stats.statistics[f.__name__] = Statistic(name=f.__name__,
+                                             symbol=symbol, desc=desc,
+                                             function=f)
     return f
  
 @add_statistics
@@ -97,6 +120,14 @@ def plan_length(stats):
         return len(stats['result'].plan)
     else:
         return np.nan
+# TODO: add same plan
+#@add_statistics
+#def plan_same(stats):
+#    """ |p| := Plan length """
+#    if plan_found(stats):
+#        return len(stats['result'].plan)
+#    else:
+#        return np.nan
 
 @add_statistics
 def goal_threshold(stats): 
@@ -200,24 +231,12 @@ def makestat(i1, i2, d):
     f2.__doc__ = '%s := %s' % (desc['symbol'], desc['desc'])
     return f2
 
-for i1, i2 in itertools.combinations(visualization_images, 2):
+for i1, i2 in itertools.combinations(Stats.get_images(), 2):
     for d in get_visualization_distances():        
         add_statistics(makestat(i1, i2, d))
+ 
 
-def f(stats, s, r):
-    reduce_ = Stats.reductions[r]
-    map_ = Stats.statistics[s].function
-    return reduce_([map_(x) for x in stats])
-
-for a, b in itertools.product(Stats.statistics, Stats.reductions):
-    def funcC(a, b):
-        def func(stats):
-            return f(stats, a, b)
-        return func
-    Stats.tables['%s-%s' % (a, b)] = funcC(a, b)
-
-
-Stats.statstables = {
+Stats.tables_for_single_sample = {
     'all': list(Stats.statistics.keys()),
     'graph': [
         'plan_found',
@@ -263,4 +282,60 @@ Stats.statstables = {
         'num_goal_redundant',
         'num_goal_collapsed',
     ]
+}
+
+Stats.tables_for_multi_sample = {                   
+     'graph_details_many': [
+        'plan_found/min_mean_max/min_mean_max_s',
+        'num_states_evaluated/min_mean_max/min_mean_max_s',
+        'num_closed/min_mean_max/min_mean_max_s',
+        'num_open/min_mean_max/min_mean_max_s',
+        'num_created/min_mean_max/min_mean_max_s',
+        'num_redundant/min_mean_max/min_mean_max_s',
+        'num_collapsed/min_mean_max/min_mean_max_s',
+        'num_start_closed/min_mean_max/min_mean_max_s',
+        'num_start_open/min_mean_max/min_mean_max_s',
+        'num_start_created/min_mean_max/min_mean_max_s',
+        'num_start_redundant/min_mean_max/min_mean_max_s',
+        'num_start_collapsed/min_mean_max/min_mean_max_s',
+        'num_goal_closed/min_mean_max/min_mean_max_s',
+        'num_goal_open/min_mean_max/min_mean_max_s',
+        'num_goal_created/min_mean_max/min_mean_max_s',
+        'num_goal_redundant/min_mean_max/min_mean_max_s',
+        'num_goal_collapsed/min_mean_max/min_mean_max_s',
+    ],
+    'graph_details_mean': [
+        'plan_found/mean',
+        'num_states_evaluated/mean',
+        'num_closed/mean',
+        'num_open/mean',
+        'num_created/mean',
+        'num_redundant/mean',
+        'num_collapsed/mean',
+        'num_start_closed/mean',
+        'num_start_open/mean',
+        'num_start_created/mean',
+        'num_start_redundant/mean',
+        'num_start_collapsed/mean',
+        'num_goal_closed/mean',
+        'num_goal_open/mean',
+        'num_goal_created/mean',
+        'num_goal_redundant/mean',
+        'num_goal_collapsed/mean',
+    ],
+        'distances_mean': [
+        'plan_found/num',
+        'plan_found/mean/perc',
+        'plan_length/mean/g',
+        'plan_time/mean/g',
+        'num_states_evaluated/mean/d',
+        'num_closed/mean/d',
+        'num_open/mean/d',
+        'num_created/mean/d',
+        'num_redundant/mean/d',
+        'num_collapsed/mean/d',
+    ],
+                                 
+                                 
+
 }

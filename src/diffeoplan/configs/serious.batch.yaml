@@ -163,6 +163,18 @@
   
 
 
+- id: test_misc8s
+  desc: |
+    small
+  algorithms:
+  - begc1_it1000
+  - betc1_it1000
+  testcases:
+  - tc_h1orbit-pt256-80-n35s_d1_*
+  - tc_h1orbit-pt256-80-n35s_d2_*
+
+
+
 
 - id: torus2_d10
   desc: This is the torus, but now we can go both left and right.

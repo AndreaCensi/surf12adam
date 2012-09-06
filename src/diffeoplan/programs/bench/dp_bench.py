@@ -6,7 +6,7 @@ import os
 
 @declare_command('bench',
                  'bench -a <algorithms> -t <testcases>')
-def bench_main(config, parser): #@UnusedVariable
+def dp_bench_main(config, parser): #@UnusedVariable
     parser.add_option("-a", "--algorithms", default='*',
                       help="Comma-separated list of algorithms. Can use *.")
     

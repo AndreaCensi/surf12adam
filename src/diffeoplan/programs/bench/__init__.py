@@ -6,5 +6,5 @@ from .bench import *
 from .tables import *
 from .visualization import *
 from .bench_jobs import *
-from .main import *
+from .dp_bench import *
 from .batch import *

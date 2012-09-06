@@ -1,12 +1,11 @@
-from . import (contract, create_tables, run_planning_stats, run_planning, logger,
-    create_tables_by_sample, jobs_visualization)
+from . import (contract, run_planning_stats, run_planning,
+    jobs_visualization)
 from collections import defaultdict
-from compmake import comp
+from compmake import comp, comp_stage_job_id
 from diffeoplan.library import UncertainImage
+from diffeoplan.programs.bench.tables import results2stats_dict, jobs_tables
 from reprep import Report
 from reprep.report_utils import ReportManager, StoreResults
-from compmake.ui.ui import comp_stage_job_id
-from diffeoplan.programs.bench.tables import results2stats_dict
 
 
 def create_bench_jobs(config, algos, testcases, outdir):
@@ -23,8 +22,9 @@ def create_bench_jobs(config, algos, testcases, outdir):
     # so that we do only one initialization per algorithms
     id_discdds2testcases = defaultdict(lambda: {}) 
     for id_tc in testcases:
-        tc = config.testcases.instance(id_tc)
-        id_discdds2testcases[tc.id_discdds][id_tc] = tc
+        tc1 = config.testcases.instance(id_tc) 
+        id_discdds2testcases[tc1.id_discdds][id_tc] = tc1
+            
         
     # for each algorithm
     for id_algo in algos:
@@ -40,7 +40,7 @@ def create_bench_jobs(config, algos, testcases, outdir):
             algoinit[dict(id_algo=id_algo, id_discdds=id_discdds)] = algo
             
             # for each test case in that dynamics
-            for id_tc in id_discdds2testcases[id_discdds]:
+            for id_tc, tc in id_discdds2testcases[id_discdds].items():
                 
                 # run the planning
                 job_id = 'plan-%s-%s' % (id_algo, id_tc)
@@ -53,45 +53,21 @@ def create_bench_jobs(config, algos, testcases, outdir):
     
                 attrs = dict(id_algo=id_algo, id_tc=id_tc,
                              id_discdds=tc.id_discdds,
-                             plan_length=len(tc.true_plan))
+                             true_plan_length=len(tc.true_plan))
                 allruns[attrs] = result_stats
                 allplanning[attrs] = result
     
     jobs_report_algo_init(config, rm, algoinit)
     jobs_report_tc(config, rm, testcases)
     jobs_report_dds(config, rm, id_discdds2testcases.keys())
-        
-#    def add_report(short, stats, desc):
-#        job_id = 'report-%s' % short
-#        report = comp(report_for_stats, short, stats, desc, job_id=job_id)
-#        report_basename = os.path.join(outdir, 'reports/%s' % short)
-#        comp(write_report, report, report_basename, job_id=job_id + '-write')
-#    
-#    for id_algo in algos:
-#        this_algo = allruns.select(id_algo=id_algo)
-#        
-#        stats = list(this_algo.values())
-#        add_report('%s' % id_algo, stats,
-#                   'All runs of algorithm %s' % id_algo)
-#    
-#        alldiscdds = set(this_algo.field('id_discdds'))
-#        
-#        for id_discdds in alldiscdds:
-#            stats = list(this_algo.select(id_discdds=id_discdds).values())
-#            add_report('%s-%s' % (id_algo, id_discdds), stats,
-#                       'All runs of algorithm %s on %s' % (id_algo, id_discdds))
+
     allstats = StoreResults()
     for key in allruns:
         run = allruns[key]
         job_id = comp_stage_job_id(run, 'statsdict')
         allstats[key] = comp(results2stats_dict, run, job_id=job_id)
 
-    if False:     
-        create_tables(allstats, rm)
-    else:
-        logger.warning('Temporarely disabled table jobs.')
-    
-    create_tables_by_sample(allstats, rm)
+    jobs_tables(allstats, rm)
     jobs_visualization(config, allruns, rm)
     
     rm.create_index_job()
