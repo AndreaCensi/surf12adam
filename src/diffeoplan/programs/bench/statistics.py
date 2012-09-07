@@ -112,6 +112,16 @@ def plan_string(stats):
         return None
     else:
         return plan_friendly(plan)
+
+@add_statistics
+def true_plan_string(stats):
+    """ t := True plan """
+    true_plan = stats['tc'].true_plan 
+    if true_plan is None:
+        return None
+    else:
+        return plan_friendly(true_plan)
+    
     
 @add_statistics
 def plan_length(stats):
@@ -119,7 +129,8 @@ def plan_length(stats):
     if plan_found(stats):
         return len(stats['result'].plan)
     else:
-        return np.nan
+        return None
+    
 # TODO: add same plan
 #@add_statistics
 #def plan_same(stats):
@@ -241,46 +252,47 @@ Stats.tables_for_single_sample = {
     'graph': [
         'plan_found',
         'plan_string',
-        'd_L2_py0_y1',
-        'plan_time',
-        'num_states_evaluated',
-        'num_closed',
-        'num_open',
-        'num_created',
-        'num_redundant',
-        'num_collapsed',
+        'd_L2_py0_y1//f3',
+        'plan_time//f2',
+        'num_states_evaluated//d',
+        'num_closed//d',
+        'num_open//d',
+        'num_created//d',
+        'num_redundant//d',
+        'num_collapsed//d',
     ],
     'distances': [
         'plan_found',
         'plan_string',
-        'd_L2_py0_y1',
-        'goal_threshold',
-        'plan_time',
-        'num_states_evaluated',
-        'num_closed',
-        'num_open',
-        'num_created',
-        'num_redundant',
-        'num_collapsed',
+        'true_plan_string',
+        'd_L2_py0_y1//f3',
+        'goal_threshold//f3',
+        'plan_time//f2',
+        'num_states_evaluated//d',
+        'num_closed//d',
+        'num_open//d',
+        'num_created//d',
+        'num_redundant//d',
+        'num_collapsed//d',
     ],
     'graph_details': [
         'plan_found',
-        'num_states_evaluated',
-        'num_closed',
-        'num_open',
-        'num_created',
-        'num_redundant',
-        'num_collapsed',
-        'num_start_closed',
-        'num_start_open',
-        'num_start_created',
-        'num_start_redundant',
-        'num_start_collapsed',
-        'num_goal_closed',
-        'num_goal_open',
-        'num_goal_created',
-        'num_goal_redundant',
-        'num_goal_collapsed',
+        'num_states_evaluated//d',
+        'num_closed//d',
+        'num_open//d',
+        'num_created//d',
+        'num_redundant//d',
+        'num_collapsed//d',
+        'num_start_closed//d',
+        'num_start_open//d',
+        'num_start_created//d',
+        'num_start_redundant//d',
+        'num_start_collapsed//d',
+        'num_goal_closed//d',
+        'num_goal_open//d',
+        'num_goal_created//d',
+        'num_goal_redundant//d',
+        'num_goal_collapsed//d',
     ]
 }
 

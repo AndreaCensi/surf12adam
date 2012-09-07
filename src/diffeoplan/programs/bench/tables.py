@@ -11,6 +11,7 @@ def results2stats_dict(results):
         res[x] = Stats.statistics[x].function(results)
     return res
 
+
 def make_samples_groups(allstats):
     """ Creates lists of samples. Also supports single samples. 
     
@@ -23,22 +24,22 @@ def make_samples_groups(allstats):
     for delta, samples in allstats.groups_by_field_value('true_plan_length'):
         sample_groups['true_plan_length=%s' % delta] = samples
     
-    # TODO: group by discdds
+    # TODO: group also by discdds
 
-    # TODO: then we make all single samples
-    print sample_groups.keys()
     return sample_groups
+
 
 def jobs_tables(allstats, rm):
     # Reports per-t
-    jobs_tables_by_sample_rows_algo(allstats, rm, Stats.tables_for_single_sample)
-    jobs_tables_by_algo_rows_samples(allstats, rm, Stats.tables_for_single_sample)
+    tables_single = Stats.tables_for_single_sample
+    tables_multi = Stats.tables_for_multi_sample
+    jobs_tables_by_sample_rows_algo(allstats, rm, tables_single)
+    jobs_tables_by_algo_rows_samples(allstats, rm, tables_single)
     
     samples_groups = make_samples_groups(allstats)
-    jobs_tables_by_sample_groups(samples_groups, rm,
-                                 Stats.tables_for_multi_sample)
-    
-    jobs_tables_by_algo_rows_sample_groups(samples_groups, rm, Stats.tables_for_multi_sample)
+    jobs_tables_by_sample_groups(samples_groups, rm, tables_multi)
+    jobs_tables_by_algo_rows_sample_groups(samples_groups, rm, tables_multi)
+        
         
 def jobs_tables_by_sample_groups(samples_groups, rm, tables):
     # Tables grouping by algorithm
@@ -58,6 +59,7 @@ def jobs_tables_by_sample_groups(samples_groups, rm, tables):
         
         rm.add(r, 'bysamplegroups', **table_key)
         
+        
 @contract(allstats=StoreResults, rm=ReportManager,
           tables='dict(str:list(str))')
 def jobs_tables_by_sample_rows_algo(allstats, rm, tables):
@@ -73,6 +75,7 @@ def jobs_tables_by_sample_rows_algo(allstats, rm, tables):
                      job_id=job_id)
 
             rm.add(r, 'bysample', id_tc=id_tc, id_statstable=id_statstable)
+            
             
 @contract(allstats=StoreResults, rm=ReportManager,
           tables='dict(str:list(str))')
@@ -92,6 +95,7 @@ def jobs_tables_by_algo_rows_samples(allstats, rm, tables):
             rm.add(r, 'byalgo-rows-sample',
                    id_algo=id_algo, id_statstable=id_statstable)
  
+
 @contract(samples_groups='dict(str:StoreResults)', rm=ReportManager,
           tables='dict(str:list(str))')
 def jobs_tables_by_algo_rows_sample_groups(samples_groups, rm, tables):

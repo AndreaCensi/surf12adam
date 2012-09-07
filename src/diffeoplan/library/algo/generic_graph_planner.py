@@ -6,6 +6,7 @@ from matplotlib.cm import get_cmap
 from reprep import Report
 from reprep.plot_utils import turn_all_axes_off
 from diffeoplan.library.discdds.plan_utils import plan_steps
+import time
 
 __all__ = ['GenericGraphPlanner']
  
@@ -14,7 +15,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
     def __init__(self, bidirectional,
                  metric_goal,
                  metric_collapse, metric_collapse_threshold,
-                 max_depth=10000, max_iterations=10000):
+                 max_depth=10000, max_iterations=10000, max_time=120):
         super(GenericGraphPlanner, self).__init__()
         self.bidirectional = bidirectional
         config = get_current_config()
@@ -23,6 +24,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         self.metric_collapse_threshold = metric_collapse_threshold
         self.max_iterations = max_iterations
         self.max_depth = max_depth
+        self.max_time = max_time
         
     def __strparams__(self):
         return ("%s;g:%s;c:%s<=%s" % 
@@ -43,9 +45,11 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
     def init_report(self, report):
         """ Creates a report for the initialization phase. """
         super(GenericGraphPlanner, self).init_report(report)
-        diffeosystem_display_products(self.get_dds(), report.section('actions'), 5)
+        diffeosystem_display_products(self.get_dds(),
+                                      report.section('actions'), 5)
 
     def plan_init(self, y0, y1):
+        self.clock_start = time.clock()
         self.y0 = y0
         self.y1 = y1
         self.start_tree = self.init_start_tree(y0)
@@ -95,7 +99,15 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
                 self.log_plan_found(d, p1, p2, plan_red, plan)
                 
                 return PlanningResult(True, plan, 'Found',
-                                      extra=self.make_extra())        
+                                      extra=self.make_extra())
+                
+            # Check if too much time passed
+            passed = time.clock() - self.clock_start
+            if passed >= self.max_time:
+                self.log_time_expired(passed)
+                return PlanningResult(False, None, 'Time expired',
+                                      extra=self.make_extra())
+                    
         self.log_planning_failed()
         
         return PlanningResult(False, None, 'not found',
@@ -139,14 +151,6 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
                    self.goal_tree.node_friendly(p2), d))
         self.info(' concat: %s' % plan_friendly(plan_red))
         self.info('reduced: %s' % plan_friendly(plan))
-#        
-#    def make_extra(self):
-#        """ Extra information to return about the search """
-#        extra = super(GenericGraphPlanner, self).make_extra()
-#        extra['start_tree'] = self.start_tree
-#        extra['goal_tree'] = self.goal_tree
-#        extra['connector'] = self.connector
-#        return extra
 
     def init_connector(self, start_tree, end_tree):
         connector = Connector(start_tree, end_tree,
@@ -300,6 +304,10 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
                 pylab, plan2color=goal_dist_y1, cmap=cmap_goal, origin=origin)
             turn_all_axes_off(pylab)
             pylab.colorbar()
+        
+    def log_time_expired(self, passed):
+        self.info('Quitting because time expired: %s > %s' % 
+                  (passed, self.max_time))
         
         
 def diffeosystem_display_products(dds, report, nsteps):

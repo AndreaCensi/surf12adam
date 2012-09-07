@@ -45,12 +45,13 @@ class Connector(WithInternalLog):
     def close_enough(self, node1, node2):
         return self.distance(node1, node2) <= self.threshold
         
-    @dp_memoize_instance
+    
+    # Don't memoize this, it is already memoized in tree1
     def value1(self, node1):
         #assert node1 in self.tree1.G
         return self.tree1.plan2image(node1)
     
-    @dp_memoize_instance
+    # Don't memoize this, it is already memoized in tree2
     def value2(self, node2):
         #assert node2 in self.tree2.G
         return self.tree2.plan2image(node2)

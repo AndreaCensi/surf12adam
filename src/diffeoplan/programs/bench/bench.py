@@ -48,6 +48,8 @@ def run_planning(config, id_algo, id_tc, algo):
     results['algo'] = algo
     results['result'] = planning_result
     results['plan_time'] = plan_time
+    
+    
     return results
 
 def run_planning_stats(config, results):
@@ -77,9 +79,11 @@ def run_planning_stats(config, results):
     images = results['images'] = {}
     images['y0'] = y0
     images['y1'] = y1         
-    images['py0'] = discdds.predict(y0, plan)
-    iplan = tuple(reversed(plan))
-    images['ipy1'] = idiscdds.predict(y1, iplan)
+        
+    if plan is not None:
+        images['py0'] = discdds.predict(y0, plan)
+        iplan = tuple(reversed(plan))
+        images['ipy1'] = idiscdds.predict(y1, iplan)
     
     if tc.true_plan is not None:
         images['ty0'] = discdds.predict(y0, tc.true_plan)
