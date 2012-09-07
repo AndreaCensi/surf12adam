@@ -27,7 +27,24 @@ def plan_friendly(plan):
         return s 
             
     s = "".join([cmd(u, n) for (u, n) in plan_group(plan)])
-    return "%s" % s
+    return  s
+
+@contract(plan='seq[N]')
+def plan_friendly_tex(plan):
+    """ Returns a TeX string for the plan. """
+    if len(plan) == 0:
+        return "\emptyset"
+    
+    names = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l']
+    
+    def cmd(u, n):
+        s = names[u]
+        if n > 1:
+            s += '^%s' % n
+        return s 
+            
+    s = "".join([cmd(u, n) for (u, n) in plan_group(plan)])
+    return s
 
 @contract(plan='seq[N]')
 def plan_group(plan):

@@ -1,14 +1,12 @@
 from . import np, contract
 from collections import deque
-from diffeoplan.library import TestCase, UncertainImage
-from diffeoplan.library.logs import LogItem
+from diffeoplan.library import LogItem, TestCase, UncertainImage
 from itertools import ifilter
-import random
-
     
     
 @contract(delta='int,>=1', n='int,>=1')
-def make_logcases(config, id_stream, n, delta, id_tc_pattern, id_discdds, discdds,
+def make_logcases(config, id_stream, n, delta, id_tc_pattern,
+                  id_discdds, discdds,
                   seed):
     
     stream = config.streams.instance(id_stream)
@@ -24,6 +22,8 @@ def make_logcases(config, id_stream, n, delta, id_tc_pattern, id_discdds, discdd
         plan = discdds.commands_to_indices(m.u)
         tc = TestCase(id_tc=id_tc, id_discdds=id_discdds,
                       y0=I0, y1=I1, true_plan=plan)
+        # TODO: add field desc
+        desc = 'Sampled from stream %s, i=%s for seed %s.' % (i, seed)
         yield tc
 
 

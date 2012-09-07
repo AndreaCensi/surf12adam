@@ -48,12 +48,10 @@ class Connector(WithInternalLog):
     
     # Don't memoize this, it is already memoized in tree1
     def value1(self, node1):
-        #assert node1 in self.tree1.G
         return self.tree1.plan2image(node1)
     
     # Don't memoize this, it is already memoized in tree2
     def value2(self, node2):
-        #assert node2 in self.tree2.G
         return self.tree2.plan2image(node2)
     
     def get_connections(self):
@@ -67,14 +65,20 @@ class Connector(WithInternalLog):
         self.print_minimum()
         return matches
 
-    def print_minimum(self):
+    def print_minimum(self, num=5):
         self.info('print_minimum:')
+        t = []
         for n1, n2 in itertools.product(self.tree1.G, self.tree2.G):
             d = self.distance(n1, n2)    
             s1 = self.tree1.node_friendly(n1)
             s2 = self.tree1.node_friendly(n2)
+            t.append((d, s1, s2))
+        
+        t.sort(key=lambda x: x[0])
+        if len(t) > num:
+            t = t[:num]
+        for d, s1, s2 in t:
             self.info('- %5f %20s %20s' % (d, s1, s2))
-        #for n1, n2 in itertools.product(self.tree1.G, self.tree2.G)
         
         nodes1 = list(self.tree1.G.nodes())
         nodes2 = list(self.tree2.G.nodes())

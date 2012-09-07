@@ -3,11 +3,14 @@ from reprep.report_utils import StoreResults
 import itertools
 import time
 from diffeoplan.programs.bench.statistics import Stats
+from contracts import contract
+from diffeoplan.library.discdds.diffeo_system import DiffeoSystem
+from ctypes.test.test_delattr import TestCase
 
 __all__ = ['run_planning', 'run_planning_stats']
 
 
-def run_planning(config, id_algo, id_tc, algo):
+def run_planning(id_algo, id_tc, testcase, algo):
     '''
     
     :param config:
@@ -17,7 +20,7 @@ def run_planning(config, id_algo, id_tc, algo):
     :param algo: Already init()ed instance of DiffeoPlanningAlgo
     '''
     # load the test case 
-    testcase = config.testcases.instance(id_tc)
+#    testcase = config.testcases.instance(id_tc)
     
     # run the planning
     y0 = testcase.y0
@@ -52,21 +55,21 @@ def run_planning(config, id_algo, id_tc, algo):
     
     return results
 
-def run_planning_stats(config, results):
+@contract(results=dict, discdds=DiffeoSystem, testcase=TestCase)
+def run_planning_stats(results, discdds, testcase):
     '''
         Compute statistics for the result of planning.
     
         :param results: output of run_planning.
     '''
     result = results['result']
-    id_discdds = results['id_discdds']
-    id_tc = results['id_tc'] 
-    tc = config.testcases.instance(id_tc)
+#    id_discdds = results['id_discdds']
+#    id_tc = results['id_tc'] 
+#    tc = config.testcases.instance(id_tc)
     # this is the planned plan
     plan = result.plan
     # reinstance system and test case
-    testcase = config.testcases.instance(id_tc)
-    discdds = config.discdds.instance(id_discdds)
+#    discdds = config.discdds.instance(id_discdds)
     idiscdds = discdds.inverse()
     # predict result according to plan
     y0 = testcase.y0
@@ -85,9 +88,9 @@ def run_planning_stats(config, results):
         iplan = tuple(reversed(plan))
         images['ipy1'] = idiscdds.predict(y1, iplan)
     
-    if tc.true_plan is not None:
-        images['ty0'] = discdds.predict(y0, tc.true_plan)
-        itrue_plan = tuple(reversed(tc.true_plan))
+    if testcase.true_plan is not None:
+        images['ty0'] = discdds.predict(y0, testcase.true_plan)
+        itrue_plan = tuple(reversed(testcase.true_plan))
         images['ity1'] = idiscdds.predict(y1, itrue_plan)
     
     distances = results['distances'] = StoreResults()

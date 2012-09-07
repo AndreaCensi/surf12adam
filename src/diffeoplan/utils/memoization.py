@@ -1,11 +1,12 @@
-from reprep.report_utils.store_results import frozendict
 from decorator import decorator
+from reprep.report_utils.store_results import frozendict
 import time
-import sys
+
 
 
 #memoize_instance_show_store = False
 memoize_instance_show_store = True
+memoize_instance_show_store_limit = 10 * 1000 * 1000
 memoize_instance_show_initial_cache = False
 memoize_instance_stats_interval = 1000000000
 
@@ -84,14 +85,13 @@ def memoize_instance(f2):
                 n = len(cache)
                 
                 cache_size = sum([x.__sizeof__() for x in cache.values()])
-                if cache_size > 1000000:
+                if cache_size > memoize_instance_show_store_limit:
                     print('compute time: clock: %sms wall: %sms' % (C * 1000, T * 1000))
                     print('cache(S): %5d stored %7d calls hits %3.3f%% size %s for %s' % 
                           (n, f.__cache_calls, perc, cache_size, f.__name__)) 
                 
         else:
             f.__cache_hits += 1
-            #print('LOAD  %s = %s' % (cache[key], signature))
             pass
         
         if f.__cache_calls % memoize_instance_stats_interval == 0:
@@ -103,7 +103,7 @@ def memoize_instance(f2):
         return cache[key]
     
     return decorator(memoizer, f2)
-    #return memoizer
+
 
 
 if __name__ == '__main__':

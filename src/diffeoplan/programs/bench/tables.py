@@ -47,17 +47,18 @@ def jobs_tables_by_sample_groups(samples_groups, rm, tables):
         id_sample_group, samples = g
         id_statstable, stats = s
         
-        table_key = dict(id_sample_group=id_sample_group,
-                         id_stats_table=id_statstable,
-                         id_reduction='mean_std')
-        
         r = comp(table_by_rows,
                  samples=samples,
                  rows_field='id_algo', # group by algorithm
                  cols_fields=stats, # which statistics for each col
                  source_descs=Stats.all_descriptions())
+
+        report_attrs = dict(id_sample_group=id_sample_group,
+                            id_stats_table=id_statstable)
         
-        rm.add(r, 'bysamplegroups', **table_key)
+        report_attrs.update(samples.fields_with_unique_values())
+        
+        rm.add(r, 'bysamplegroups', **report_attrs)
         
         
 @contract(allstats=StoreResults, rm=ReportManager,
@@ -73,10 +74,13 @@ def jobs_tables_by_sample_rows_algo(allstats, rm, tables):
                      cols_fields=stats, # which statistics for each col
                      source_descs=Stats.all_descriptions(),
                      job_id=job_id)
+            
+            report_attrs = dict(id_statstable=id_statstable) # id_tc=id_tc, 
+            report_attrs.update(tcruns.fields_with_unique_values())
 
-            rm.add(r, 'bysample', id_tc=id_tc, id_statstable=id_statstable)
+            rm.add(r, 'bysample', **report_attrs)
             
-            
+
 @contract(allstats=StoreResults, rm=ReportManager,
           tables='dict(str:list(str))')
 def jobs_tables_by_algo_rows_samples(allstats, rm, tables):
@@ -92,8 +96,11 @@ def jobs_tables_by_algo_rows_samples(allstats, rm, tables):
                      source_descs=Stats.all_descriptions(),
                      job_id=job_id)
 
-            rm.add(r, 'byalgo-rows-sample',
-                   id_algo=id_algo, id_statstable=id_statstable)
+            report_attrs = dict(id_statstable=id_statstable)
+            report_attrs.update(samples.fields_with_unique_values())
+            assert report_attrs['id_algo'] == id_algo
+            
+            rm.add(r, 'byalgo-rows-sample', **report_attrs)
  
 
 @contract(samples_groups='dict(str:StoreResults)', rm=ReportManager,
@@ -117,7 +124,11 @@ def jobs_tables_by_algo_rows_sample_groups(samples_groups, rm, tables):
                      cols_fields=stats, # which statistics for each col
                      source_descs=Stats.all_descriptions(),
                      job_id=job_id)
-
-            rm.add(r, 'byalgo-rows-sample-groups',
-                   id_algo=id_algo, id_statstable=id_statstable)
+            
+            
+            report_attrs = dict(id_statstable=id_statstable)
+            report_attrs.update(samples.fields_with_unique_values())
+            assert report_attrs['id_algo'] == id_algo
+           
+            rm.add(r, 'byalgo-rows-sample-groups', **report_attrs)
  

@@ -1,18 +1,5 @@
 from . import np
-from compmake import comp
-from reprep import Report, scale
-from reprep.graphics.zoom import rgb_zoom
-
-     
-def jobs_visualization(config, allruns, rm):
-    
-    for run in allruns:
-        id_tc = run['id_tc']
-        id_algo = run['id_algo']
-        result = allruns[run]
-        job_id = 'plan-%s-%s-visualize' % (id_algo, id_tc)
-        report = comp(visualize_result, config, id_tc, id_algo, result, job_id=job_id)
-        rm.add(report, 'visualization', id_tc=id_tc, id_algo=id_algo)
+from reprep import Report, scale, rgb_zoom
 
 
 def visualize_result(config, id_tc, id_algo, stats):

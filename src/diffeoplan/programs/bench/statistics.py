@@ -1,6 +1,7 @@
-from . import np, logger, contract
+from . import logger, contract
 from diffeoplan.configuration import get_current_config
-from diffeoplan.library import DistanceNormWeighted, DistanceNorm, plan_friendly
+from diffeoplan.library import (DistanceNormWeighted, DistanceNorm, plan_friendly,
+    plan_friendly_tex)
 from itertools import chain
 from reprep.report_utils import (FunctionWithDescription, WithDescription,
     symbol_desc_from_docstring, frozendict, symbol_desc_from_string)
@@ -114,6 +115,16 @@ def plan_string(stats):
         return plan_friendly(plan)
 
 @add_statistics
+def plan_string_tex(stats):
+    """ p := Plan """
+    plan = stats['result'].plan 
+    if plan is None:
+        return None
+    else:
+        return '$%s$' % plan_friendly_tex(plan)
+
+
+@add_statistics
 def true_plan_string(stats):
     """ t := True plan """
     true_plan = stats['tc'].true_plan 
@@ -121,6 +132,15 @@ def true_plan_string(stats):
         return None
     else:
         return plan_friendly(true_plan)
+
+@add_statistics
+def true_plan_string_tex(stats):
+    """ t := True plan """
+    true_plan = stats['tc'].true_plan 
+    if true_plan is None:
+        return None
+    else:
+        return '$%s$' % plan_friendly_tex(true_plan)
     
     
 @add_statistics
@@ -251,7 +271,7 @@ Stats.tables_for_single_sample = {
     'all': list(Stats.statistics.keys()),
     'graph': [
         'plan_found',
-        'plan_string',
+        'plan_string_tex',
         'd_L2_py0_y1//f3',
         'plan_time//f2',
         'num_states_evaluated//d',
@@ -263,8 +283,8 @@ Stats.tables_for_single_sample = {
     ],
     'distances': [
         'plan_found',
-        'plan_string',
-        'true_plan_string',
+        'plan_string_tex',
+        'true_plan_string_tex',
         'd_L2_py0_y1//f3',
         'goal_threshold//f3',
         'plan_time//f2',
@@ -335,7 +355,7 @@ Stats.tables_for_multi_sample = {
         'num_goal_redundant/mean',
         'num_goal_collapsed/mean',
     ],
-        'distances_mean': [
+    'distances_mean': [
         'plan_found/num',
         'plan_found/mean/perc',
         'plan_length/mean/g',

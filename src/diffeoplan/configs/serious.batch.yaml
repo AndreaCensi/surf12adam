@@ -192,8 +192,19 @@
   algorithms:
   - bnbn1_it1000
   testcases:
+  - tc_h1orbit-pt256-80-n35s_d1_*
+  - tc_h1orbit-pt256-80-n35s_d2_*
+  - tc_h1orbit-pt256-80-n35s_d3_*
+  - tc_h1orbit-pt256-80-n35s_d4_*
+  - tc_h1orbit-pt256-80-n35s_d5_*
+  - tc_h1orbit-pt256-80-n35s_d6_*
+  - tc_h1orbit-pt256-80-n35s_d7_*
   - tc_h1orbit-pt256-80-n35s_d8_*
-
+  - tc_h1orbit-pt256-80-n35s_d9_*
+  - tc_h1orbit-pt256-80-n35s_d10_*
+  - tc_h1orbit-pt256-80-n35s_d11_*
+  - tc_h1orbit-pt256-80-n35s_d12_*
+  
 
 
 
