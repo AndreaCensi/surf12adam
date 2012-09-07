@@ -102,15 +102,16 @@ class DiffeoTreeSearch(GenericGraphSearch, WithInternalLog):
         node_color = map(plan2color, nodes) 
         labels = dict((n, plan2label(n)) for n in self.G)
         
-        if len(all_positions) != len(set(all_positions)):
-            print('Warning, overlapping nodes')
-            y = collections.Counter(all_positions)
-            for p, num in y.items():
-                if num > 1:
-                    print('- %d for %s' % (num, p))
-                    for node, node_pos in pos.items():
-                        if tuple(node_pos) == p:
-                            print('  - %s ' % str(node))
+        if False:
+            if len(all_positions) != len(set(all_positions)):
+                print('Warning, overlapping nodes')
+                y = collections.Counter(all_positions)
+                for p, num in y.items():
+                    if num > 1:
+                        print('- %d for %s' % (num, p))
+                        for node, node_pos in pos.items():
+                            if tuple(node_pos) == p:
+                                print('  - %s ' % str(node))
 
         nx.draw_networkx(self.G, with_labels=True, pos=pos, labels=labels,
                         node_color=node_color, cmap=cmap)

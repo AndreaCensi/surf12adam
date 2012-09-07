@@ -30,22 +30,28 @@ class Connector(WithInternalLog):
     def update(self, new_nodes_G1, new_nodes_G2):
         pass
     
-    @memoize_instance
+    @dp_memoize_instance
     def distance(self, node1, node2):
         '''
         Returns the distance between nodes
         :param node1: A node in G1
         :param node2: A node in G2
         '''
-        v1 = self.value1(node1)
-        v2 = self.value2(node2)
-        return self.metric.distance(v1, v2)
+        if False:
+            # this is good as heuristics, but we want the real distance
+            # to check that we are below the threshold
+            v1 = self.value1(node1)
+            v2 = self.value2(node2)
+            return self.metric.distance(v1, v2)
+        else:
+            plan = node1 + tuple(reversed(node2))
+            v1 = self.value1(plan)
+            v2 = self.value2(())
+            return self.metric.distance(v1, v2)
     
-    @memoize_instance
     def close_enough(self, node1, node2):
         return self.distance(node1, node2) <= self.threshold
         
-    
     # Don't memoize this, it is already memoized in tree1
     def value1(self, node1):
         return self.tree1.plan2image(node1)

@@ -97,22 +97,27 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
                 # let's simplify it
                 plan = self.get_plan_reducer().get_canonical(plan_red)
                 self.log_plan_found(d, p1, p2, plan_red, plan)
-                
-                return PlanningResult(True, plan, 'Found',
-                                      extra=self.make_extra())
+                result = PlanningResult(True, plan, 'Found',
+                                        extra=self.make_extra())
+                self.log_final_result(result)
+                return result
                 
             # Check if too much time passed
             passed = time.clock() - self.clock_start
             if passed >= self.max_time:
                 self.log_time_expired(passed)
-                return PlanningResult(False, None, 'Time expired',
+                result = PlanningResult(False, None, 'Time expired',
                                       extra=self.make_extra())
+                self.log_final_result(result)
+                return result
                     
         self.log_planning_failed()
+        result = PlanningResult(False, None, 'not found',
+                                       extra=self.make_extra())
+        self.log_final_result(result)
+        return result
         
-        return PlanningResult(False, None, 'not found',
-                              extra=self.make_extra())
-    
+        
     def log_start_tree_expanded(self, added):
         if False:
             if added:
@@ -308,7 +313,15 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
     def log_time_expired(self, passed):
         self.info('Quitting because time expired: %s > %s' % 
                   (passed, self.max_time))
-        
+    
+    def log_final_result(self, result): #@UnusedVariable
+        """ Called last, before returning """
+        self.info('Summary of memory for start_tree:\n %s' 
+                  % self.start_tree.memoize_cache.summary())
+        self.info('Summary of memory for goal_tree:\n %s' 
+                  % self.goal_tree.memoize_cache.summary())
+        self.info('Summary of memory for connecor:\n %s' 
+                  % self.connector.memoize_cache.summary())
         
 def diffeosystem_display_products(dds, report, nsteps):
     # XXX: make separate

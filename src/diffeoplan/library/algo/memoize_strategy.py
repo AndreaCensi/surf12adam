@@ -1,4 +1,4 @@
-from diffeoplan.utils.memoization import memoize_instance
+from diffeoplan.utils.memoize_limits import memoize_limited
 
 
 def dp_memoize_instance(f):
@@ -11,10 +11,11 @@ def dp_memoize_instance(f):
         In the future we will have a smarter strategy.
     """
     
-    if True:
-        return memoize_instance(f)
-    else:
-        return f
+#    if True:
+#        return memoize_instance(f)
+#    
+    memoize = memoize_limited(max_size=None, max_mem_MB=25)
+    return memoize(f)
     
     
     
