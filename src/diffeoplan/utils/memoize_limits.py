@@ -1,11 +1,11 @@
 from collections import deque
 from compmake.utils import duration_human
-from contracts import contract
-from contracts.interface import describe_type
+from contracts import contract, describe_type
 from decorator import decorator
 from diffeoplan.utils import WithInternalLog
-from reprep.report_utils import frozendict
+from reprep.utils import frozendict2
 import time
+from psutil._compat import defaultdict
 
 def memstring(num_bytes):
     K = 1000.0
@@ -34,7 +34,7 @@ class CacheResult(object):
         if size is None:
             size = value.__sizeof__()
         self.size = size
-        
+    
     def get_size_bytes(self):
         return self.size
     
@@ -42,7 +42,7 @@ class CacheResult(object):
         self.num_calls += 1
         return self.value
     
-    def __str__(self):
+    def __repr__(self):
         return ('CacheResult(size=%s,clock=%s,wall=%s,value=%s)' % 
                 (memstring(self.size), timestring(self.clock), timestring(self.wall),
                  describe_type(self.value)))
@@ -53,10 +53,9 @@ class MemoizeCache(WithInternalLog):
         super(MemoizeCache, self).__init__()
         self.obj = obj
         self.max_size = max_size
-        if max_mem_MB is not None:
-            self.max_mem_bytes = max_mem_MB * 1000 * 1000
-        else:
-            self.max_mem_bytes = None
+        self.set_max_memory_MB(max_mem_MB)
+        
+        self.cur_mem_bytes = 0
         self.ncalls = 0
         self.nhits = 0
         self.nmiss = 0
@@ -67,13 +66,23 @@ class MemoizeCache(WithInternalLog):
         self.erased_clock = 0.0 # Seconds of clock time of entries erased
         self.erased_bytes = 0 # Size of erased objects
         
+        self.clear()
+        
+    def clear(self):
         # key -> CacheResult
         self.cache = {}
-        
         # list of keys recently accessed
         self.accessed = deque()
+        self.ignore = {} 
+        
+    def set_max_memory_MB(self, max_mem_MB):
+        if max_mem_MB is not None:
+            self.max_mem_bytes = max_mem_MB * 1000 * 1000
+        else:
+            self.max_mem_bytes = None
         
     def call(self, f, *args, **kwargs):
+        assert len(self.cache) <= len(self.accessed)
         self.ncalls += 1
         key = self.make_key(f, args, kwargs)
         if not key in self.cache:
@@ -82,38 +91,84 @@ class MemoizeCache(WithInternalLog):
             cache_result = self.compute(f, args, kwargs)
             self.log_computed(key, cache_result)
             self.possibly_add_new_result(key, cache_result)
+            # Mark access
+            assert not key in self.ignore
+            self.ignore[key] = 1
+            #print('Adding %s' % str(key))
             return cache_result.get_value()
         else:
             self.nhits += 1
             cache_result = self.cache[key]
             self.log_access(key, cache_result)
-            self.mark_accessed(key)
+            # Mark access
+            self.ignore[key] += 1
+            #print('Marking %s with %s ' % (key, self.ignore[key]))
+            #print('len %s %s' % (len(self.accessed), x))
+            self.accessed.appendleft(key)
             self.saved_wall += cache_result.wall
             self.saved_clock += cache_result.clock
-            return self.cache[key].get_value()
+            return cache_result.get_value()
+    
     
     def possibly_add_new_result(self, key, cache_result):
         """ Possibly adds the newly computed cache_result to the cache. """
         # We add it to the cache, and if we are over the limits
         # we will delete something.
-        self.mark_accessed(key)
         self.log_added(key, cache_result)
-        self.cache[key] = cache_result
+        self.add_to_cache(key, cache_result)
+        self.accessed.appendleft(key)
+        self.trim()
+        
+    def trim(self):
         while self.over_limit():
-            self.log_over_limit(key, cache_result)
+            #self.log_over_limit(key, cache_result)
             # We need to delete something.
             # Let's delete the thing that was accessed more remotely
             # (we can make variations on this strategy).
-            oldest = self.accessed[-1]
-            self.log_removing(oldest, self.cache[oldest])
-            del self.cache[oldest]
-            self.accessed.remove(oldest)
+            oldest = self.accessed.pop()
+            
+            if not oldest in self.ignore:
+                # bad cache: TODO solve this
+                self.ignore[oldest] = 1
+            
+            assert oldest in self.ignore
+            
+            self.ignore[oldest] -= 1
+                         
+            if self.ignore[oldest] > 0:
+                continue 
+
+            assert oldest in self.cache
+             
+            cache_result = self.cache[oldest]
+            self.log_removing(oldest, cache_result)
+            self.delete_from_cache(oldest)
+            del self.ignore[oldest]
+            
             self.nerased += 1
             self.erased_wall += cache_result.wall
             self.erased_clock += cache_result.clock
             self.erased_bytes += cache_result.get_size_bytes()
            
-            
+    def add_to_cache(self, key, cache_result):
+        self.cur_mem_bytes += cache_result.get_size_bytes()
+        self.cache[key] = cache_result
+        
+    def delete_from_cache(self, key):
+        cache_result = self.cache[key]
+        self.cur_mem_bytes -= cache_result.get_size_bytes()
+        del self.cache[key]
+  
+     
+#    def remove_large_objects(self, min_size_MB):
+#        """ Removes large objects from the cache. """
+#        for key in list(self.cache.keys()):
+#            cache_result = self.cache[key]
+#            if cache_result.get_size_bytes() > min_size_MB * 1000 * 1000:
+#                del self.cache[key]
+#                # FIXME This does not necessarily work...
+#                self.ignore[key] += 1
+        
     def over_limit(self):
         """ Returns true if the cache is over the limit. """
         if (self.max_size is not None) and (len(self.cache) > self.max_size):
@@ -129,7 +184,8 @@ class MemoizeCache(WithInternalLog):
                  
     def current_cache_bytes(self):
         """ Estimates the size of the current cache in bytes. """
-        return sum([x.get_size_bytes() for x in self.cache.values()])
+        return self.cur_mem_bytes
+        #return sum([x.get_size_bytes() for x in self.cache.values()])
        
     @contract(returns=CacheResult)
     def compute(self, f, args, kwargs):
@@ -139,13 +195,8 @@ class MemoizeCache(WithInternalLog):
         clock = time.clock() - c0
         wall = time.time() - t0
         result = CacheResult(value=value, clock=clock, wall=wall)
-        return result
-        
-    def mark_accessed(self, key):
-        if key in self.accessed:
-            self.accessed.remove(key)
-        self.accessed.appendleft(key)
-        
+        return result 
+    
     def make_key(self, f, args, kwargs):
         """ 
             Returns an hashable key.
@@ -156,7 +207,7 @@ class MemoizeCache(WithInternalLog):
         """
         # TODO: use resolving names, so that equivalent calls
         # have the same signature
-        key = (f.__name__, args, frozendict(kwargs))
+        key = (f.__name__, args, frozendict2(kwargs))
         return key
     
     def get_signature(self, key):
@@ -211,6 +262,7 @@ class MemoizeCache(WithInternalLog):
         s += '  ncalls: %6d\n' % self.ncalls
         s += '   nhits: %6d (%s)\n' % (self.nhits, perc(self.nhits, self.ncalls))
         s += '   nmiss: %6d (%s)\n' % (self.nmiss, perc(self.nmiss, self.ncalls))
+        s += '   len queue: %6d \n' % (len(self.accessed))
         s += '  ___Saved: \n'
         s += '   clock: %s\n' % timestring(self.saved_clock)
         s += '    wall: %s\n' % timestring(self.saved_wall)
@@ -220,7 +272,7 @@ class MemoizeCache(WithInternalLog):
         s += '         clock: %s\n' % timestring(self.erased_clock)
         s += '         bytes: %s\n' % memstring(self.erased_bytes)
         
-        assert len(self.cache) == len(self.accessed)
+        assert len(self.cache) <= len(self.accessed)
         n = 3
         n = min(n, len(self.cache) / 2)
         s += '\n'

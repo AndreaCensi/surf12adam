@@ -84,7 +84,6 @@
   - diffeoplan.library.Twirl
   - {}
 
-
 - id: twirl
   desc: A big twirl
   code: 
@@ -92,3 +91,19 @@
   - id_diffeo: "twirl1"
     times: 20
 
+
+- id: "pR${deg}"
+  desc: "Rotation of ${deg} degrees around the center (plane topology)"
+  code: 
+  - diffeoplan.library.EvalDiffeo
+  - function: 'rotdeg(p,+${deg})' 
+    inverse:  'rotdeg(p,-${deg})' 
+    topology: plane
+ 
+- id: "pX${perc}"
+  desc: "Horizontal translation (left) of ${perc}%, plane topology"
+  code: 
+  - diffeoplan.library.EvalDiffeo
+  - function: '[x+0.${perc}*2, y]'  # viewport is [-1,+1]
+    inverse:  '[x-0.${perc}*2, y]'
+    topology: plane

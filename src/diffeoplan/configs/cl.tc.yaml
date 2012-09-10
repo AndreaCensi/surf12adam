@@ -1,0 +1,63 @@
+
+- id: "t_m5_${dds}"
+  desc: Minimap test
+  code:
+  - diffeoplan.library.FromImages
+  - tcname: "t_minimap_${dds}"
+    id_discdds: "${dds}"
+    image1: png-minimapv-01
+    image2: png-minimapv-02
+    #true_plan: [0, 4, 5 ]
+    true_plan: [1, 2, 4, 5, 
+                1, 2, 4, 5, 
+                1, 2, 4, 5, 
+                1, 2, 4, 5, 
+                1, 2, 4, 5]
+    #4,5, 1, 2,4,5]
+
+- id: "t_m1_${dds}"
+  desc: Minimap test
+  code:
+  - diffeoplan.library.FromImages
+  - tcname: "t_m1_${dds}"
+    id_discdds: "${dds}"
+    image1: png-minimapv-01
+    image2: png-minimapv-03
+    true_plan: [1, 2, 4, 5]
+
+- id: "t_m2_${dds}"
+  desc: Minimap test
+  code:
+  - diffeoplan.library.FromImages
+  - tcname: "t_m2_${dds}"
+    id_discdds: "${dds}"
+    image1: png-minimapv-01
+    image2: png-minimapv-04
+    true_plan: [1, 2, 4, 5,
+                1, 2, 4, 5]
+
+- id: "t_m3_${dds}"
+  desc: Minimap test
+  code:
+  - diffeoplan.library.FromImages
+  - tcname: "t_m3_${dds}"
+    id_discdds: "${dds}"
+    image1: png-minimapv-01
+    image2: png-minimapv-05
+    true_plan: [1, 2, 4, 5,
+                1, 2, 4, 5,
+                1, 2, 4, 5]
+
+- id: "t_m4_${dds}"
+  desc: Minimap test
+  code:
+  - diffeoplan.library.FromImages
+  - tcname: "t_m4_${dds}"
+    id_discdds: "${dds}"
+    image1: png-minimapv-01
+    image2: png-minimapv-06
+    true_plan: [1, 2, 4, 5,
+                1, 2, 4, 5,
+                1, 2, 4, 5,
+                1, 2, 4, 5]
+

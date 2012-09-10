@@ -87,8 +87,9 @@ def dp(arguments):
         cProfile.runctx('go()', globals(), locals(), 'dp_prof')
         import pstats
         p = pstats.Stats('dp_prof')
-        p.sort_stats('cumulative').print_stats(30)
-        p.sort_stats('time').print_stats(30)
+        n = 30
+        p.sort_stats('cumulative').print_stats(n)
+        p.sort_stats('time').print_stats(n)
 
 def dpmain():
     exceptions_no_traceback = (UserError, ConfToolsException)

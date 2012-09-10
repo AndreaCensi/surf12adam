@@ -3,3 +3,13 @@
   code: 
     - procgraph_pil.imread.imread
     - filename: images/lena.jpg
+
+- id: "png-${name}"
+  desc: "Load PNG file named ${name}"
+  code: 
+    - procgraph_pil.imread.imread
+    - file:filename: "images/${name}.png"
+
+- id: "png-minimap-01"
+
+- id: "png-minimap-02"

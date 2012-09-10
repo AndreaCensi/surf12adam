@@ -1,10 +1,10 @@
 
-- id: "tm_${id_discdds}_${id_image}_${planstring}"
-  desc: "Manual test case for ${id_discdds} with plan ${planstring}"
+- id: "tm_${discdds}_${id_image}_${planstring}"
+  desc: "Manual test case for ${discdds} with plan ${planstring}"
   code:
   - diffeoplan.library.ManualMotion
-  - tcname: "tm_${id_discdds}_${id_image}-${planstring}"
-    id_discdds: "${id_discdds}"
+  - tcname: "tm_${discdds}_${id_image}-${planstring}"
+    id_discdds: "${discdds}"
     id_image: "${id_image}"
     planstring: "${planstring}"
 

@@ -9,3 +9,4 @@ from .square_domain import *
 from .coordinate_change import *
 from .viewport import *
 from .ddsfromsymbolic import *
+from .motion import *

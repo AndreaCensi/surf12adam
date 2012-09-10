@@ -1,11 +1,8 @@
-from . import get_visualization_distances, logger
+from . import Stats, contract, get_visualization_distances, logger
+from diffeoplan.library import DiffeoSystem, TestCase
 from reprep.report_utils import StoreResults
 import itertools
 import time
-from diffeoplan.programs.bench.statistics import Stats
-from contracts import contract
-from diffeoplan.library.discdds.diffeo_system import DiffeoSystem
-from ctypes.test.test_delattr import TestCase
 
 __all__ = ['run_planning', 'run_planning_stats']
 
@@ -18,10 +15,7 @@ def run_planning(id_algo, id_tc, testcase, algo):
     :param id_discdds:
     :param id_tc:
     :param algo: Already init()ed instance of DiffeoPlanningAlgo
-    '''
-    # load the test case 
-#    testcase = config.testcases.instance(id_tc)
-    
+    ''' 
     # run the planning
     y0 = testcase.y0
     y1 = testcase.y1
@@ -39,7 +33,18 @@ def run_planning(id_algo, id_tc, testcase, algo):
     # TODO: add computation time
     t0 = time.clock()
     # Run the planning
-    planning_result = algo.plan(y0, y1, precision)
+    try:
+        planning_result = algo.plan(y0, y1, precision)
+    except:
+        try:
+            logger.info(algo.start_tree.memoize_cache.summary())
+            logger.info(algo.goal_tree.memoize_cache.summary())
+        except:
+            pass
+        raise
+    
+    algo.start_tree.memoize_cache.clear()
+    algo.goal_tree.memoize_cache.clear()
     
     plan_time = time.clock() - t0
     

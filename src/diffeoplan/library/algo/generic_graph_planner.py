@@ -1,11 +1,11 @@
-from . import DiffeoPlanningAlgo, PlanningResult, contract, Connector, DiffeoTreeSearchImage
+from . import (DiffeoPlanningAlgo, PlanningResult, contract, Connector,
+    DiffeoTreeSearchImage)
 from diffeoplan import get_current_config
 from diffeoplan.library import (DiffeoSystem, guess_state_space, plan_friendly,
-    DiffeoAction, PlanReducer, UncertainImage)
+    DiffeoAction, PlanReducer, UncertainImage, plan_steps)
 from matplotlib.cm import get_cmap
 from reprep import Report
 from reprep.plot_utils import turn_all_axes_off
-from diffeoplan.library.discdds.plan_utils import plan_steps
 import time
 
 __all__ = ['GenericGraphPlanner']
@@ -15,7 +15,8 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
     def __init__(self, bidirectional,
                  metric_goal,
                  metric_collapse, metric_collapse_threshold,
-                 max_depth=10000, max_iterations=10000, max_time=120):
+                 max_depth=10000, max_iterations=10000, max_time=120,
+                 max_memory_MB=25):
         super(GenericGraphPlanner, self).__init__()
         self.bidirectional = bidirectional
         config = get_current_config()
@@ -25,6 +26,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         self.max_iterations = max_iterations
         self.max_depth = max_depth
         self.max_time = max_time
+        self.max_memory_MB = max_memory_MB
         
     def __strparams__(self):
         return ("%s;g:%s;c:%s<=%s" % 
@@ -55,6 +57,13 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         self.start_tree = self.init_start_tree(y0)
         self.goal_tree = self.init_goal_tree(y1)
                 
+                
+        # make one call to initialize memoization
+        self.start_tree.plan2image(())
+        self.start_tree.memoize_cache.set_max_memory_MB(self.max_memory_MB)
+        self.goal_tree.plan2image(())
+        self.goal_tree.memoize_cache.set_max_memory_MB(self.max_memory_MB)
+        
         plan0 = ()
         self.start_tree.init_search(plan0)
         self.goal_tree.init_search(plan0)
@@ -146,7 +155,6 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
     def log_planning_init(self):
         self.info('Planning started')
         
-    
     def log_planning_failed(self):
         self.info('Planning failed')
         
@@ -311,7 +319,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
             pylab.colorbar()
         
     def log_time_expired(self, passed):
-        self.info('Quitting because time expired: %s > %s' % 
+        self.info('Stopping because time expired: %s > %s' % 
                   (passed, self.max_time))
     
     def log_final_result(self, result): #@UnusedVariable

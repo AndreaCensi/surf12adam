@@ -32,7 +32,9 @@ def diffeo_from_function_viewport(diffeo, manifold, viewport, shape):
             assert domain.belongs(cell2)
             new_cell = np.floor(cell2)
             approx = np.linalg.norm(cell2 - (new_cell + center_offset))
-            info[coords[0], coords[1]] = np.exp(-approx)
+            quality = np.exp(-approx)
+            quality = 1
+            info[coords[0], coords[1]] = quality
             D[coords[0], coords[1], 0] = new_cell[0]
             D[coords[0], coords[1], 1] = new_cell[1]
         else:
@@ -41,7 +43,4 @@ def diffeo_from_function_viewport(diffeo, manifold, viewport, shape):
             # we put the identity as a dummy value
             D[coords[0], coords[1], 0] = coords[0]
             D[coords[0], coords[1], 1] = coords[1]
-#    D2 = np.transpose(D, (1, 0, 2))
-#    info2 = np.transpose(info, (1, 0))
-#    return D2, info2
     return D, info

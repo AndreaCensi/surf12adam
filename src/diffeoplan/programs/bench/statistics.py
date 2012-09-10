@@ -4,8 +4,9 @@ from diffeoplan.library import (DistanceNormWeighted, DistanceNorm, plan_friendl
     plan_friendly_tex)
 from itertools import chain
 from reprep.report_utils import (FunctionWithDescription, WithDescription,
-    symbol_desc_from_docstring, frozendict, symbol_desc_from_string)
+    symbol_desc_from_docstring, symbol_desc_from_string)
 import itertools
+from reprep.utils.frozen import frozendict2
 
 class Statistic(FunctionWithDescription):
     pass
@@ -36,7 +37,8 @@ class Stats:
         
         for objspec in config.specs.values():
             if not objspec:
-                logger.warning('Something is not right...s')
+                logger.warning('No %s defined? Just wondering...' % 
+                               objspec.name)
             for k, v in objspec.items():
                 symbol, desc = symbol_desc_from_string(v['desc'])
                 if desc is None:
@@ -253,7 +255,7 @@ def makestat(i1, i2, d):
     
     def f2(stats):
         distances = stats['distances']
-        key = frozendict(i1=i1, i2=i2, d=d)
+        key = frozendict2(i1=i1, i2=i2, d=d)
         if not key in distances:
             return None
         else:
@@ -272,7 +274,7 @@ Stats.tables_for_single_sample = {
     'graph': [
         'plan_found',
         'plan_string_tex',
-        'd_L2_py0_y1//f3',
+        #'d_L2_py0_y1//f3',
         'd_L2w_py0_y1//f3',
         'plan_time//f2',
         'num_states_evaluated//d',
@@ -286,7 +288,7 @@ Stats.tables_for_single_sample = {
         'plan_found',
         'plan_string_tex',
         'true_plan_string_tex',
-        'd_L2_py0_y1//f3',
+        #'d_L2_py0_y1//f3',
         'd_L2w_py0_y1//f3',
         'goal_threshold//f3',
         'plan_time//f2',

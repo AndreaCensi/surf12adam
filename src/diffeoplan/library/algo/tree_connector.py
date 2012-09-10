@@ -1,8 +1,8 @@
-from . import np
+from . import dp_memoize_instance, np
 from diffeoplan.utils import (WithInternalLog, assert_allclose,
-    construct_matrix_iterators, memoize_instance)
+    construct_matrix_iterators)
 import itertools
-from diffeoplan.library.algo.memoize_strategy import dp_memoize_instance
+import warnings
 
 __all__ = ['Connector']
 
@@ -37,7 +37,8 @@ class Connector(WithInternalLog):
         :param node1: A node in G1
         :param node2: A node in G2
         '''
-        if False:
+        warnings.warn('Remember to make this choice a configuration switch')
+        if True:
             # this is good as heuristics, but we want the real distance
             # to check that we are below the threshold
             v1 = self.value1(node1)
@@ -98,8 +99,7 @@ class Connector(WithInternalLog):
         s1 = self.tree1.node_friendly(n1)
         s2 = self.tree1.node_friendly(n2)
         self.info('Minimum distance: %g between %s and %s' % (np.min(D), s1, s2))
-        #self.info('y1: %s' % self.value1(n1))            
-        #self.info('y2: %s' % self.value2(n2))
+
 
 def md_argmin(a):
     """ Returns the index coordinate of a multidimensional array """

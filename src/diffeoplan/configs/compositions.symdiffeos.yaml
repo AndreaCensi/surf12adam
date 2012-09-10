@@ -6,6 +6,13 @@
   - diffeoplan.library.make_inverse
   - id_diffeo: "${diffeo}"
 
+
+# - id: "${diffeo1}+${diffeo2}"
+#   desc: "${diffeo1} +${diffeo2}"
+#   code:
+#   - diffeoplan.library.make_chain
+#   - diffeos: ["${diffeo1}", "${diffeo2}"]
+
 - id: "Itx1"
 
 - id: "R2${diffeo}"

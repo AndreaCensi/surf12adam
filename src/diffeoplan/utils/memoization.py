@@ -1,11 +1,11 @@
 from decorator import decorator
-from reprep.report_utils.store_results import frozendict
+from reprep.utils import frozendict2
 import time
 
 
 
-#memoize_instance_show_store = False
-memoize_instance_show_store = True
+memoize_instance_show_store = False
+#memoize_instance_show_store = True
 memoize_instance_show_store_limit = 10 * 1000 * 1000
 memoize_instance_show_initial_cache = False
 memoize_instance_stats_interval = 1000000000
@@ -14,7 +14,7 @@ def memoize_simple(obj):
     cache = obj.cache = {}
 
     def memoizer(f, *args, **kwargs):
-        key = (args, frozendict(kwargs))
+        key = (args, frozendict2(kwargs))
         if key not in cache:
             cache[key] = f(*args, **kwargs)
             #print('memoize: %s %d storage' % (obj, len(cache)))
@@ -71,7 +71,7 @@ def memoize_instance(f2):
                                              args_str, kwargs_str)
             return signature
         
-        key = (args, frozendict(kwargs)) 
+        key = (args, frozendict2(kwargs)) 
         if key not in cache:
             c0 = time.clock()
             t0 = time.time()

@@ -1,0 +1,145 @@
+
+- id: dcl1
+  desc: |
+    Car-like robot 
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: 128
+    actions:  # vel, steering
+    - original_cmd: [1, 0] # forward 
+      diffeo: pX10
+      label: fwd
+    - original_cmd: [1, 1] # forward, right
+      diffeo: [pX10, pR10]
+      label: fwdR
+    - original_cmd: [1, -1] # forward 
+      diffeo: [pX10, IpR10]
+      label: fwdL
+    - original_cmd: [-1, 0] # forward 
+      diffeo: IpX10
+      label: bck
+    - original_cmd: [-1, 1] # forward, right
+      diffeo: [IpX10, pR10]
+      label: bckR
+    - original_cmd: [-1, -1] # forward 
+      diffeo: [IpX10, IpR10]
+      label: bckL
+    topology: plane
+
+
+
+- id: dcl2
+  desc: |
+    Car-like robot 
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: 128
+    actions:  # vel, steering
+    - original_cmd: [1, 0] # forward 
+      diffeo: pX10
+      label: fwd
+    - original_cmd: [1, 1] # forward, right
+      diffeo: [pR10, pX10]
+      label: fwdR
+    - original_cmd: [1, -1] # forward 
+      diffeo: [IpR10, pX10]
+      label: fwdL
+    - original_cmd: [-1, 0] # forward 
+      diffeo: IpX10
+      label: bck
+    - original_cmd: [-1, 1] # forward, right
+      diffeo: [pR10, IpX10]
+      label: bckR
+    - original_cmd: [-1, -1] # forward 
+      diffeo: [IpR10, IpX10]
+      label: bckL
+    topology: plane
+
+
+
+- id: "dcl3r${resolution}"
+  desc: |
+    Car-like robot (3rd config)
+    tolerance: 0.04 for commuting
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: "${resolution}"
+    actions:  # vel, steering
+    - original_cmd: [1, 0] # forward 
+      diffeo: pX10
+      label: fwd
+    - original_cmd: [1, 1] # forward, right
+      diffeo: [pR30, pX10]
+      label: fwdR
+    - original_cmd: [1, -1] # forward 
+      diffeo: [IpR30, pX10]
+      label: fwdL
+    - original_cmd: [-1, 0] # forward 
+      diffeo: IpX10
+      label: bck
+    - original_cmd: [-1, 1] # forward, right
+      diffeo: [pR30, IpX10]
+      label: bckR
+    - original_cmd: [-1, -1] # forward 
+      diffeo: [IpR30, IpX10]
+      label: bckL
+    topology: plane
+
+- id: "dcl3br${resolution}"
+  desc: |
+    Car-like robot (3rd config)
+    tolerance: 0.04 for commuting
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: "${resolution}"
+    actions:  # vel, steering
+    - original_cmd: [1, 0] # forward 
+      diffeo: pX10
+      label: fwd
+    - original_cmd: [1, 1] # forward, right
+      diffeo: [pX10, pR30]
+      label: fwdR
+    - original_cmd: [1, -1] # forward 
+      diffeo: [pX10, IpR30]
+      label: fwdL
+    - original_cmd: [-1, 0] # forward 
+      diffeo: IpX10
+      label: bck
+    - original_cmd: [-1, 1] # forward, right
+      diffeo: [ IpX10, pR30]
+      label: bckR
+    - original_cmd: [-1, -1] # forward 
+      diffeo: [ IpX10, IpR30]
+      label: bckL
+    topology: plane
+
+
+
+- id: "dcl4r${resolution}"
+  desc: |
+    Car-like robot (3rd config)
+    tolerance: 0.05 for commuting
+  code:
+  - diffeoplan.library.DDSFromSymbolic
+  - resolution: "${resolution}"
+    actions:  # vel, steering
+    - original_cmd: [1, 0] # forward 
+      diffeo: "X0.2_R0" # 0.52 rad = 30 deg
+      label: fwd
+    - original_cmd: [1, 1] # forward, right
+      diffeo: "X0.2_R0.2"
+      label: fwdR
+    - original_cmd: [1, -1] # forward 
+      diffeo: "X0.2_R-0.2"
+      label: fwdL
+    - original_cmd: [-1, 0] # forward 
+      diffeo: "IX0.2_R0"
+      label: bck
+    - original_cmd: [-1, 1] # forward, right
+      diffeo: "IX0.2_R0.2"
+      label: bckR
+    - original_cmd: [-1, -1] # forward 
+      diffeo: "IX0.2_R-0.2"
+      label: bckL
+    topology: plane
+

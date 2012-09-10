@@ -1,0 +1,30 @@
+
+- id: test_cl_1
+  desc: "another random test"
+  algorithms:
+  - begc3
+  testcases:
+  - tm_dcl3_lena_bcefbcef
+
+- id: test_cl_2
+  desc: "another random test"
+  algorithms:
+  - begc3
+  testcases:
+  - tm_dcl3r80_lena_b
+  - tm_dcl3r80_lena_bc
+  - tm_dcl3r80_lena_bce
+  - tm_dcl3r80_lena_bcef
+  - tm_dcl3r80_lena_bcefb
+  - tm_dcl3r80_lena_bcefbc
+  - tm_dcl3r80_lena_bcefbce
+  - tm_dcl3r80_lena_bcefbcef
+
+
+- id: test_cl_3
+  desc: "another random test"
+  algorithms:
+  - begc3
+  testcases:
+  - t_cl3_minimap
+

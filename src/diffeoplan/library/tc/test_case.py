@@ -42,7 +42,7 @@ class TestCase():
         
         write_entries([description], filename_yaml)
             
-    def display(self, report):
+    def display(self, report, discdds=None):
         report.text('summary',
                     'Testcase: %s\nPlan: %s' % (self.id_tc, self.true_plan))
         report.data('id_tc', self.id_tc)
@@ -59,12 +59,13 @@ class TestCase():
         f.data_rgb('y1_rgb', zoom(self.y1.get_rgb()), caption='$y_1$ (rgb)')
         d = DistanceNorm(2)
         
-        discdds = get_current_config().discdds.instance(self.id_discdds)
+        if discdds is None:
+            discdds = get_current_config().discdds.instance(self.id_discdds)
         y1p = discdds.predict(self.y0, self.true_plan)
         
         e_y0_y1_field = d.error_field(self.y1, self.y0)
         e_y1p_y1_field = d.error_field(self.y1, y1p)
-        e_max = max(e_y0_y1_field.max(), e_y1p_y1_field.max())
+        e_max = float(max(e_y0_y1_field.max(), e_y1p_y1_field.max()))
         
         f.data_rgb('e_y0_y1', zoom(scale(e_y0_y1_field, max_value=e_max)),
                     caption="Discrepancy between $y_0$ and $y_1$.")

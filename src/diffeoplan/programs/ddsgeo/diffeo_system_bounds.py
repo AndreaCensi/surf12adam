@@ -1,15 +1,16 @@
 from diffeoplan.library.analysis import DiffeoCover, DiffeoStructure
-from diffeoplan.library.discdds import DiffeoAction, make_hard_choices
+from diffeoplan.library.discdds import DiffeoAction
 
 class DiffeoSystemBounds:
-    def __init__(self, id_dds, dds, tolerance, info_threshold, min_visibility, debug_it, max_it):
+    def __init__(self, id_dds, dds, tolerance,
+                 collapse_threshold,
+                 min_visibility, debug_it, max_it):
         self.dds = dds
-        self.dds_hard = make_hard_choices(dds, info_threshold)
-        
+         
         self.ds = DiffeoStructure(dds, tolerance)
         
-        self.cover = DiffeoCover(id_dds, self.dds_hard, self.ds,
-                                 info_threshold=info_threshold,
+        self.cover = DiffeoCover(id_dds, self.dds, self.ds,
+                                 collapse_threshold=collapse_threshold,
                                  min_visibility=min_visibility,
                                  debug_it=debug_it,
                                  max_it=max_it)

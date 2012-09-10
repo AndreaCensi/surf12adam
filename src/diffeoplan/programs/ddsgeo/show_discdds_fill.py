@@ -13,8 +13,8 @@ def show_discdds_fill_main(config, parser):
                       default='out/dp-show-discdds-fill/')
     parser.add_option("-t", "--tolerance", help="Normalized tolerance",
                       default=0.3, type='float')
-    parser.add_option("-i", "--info_threshold", help="Normalized tolerance",
-                      default=0.6, type='float')
+    parser.add_option("--collapse_threshold", help="Collapse threshold",
+                      default=0, type='float')
     parser.add_option("-n", "--num_iterations", help="Max number of iterations",
                       default=100000, type='int')
     parser.add_option("-v", "--min_visibility", help="Minimum visibility",
@@ -37,7 +37,7 @@ def show_discdds_fill_main(config, parser):
         
         show_ddsfill(id_dds, dds, report,
                      tolerance=options.tolerance,
-                     info_threshold=options.info_threshold,
+                     collapse_threshold=options.collapse_threshold,
                      debug_it=options.debug_it,
                      max_it=options.num_iterations,
                      min_visibility=options.min_visibility)    

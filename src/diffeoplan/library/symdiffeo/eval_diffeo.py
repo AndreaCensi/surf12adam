@@ -61,6 +61,11 @@ class SymDiffeoComposition(SymbolicDiffeo):
         return ("Comp(%s)" % self.chain)
 
     
+def make_chain(diffeos):
+    symdiffeos = get_current_config().symdiffeos
+    chain = map(symdiffeos.instance, diffeos) 
+    return SymDiffeoComposition(chain)     
+
 def make_inverse(id_diffeo):
     symdiffeos = get_current_config().symdiffeos 
     return symdiffeos.instance(id_diffeo).get_inverse()     

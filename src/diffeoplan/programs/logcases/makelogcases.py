@@ -23,7 +23,7 @@ def make_logcases(config, id_stream, n, delta, id_tc_pattern,
         tc = TestCase(id_tc=id_tc, id_discdds=id_discdds,
                       y0=I0, y1=I1, true_plan=plan)
         # TODO: add field desc
-        desc = 'Sampled from stream %s, i=%s for seed %s.' % (i, seed)
+        #desc = 'Sampled from stream %s, i=%s for seed %s.' % (i, seed)
         yield tc
 
 

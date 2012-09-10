@@ -50,12 +50,12 @@ class DiffeoSystem():
             rplan = np.random.randint(low=0, high=(n - 1), size=plan_length)
         return rplan.tolist() 
 
-    @contract(plan='seq[>=1](int)', y0=UncertainImage, returns=UncertainImage)
+    @contract(plan='seq[>=0](int)', y0=UncertainImage, returns=UncertainImage)
     def predict(self, y0, plan):
         """ 
             Predicts the result of applying the given plan to the image. 
         """
-        # TODO: check that the integers have correct range
+        self.check_valid_plan(plan)
         y1 = y0
         for p in plan:
             action = self.actions[p]
@@ -65,11 +65,23 @@ class DiffeoSystem():
     @contract(plan='seq[>=1](int)', returns=DiffeoAction)
     def plan2action(self, plan):
         """ Creates the DiffeoAction for the given composition. """
+        self.check_valid_plan(plan)
         a = self.actions[plan[0]]
         for i in plan:
             a_i = self.actions[i]
             a = DiffeoAction.compose(a, a_i) # XXX: check
         return a
+    
+    def check_valid_plan(self, plan):
+        """ 
+            Checks that the plan contains integers in the correct range. 
+            Raises ValueError if not.
+        """
+        for i in plan:
+            if i < 0 or i >= len(self.actions):
+                msg = ("Invalid plan %s as there are only %d actions. " % 
+                       (str(plan), len(self.actions)))
+                raise ValueError(msg) 
     
     @contract(us='seq[N](array)', returns='list[N](int)')
     def commands_to_indices(self, us):

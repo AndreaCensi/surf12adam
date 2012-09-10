@@ -1,15 +1,21 @@
 from . import np
 from reprep import Report, scale, rgb_zoom
+from diffeoplan.configuration import set_current_config
 
 
 def visualize_result(config, id_tc, id_algo, stats):
     """ Returns a report """
+    set_current_config(config)
+    
     result = stats['result']
     r = Report('%s-%s' % (id_tc, id_algo))
-    tc = config.testcases.instance(id_tc)
-    discdds = config.discdds.instance(tc.id_discdds)
-
-    tc.display(r.section('testcase'))
+#    tc = config.testcases.instance(id_tc)
+#    discdds = config.discdds.instance(tc.id_discdds)
+    algo = stats['algo']
+    tc = stats['tc']
+    discdds = algo.get_dds()
+    
+    tc.display(r.section('testcase'), discdds=discdds)
     
     if not result.success:
         r.text('warning', 'Plannning unsuccesful')
@@ -34,7 +40,7 @@ def visualize_result(config, id_tc, id_algo, stats):
                    caption='Mismatch value pixel by pixel '
                             '(zero for synthetic testcases...)')
     
-    algo = stats['algo']
+    
     algo.plan_report(r.section('planning'), result, tc)
     
     extra = result.extra
@@ -47,7 +53,6 @@ def visualize_result(config, id_tc, id_algo, stats):
 def write_log_lines(r, extra):    
     if 'log_lines' in extra:
         log_lines = extra['log_lines']
-#        lines = [l[1] for l in log_lines]
         lines = log_lines
         r.text('execution_log', '\n'.join(lines)) # XXX
     else:

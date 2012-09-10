@@ -2,6 +2,7 @@ from . import Stats, contract
 from compmake import comp
 from itertools import product
 from reprep.report_utils import ReportManager, StoreResults, table_by_rows
+from compmake.ui.user_utils import comp_store
 
 
 def results2stats_dict(results):
@@ -42,6 +43,7 @@ def jobs_tables(allstats, rm):
         
         
 def jobs_tables_by_sample_groups(samples_groups, rm, tables):
+    source_descs = comp_store(Stats.all_descriptions())
     # Tables grouping by algorithm
     for g, s in product(samples_groups.items(), tables.items()):
         id_sample_group, samples = g
@@ -51,7 +53,7 @@ def jobs_tables_by_sample_groups(samples_groups, rm, tables):
                  samples=samples,
                  rows_field='id_algo', # group by algorithm
                  cols_fields=stats, # which statistics for each col
-                 source_descs=Stats.all_descriptions())
+                 source_descs=source_descs)
 
         report_attrs = dict(id_sample_group=id_sample_group,
                             id_stats_table=id_statstable)
@@ -64,6 +66,8 @@ def jobs_tables_by_sample_groups(samples_groups, rm, tables):
 @contract(allstats=StoreResults, rm=ReportManager,
           tables='dict(str:list(str))')
 def jobs_tables_by_sample_rows_algo(allstats, rm, tables):
+    source_descs = comp_store(Stats.all_descriptions())
+    
     for id_statstable, stats in tables.items():
         for id_tc, tcruns in allstats.groups_by_field_value('id_tc'):
             job_id = 'bysample-%s-%s' % (id_tc, id_statstable)
@@ -72,7 +76,7 @@ def jobs_tables_by_sample_rows_algo(allstats, rm, tables):
                      samples=tcruns,
                      rows_field='id_algo', # group by algorithm
                      cols_fields=stats, # which statistics for each col
-                     source_descs=Stats.all_descriptions(),
+                     source_descs=source_descs,
                      job_id=job_id)
             
             report_attrs = dict(id_statstable=id_statstable) # id_tc=id_tc, 
@@ -85,6 +89,7 @@ def jobs_tables_by_sample_rows_algo(allstats, rm, tables):
           tables='dict(str:list(str))')
 def jobs_tables_by_algo_rows_samples(allstats, rm, tables):
     """ One table for each algo, where rows are test cases. """
+    source_descs = comp_store(Stats.all_descriptions())
     for id_statstable, stats in tables.items():
         for id_algo, samples in allstats.groups_by_field_value('id_algo'):
             job_id = 'byalgo-%s-%s' % (id_algo, id_statstable)
@@ -93,7 +98,7 @@ def jobs_tables_by_algo_rows_samples(allstats, rm, tables):
                      samples=samples,
                      rows_field='id_tc', # rows = tc
                      cols_fields=stats, # which statistics for each col
-                     source_descs=Stats.all_descriptions(),
+                     source_descs=source_descs,
                      job_id=job_id)
 
             report_attrs = dict(id_statstable=id_statstable)
@@ -106,6 +111,7 @@ def jobs_tables_by_algo_rows_samples(allstats, rm, tables):
 @contract(samples_groups='dict(str:StoreResults)', rm=ReportManager,
           tables='dict(str:list(str))')
 def jobs_tables_by_algo_rows_sample_groups(samples_groups, rm, tables):
+    source_descs = comp_store(Stats.all_descriptions())
     
     # Crate a new store, add the key "group"
     allstats = StoreResults()
@@ -122,9 +128,8 @@ def jobs_tables_by_algo_rows_sample_groups(samples_groups, rm, tables):
                      samples=samples,
                      rows_field='id_group', # rows = tc
                      cols_fields=stats, # which statistics for each col
-                     source_descs=Stats.all_descriptions(),
-                     job_id=job_id)
-            
+                     source_descs=source_descs,
+                     job_id=job_id) 
             
             report_attrs = dict(id_statstable=id_statstable)
             report_attrs.update(samples.fields_with_unique_values())
