@@ -5,8 +5,7 @@ from decorator import decorator
 from diffeoplan.utils import WithInternalLog
 from reprep.utils import frozendict2
 import time
-from psutil._compat import defaultdict
-
+ 
 def memstring(num_bytes):
     K = 1000.0
     if num_bytes < K:
@@ -47,6 +46,22 @@ class CacheResult(object):
                 (memstring(self.size), timestring(self.clock), timestring(self.wall),
                  describe_type(self.value)))
 
+class WithMemoizeCache(object):
+    """ 
+        An object with a MemoizeCache.
+    
+        This initializes the cache at the beginning. 
+        
+        It is not strictly necessary though because the decorators
+        check every time.
+        
+        In the future it will make it possible to make one cache
+        for all subobjects.
+    """
+    def __init__(self, max_size=None, max_mem_MB=None):
+        self.memoize_cache = MemoizeCache(self, max_size=max_size, max_mem_MB=max_mem_MB)
+        
+
 class MemoizeCache(WithInternalLog):
     
     def __init__(self, obj, max_size=None, max_mem_MB=None):
@@ -67,6 +82,19 @@ class MemoizeCache(WithInternalLog):
         self.erased_bytes = 0 # Size of erased objects
         
         self.clear()
+    
+    def get_stats(self):
+        """ Returns a dictionary with all statistics of the cache. """
+        attrs = ['cur_mem_bytes', 'ncalls', 'nhits', 'nmiss',
+                 'nerased', 'saved_wall', 'saved_clock', 'erased_wall',
+                 'erased_clock', 'erased_bytes', 'max_size', 'max_mem_bytes']
+        res = {}
+        for k in attrs:
+            res[k] = self.__dict__[k]
+        res['cur_cache_size'] = len(self.cache)
+        res['cur_accessed_queue_size'] = len(self.accessed)
+        return res
+        
         
     def clear(self):
         # key -> CacheResult

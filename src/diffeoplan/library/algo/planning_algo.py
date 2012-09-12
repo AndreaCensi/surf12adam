@@ -29,7 +29,7 @@ class DiffeoPlanningAlgo(WithInternalLog):
         
     @contract(y0=UncertainImage, y1=UncertainImage, precision='>=0',
               returns=PlanningResult)
-    def plan(self, y0, y1, precision): #@UnusedVariable
+    def plan(self, y0, y1, precision, min_visibility): #@UnusedVariable
         """ 
             Must be redefined by subclasses. 
         

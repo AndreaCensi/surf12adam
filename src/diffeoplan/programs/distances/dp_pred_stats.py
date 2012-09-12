@@ -17,8 +17,11 @@ import os
 
 @declare_command('pred-stats',
                  'pred-stats -d <distances> -s <streams> --dds discdds')
-def predstats_main(config, parser): 
+def dp_predstats_main(config, parser): 
     
+    parser.add_option("-o", "--output", default='out/dp-pred-stats',
+                      help="Output directory")
+
     parser.add_option("-d", "--distances", default='*',
                       help="Comma-separated list of distances. Can use *.")
     
@@ -50,7 +53,7 @@ def predstats_main(config, parser):
     logger.info('Using streams: %s' % streams)
     logger.info('Using discdds: %s' % id_discdds)
     
-    outdir = 'out/dp-pred-stats/%s' % id_discdds
+    outdir = '%s/%s' % (options.output, id_discdds)
     storage = os.path.join(outdir, 'compmake')
     use_filesystem(storage)
     read_rc_files()

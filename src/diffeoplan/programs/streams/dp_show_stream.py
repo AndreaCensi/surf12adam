@@ -5,7 +5,6 @@ from .. import declare_command
                  'show-stream  [<stream1> ...]')
 def show_stream(config, parser): #@UnusedVariable
     """ Displays the learned DDS """
-    #parser.add_option("-i", "--id_image", help="ID image.", default='lena')
     parser.add_option("-o", "--output", help="Output directory",
                       default='out/dp-show-stream/')
     options, which = parser.parse()

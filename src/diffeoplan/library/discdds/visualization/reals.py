@@ -1,6 +1,8 @@
 from diffeoplan.library.discdds.visualization.statespace import DiffeoSystemStateSpace
 import numpy as np
 from contracts import contract
+from geometry.manifolds import SE2, se2
+from geometry.poses import rotation_translation_from_SE2
         
 class Reals(DiffeoSystemStateSpace):
     
@@ -25,4 +27,27 @@ class Reals(DiffeoSystemStateSpace):
             return np.array([state[0], 0])
         else:
             return state[:2]
+            
+     
+class EuclideanMotions(DiffeoSystemStateSpace):
+    """ Visualization of Euclidean motions """
+    
+    @contract(dt='>0')
+    def __init__(self, dt=1):
+        self.dt = dt
+
+    @contract(returns='SE2')
+    def default_state(self):
+        return SE2.identity()        
+    
+    @contract(state='SE2', command='array[3]')
+    def integrate(self, state, command):
+        v = se2.algebra_from_vector(command)
+        delta = SE2.group_from_algebra(v * self.dt)
+        return np.dot(state, delta)
+
+    @contract(state='SE2', returns='array[2]')
+    def xy_from_state(self, state):
+        _, t = rotation_translation_from_SE2(state)
+        return t
             

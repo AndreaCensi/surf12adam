@@ -1,3 +1,3 @@
 from .. import logger
 
-from .main import *
+from .dp_show_discdds import *

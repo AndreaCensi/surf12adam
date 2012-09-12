@@ -3,7 +3,7 @@ from bootstrapping_olympics.utils.in_a_while import InAWhile
 
 @declare_command('dist-fps',
                  'dist-fps -d <distances> -t <testcases>')
-def distances_main(config, parser): #@UnusedVariable
+def dp_dist_fps(config, parser): #@UnusedVariable
     """ FPS statistics for distances """
     parser.add_option("-d", "--distances", default='*',
                       help="Comma-separated list of distances. Can use *.")

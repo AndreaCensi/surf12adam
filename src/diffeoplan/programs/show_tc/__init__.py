@@ -1,3 +1,3 @@
 from .. import declare_command, logger
 
-from .main import *
+from .dp_show_tc import *

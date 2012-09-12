@@ -6,7 +6,8 @@ from reprep import Report
     
 class DiffeoAction():
     """ 
-        An "action" is a couple of diffeomoprhims
+        An "action" is described by a pair of diffeomorphism.
+        
     """
     @contract(diffeo=Diffeomorphism2D,
               diffeo_inv=Diffeomorphism2D,
@@ -26,10 +27,13 @@ class DiffeoAction():
     
     def inverse(self):
         """ Return the action with swapped diffeomorphisms. """
-        label = self.label + '_inv'
+        # label = '(i%s)' % self.label
+        # let's just use the same label
+        label = self.label
+        
         diffeo = self.diffeo_inv # <-- note swapped
         diffeo_inv = self.diffeo # <-- note swapped
-        cmd = -self.original_cmd # XXX
+        cmd = [-x for x in self.get_original_cmds()]
         return DiffeoAction(label, diffeo, diffeo_inv, cmd)
     
     def __sizeof__(self):
@@ -46,12 +50,13 @@ class DiffeoAction():
         diffeo_inv = diffeo
         return DiffeoAction(label, diffeo, diffeo_inv, original_cmd)
     
+    @contract(returns=Diffeomorphism2D)
     def get_diffeo2d_forward(self):
         return self.diffeo
     
+    @contract(returns=Diffeomorphism2D)
     def get_diffeo2d_backward(self):
         return self.diffeo_inv
-    
     
     @contract(returns='list[>=1](array)')
     def get_original_cmds(self):
@@ -74,15 +79,15 @@ class DiffeoAction():
         
     @contract(report=Report)
     def display(self, report, image=None): #@UnusedVariable
+        report.text('summary', 'Label: %s\noriginal: %s' % 
+                    (self.label, self.original_cmd))
         report.data('label', self.label)
         report.data('original_cmd', self.original_cmd)
         
-        s1 = report.section('forward')
-        self.diffeo.display(s1) 
-        s2 = report.section('backward')
-        self.diffeo_inv.display(s2)
-        
-        # TODO: to finish
+        with report.subsection('forward') as s1:
+            self.diffeo.display(s1) 
+        with report.subsection('backward') as s2:
+            self.diffeo_inv.display(s2)
         
     @staticmethod
     def compose(a1, a2):

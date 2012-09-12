@@ -15,7 +15,7 @@ import os
 
 @declare_command('dist-stats',
                  'dist-stats -d <distances> -s  <streams> ... ')
-def distances_main(config, parser): #@UnusedVariable
+def dp_dist_stats(config, parser): #@UnusedVariable
     
     parser.add_option("-d", "--distances", default='*',
                       help="Comma-separated list of distances. Can use *.")

@@ -7,7 +7,7 @@ import os
 
 @declare_command('batch',
                  'batch <sets> -c command')
-def batch_main(config, parser):
+def dp_batch_main(config, parser):
 
     parser.add_option("-o", "--output", default='out/dp-batch',
                       help="Output directory")

@@ -132,9 +132,9 @@
 
  
   
-- id: test_misc8
+- id: tr1_ptall
   desc: |
-    "for a in 1 2 3 4 5 6 7 8; dp logcases --seed 42 -s orbit-pt256-80 --dds h1orbit-pt256-80-n35s -d $a -n 1"
+    "for a in 1 2 3 4 5 6 7 8 9 10 11 12; dp logcases --seed 42 -s orbit-pt256-80 --dds h1orbit-pt256-80-n35s -d $a -n 10"
   algorithms:
   - gnbn1_it1000
   - gnbc1_it1000

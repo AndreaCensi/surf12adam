@@ -13,17 +13,22 @@ def plans_of_max_length(ncmd, maxsteps):
 
 
 @contract(plan='seq[N]')
-def plan_friendly(plan):
+def plan_friendly(plan, names=None, empty='<>', use_exponent=False):
     """ Returns a friendly string for the plan. """
     if len(plan) == 0:
-        return "<>"
+        return empty
     
-    names = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l']
+    if names is None:
+        names = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l']
     
     def cmd(u, n):
-        s = names[u]
-        if n > 1:
-            s += '%s' % n
+        if use_exponent:
+            if n > 1:
+                return '(%s)^%s' % (names[u], n)
+            else:
+                return names[u]
+        else:
+            return names[u] * n
         return s 
             
     s = "".join([cmd(u, n) for (u, n) in plan_group(plan)])

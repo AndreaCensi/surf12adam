@@ -61,7 +61,6 @@ class GenericGraphSearch(object):
         """ 
         return self.num_collapsed
         
-
     def do_iteration(self):
         """ Returns the list of new nodes added """
         assert self.has_next()

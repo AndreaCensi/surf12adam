@@ -3,7 +3,7 @@ from .. import logger, np, contract
 from ..utils import MyOptionParser
 from .utils import *
 
-from .show_config import * 
+from .dp_config import * 
 from .show_discdds import *
 from .show_symdiffeo import *
 from .show_tc import *

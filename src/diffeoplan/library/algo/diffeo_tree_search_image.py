@@ -1,9 +1,9 @@
-from . import DiffeoTreeSearch, contract
+from . import DiffeoTreeSearch, contract, dp_memoize_instance
 from diffeoplan.library.images import UncertainImage
-from diffeoplan.utils import memoize_instance
-from diffeoplan.library.algo.memoize_strategy import dp_memoize_instance
+
 
 __all__ = ['DiffeoTreeSearchImage']
+
 
 class DiffeoTreeSearchImage(DiffeoTreeSearch):
     """
@@ -11,14 +11,12 @@ class DiffeoTreeSearchImage(DiffeoTreeSearch):
             - each plan gives an image
     """    
      
-
     def __init__(self, image, metric_collapse,
                         metric_collapse_threshold, **kwargs):
         DiffeoTreeSearch.__init__(self, **kwargs)
         self.image = image
         self.metric_collapse = metric_collapse        
         self.metric_collapse_threshold = metric_collapse_threshold
-    
         
     def __str__(self):
         return 'DiffeoTreeSearchImage'
@@ -29,7 +27,7 @@ class DiffeoTreeSearchImage(DiffeoTreeSearch):
         action = self.plan2action(plan)
         return action.predict(self.image)
 
-    @memoize_instance
+    @dp_memoize_instance
     @contract(plan1='seq(int)', plan2='seq(int)', returns='>=0')
     def distance_image(self, plan1, plan2):
         """ Returns the distance between images obtained by the plans. """
@@ -43,8 +41,7 @@ class DiffeoTreeSearchImage(DiffeoTreeSearch):
         d = self.distance_image(n1, n2) 
         return d <= self.metric_collapse_threshold
 
-
-    def available_actions(self, node): #@UnusedVariable
+    def available_actions(self, node):
         image = self.plan2image(node)
         if image.get_scalar_uncertainty().max() == 0:
             self.log_node_uncertain(node)
@@ -56,5 +53,4 @@ class DiffeoTreeSearchImage(DiffeoTreeSearch):
                   % self.node_friendly(node))
         self.info('image: %s' % self.plan2image(node))
         
-
-    
+ 

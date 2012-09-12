@@ -56,7 +56,9 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         self.y1 = y1
         self.start_tree = self.init_start_tree(y0)
         self.goal_tree = self.init_goal_tree(y1)
-                
+        
+        self.start_tree.set_min_visibility(self.min_visibility)
+        self.goal_tree.set_min_visibility(self.min_visibility)
                 
         # make one call to initialize memoization
         self.start_tree.plan2image(())
@@ -76,9 +78,14 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
 
         self.log_planning_init()
 
-    @contract(y0=UncertainImage, y1=UncertainImage, returns=PlanningResult)
-    def plan(self, y0, y1, precision):
+    @contract(y0=UncertainImage, y1=UncertainImage,
+              precision='>=0', min_visibility='>=0',
+              returns=PlanningResult)
+    def plan(self, y0, y1, precision, min_visibility):
+        self.log_plan(y0, y1, precision, min_visibility)
+        
         self.metric_goal_threshold = precision
+        self.min_visibility = min_visibility
         self.plan_init(y0, y1)
         
         while self.start_tree.has_next() or self.goal_tree.has_next():
@@ -100,9 +107,12 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
                 self.log_connections_found(connections)
                 # let's choose any one
                 connection = connections[0]
-                d, p1, p2 = connection 
+                d = connection.distance_prediction
+                p1 = connection.n1
+                p2 = connection.n2
+                                
                 # this can be redundant
-                plan_red = p1 + tuple(reversed(p2))
+                plan_red = connection.plan
                 # let's simplify it
                 plan = self.get_plan_reducer().get_canonical(plan_red)
                 self.log_plan_found(d, p1, p2, plan_red, plan)
@@ -126,6 +136,9 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         self.log_final_result(result)
         return result
         
+    def log_plan(self, y0, y1, precision, min_visibility): #@UnusedVariable
+        self.info('Planning query; precision: %s  min_visibility: %s' 
+                  % (precision, min_visibility))
         
     def log_start_tree_expanded(self, added):
         if False:
@@ -147,11 +160,14 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
     def log_connections_found(self, connections):
         self.info('Found %d connections' % len(connections))
         for c in connections:
-            d, p1, p2 = c #@UnusedVariable
-            self.info(' - between %s and %s dist %s' % 
-                      (self.start_tree.node_friendly(p1),
-                       self.goal_tree.node_friendly(p2), d))
-            
+            self.info(' - %s' % c.__str__())
+#            between %s and %s dist_pr %s dist_br %s' % 
+#                      (self.start_tree.node_friendly(c.n1),
+#                       self.goal_tree.node_friendly(c.n2),
+#                       c.distance_prediction,
+#                       c.distance_branch))
+#            
+
     def log_planning_init(self):
         self.info('Planning started')
         
@@ -167,7 +183,8 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
 
     def init_connector(self, start_tree, end_tree):
         connector = Connector(start_tree, end_tree,
-                              self.metric_goal, self.metric_goal_threshold)
+                              self.metric_goal, self.metric_goal_threshold,
+                              min_visibility=self.min_visibility)
         return connector
     
     def get_plan_reducer(self):

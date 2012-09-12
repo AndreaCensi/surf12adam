@@ -12,6 +12,7 @@ class DiffeoStructure():
         and is able to tell you if a plan has a shorter equivalent.    
     """
     def __init__(self, dds, tolerance, use_weighted=True):
+        # TODO: make an arbitrary diffeoactiondistance be passed as argument
         '''
         
         :param dds: The DiffeoSystem
@@ -20,7 +21,6 @@ class DiffeoStructure():
         '''
         self.dds = dds
 
-        
         # This is our tolerance for comparisons
         self.tolerance = tolerance
         # Names of actions
@@ -129,6 +129,12 @@ class DiffeoStructure():
         return cplans, plan2cplan
     
     def display(self, report):
+        summary = """
+            Tolerance: %s
+            Scale: %s
+            Scalew: %s
+        """ % (self.scale, self.scalew, self.tolerance)
+        report.text('summary', summary)
         report.data('tolerance', self.tolerance)
         report.data('scale', self.scale)
         report.data('scalew', self.scalew)

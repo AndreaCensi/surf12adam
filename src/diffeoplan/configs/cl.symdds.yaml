@@ -123,23 +123,22 @@
   - diffeoplan.library.DDSFromSymbolic
   - resolution: "${resolution}"
     actions:  # vel, steering
-    - original_cmd: [1, 0] # forward 
+    - original_cmd: [0, 0.2, 0] # forward 
       diffeo: "X0.2_R0" # 0.52 rad = 30 deg
-      label: fwd
-    - original_cmd: [1, 1] # forward, right
+      label: F
+    - original_cmd: [+0.2, 0.2, 0] # forward, right
       diffeo: "X0.2_R0.2"
-      label: fwdR
-    - original_cmd: [1, -1] # forward 
+      label: R
+    - original_cmd: [-0.2, 0.2, 0] # forward 
       diffeo: "X0.2_R-0.2"
-      label: fwdL
-    - original_cmd: [-1, 0] # forward 
+      label: L
+    - original_cmd: [0, -0.2, 0] # forward 
       diffeo: "IX0.2_R0"
-      label: bck
-    - original_cmd: [-1, 1] # forward, right
+      label: f
+    - original_cmd: [-0.2, -0.2, 0] # forward, right
       diffeo: "IX0.2_R0.2"
-      label: bckR
-    - original_cmd: [-1, -1] # forward 
+      label: r
+    - original_cmd: [+0.2, -0.2, 0] # forward 
       diffeo: "IX0.2_R-0.2"
-      label: bckL
+      label: l
     topology: plane
-

@@ -1,3 +1,3 @@
 from .. import logger, np, contract
 from .display import *
-from .main import *
+from .dp_show_symdiffeo import *

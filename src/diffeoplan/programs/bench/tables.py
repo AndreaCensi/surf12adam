@@ -50,6 +50,7 @@ def jobs_tables_by_sample_groups(samples_groups, rm, tables):
         id_statstable, stats = s
         
         r = comp(table_by_rows,
+                 "bysamplegroups-%s-%s" % (id_sample_group, id_statstable),
                  samples=samples,
                  rows_field='id_algo', # group by algorithm
                  cols_fields=stats, # which statistics for each col
@@ -73,6 +74,7 @@ def jobs_tables_by_sample_rows_algo(allstats, rm, tables):
             job_id = 'bysample-%s-%s' % (id_tc, id_statstable)
 
             r = comp(table_by_rows,
+                     "bysample-%s-%s" % (id_tc, id_statstable),
                      samples=tcruns,
                      rows_field='id_algo', # group by algorithm
                      cols_fields=stats, # which statistics for each col
@@ -95,6 +97,7 @@ def jobs_tables_by_algo_rows_samples(allstats, rm, tables):
             job_id = 'byalgo-%s-%s' % (id_algo, id_statstable)
 
             r = comp(table_by_rows,
+                     "byalgo-rows-sample-%s-%s" % (id_algo, id_statstable),
                      samples=samples,
                      rows_field='id_tc', # rows = tc
                      cols_fields=stats, # which statistics for each col
@@ -125,6 +128,7 @@ def jobs_tables_by_algo_rows_sample_groups(samples_groups, rm, tables):
             job_id = 'byalgo-%s-%s' % (id_algo, id_statstable)
 
             r = comp(table_by_rows,
+                     "byalgo-rows-sample-groups-%s-%s" % (id_algo, id_statstable),
                      samples=samples,
                      rows_field='id_group', # rows = tc
                      cols_fields=stats, # which statistics for each col

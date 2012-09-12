@@ -3,6 +3,7 @@ from diffeoplan.library import DiffeoSystem, TestCase
 from reprep.report_utils import StoreResults
 import itertools
 import time
+import warnings
 
 __all__ = ['run_planning', 'run_planning_stats']
 
@@ -26,6 +27,17 @@ def run_planning(id_algo, id_tc, testcase, algo):
     y1p = dds.predict(y0, testcase.true_plan)
     d = metric.distance(y1, y1p)
     precision = d * 1.01
+    
+    # compute a bound that we want on the visibility
+    warnings.warn('Remember to make a parameter of the test case whether we want'
+                  ' to preserve a minimum visibility ratio.')
+    should_preserve = 'dcl' in id_tc
+    if should_preserve:
+        action = dds.plan2action(testcase.true_plan)
+        min_visibility = action.get_diffeo2d_forward().get_visibility() / 1.01
+    else:
+        min_visibility = 0
+    
     logger.info('Using model and algo metric, the reachable distance is %s. '
                 'Treshold: %s' % (d, precision))
     
@@ -33,18 +45,27 @@ def run_planning(id_algo, id_tc, testcase, algo):
     # TODO: add computation time
     t0 = time.clock()
     # Run the planning
-    try:
-        planning_result = algo.plan(y0, y1, precision)
-    except:
-        try:
-            logger.info(algo.start_tree.memoize_cache.summary())
-            logger.info(algo.goal_tree.memoize_cache.summary())
-        except:
-            pass
-        raise
+#    try:
+    planning_result = algo.plan(y0, y1, precision=precision,
+                                min_visibility=min_visibility)
+#    except:
+#        try:
+#            logger.info(algo.start_tree.memoize_cache.summary())
+#            logger.info(algo.goal_tree.memoize_cache.summary())
+#            logger.info(algo.connector.memoize_cache.summary())
+#        except:
+#            pass
+#        raise
     
-    algo.start_tree.memoize_cache.clear()
-    algo.goal_tree.memoize_cache.clear()
+    cache_stats = {
+     'start_tree': algo.start_tree.get_cache_stats(),
+     'goal_tree': algo.goal_tree.get_cache_stats(),
+     'connector': algo.connector.get_cache_stats(),
+    }
+    
+    algo.start_tree.clear_cache()
+    algo.goal_tree.clear_cache()
+    algo.connector.clear_cache()
     
     plan_time = time.clock() - t0
     
@@ -56,9 +77,10 @@ def run_planning(id_algo, id_tc, testcase, algo):
     results['algo'] = algo
     results['result'] = planning_result
     results['plan_time'] = plan_time
-    
+    results['cache_stats'] = cache_stats
     
     return results
+
 
 @contract(results=dict, discdds=DiffeoSystem, testcase=TestCase)
 def run_planning_stats(results, discdds, testcase):

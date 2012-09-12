@@ -66,3 +66,16 @@ def diffeoaction_comm_distance_L2_infow(a1, a2):
     return diffeoaction_comm_distance(a1, a2, diffeoaction_distance_L2_infow)
 
         
+class UncertainDiffeoDistance(object):
+    
+    @contract(d1=Diffeomorphism2D, d2=Diffeomorphism2D)
+    def distance(self, d1, d2):
+        raise NotImplemented
+    
+    
+class DiffeoActionDistance(object):
+
+    @contract(a1=DiffeoAction, a2=DiffeoAction)
+    def distance(self, a1, a2):
+        raise NotImplemented
+        

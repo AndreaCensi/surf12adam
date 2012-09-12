@@ -1,63 +1,79 @@
-from . import logger, np, contract
-from boot_agents.diffeo import Diffeomorphism2D
-from diffeoplan.library.discdds import (diffeoaction_distance_L2_infow,
-    plan_friendly, guess_state_space, DiffeoAction)
-from diffeoplan.utils import construct_matrix
-from diffeoplan.utils.memoize_limits import memoize_limited
+from . import dp_memoize_instance, logger, np, contract
+from diffeoplan.library.algo import DiffeoTreeSearch
+from diffeoplan.library.analysis import (get_nodes_distance_matrix,
+    edges_type_to_color, plot_3d_graph, get_embedding_mds, plot_2d_graph,
+    DiffeoStructure)
+from diffeoplan.library.discdds import (DiffeoActionDistance,
+    diffeoaction_distance_L2_infow, plan_friendly, guess_state_space)
+from diffeoplan.utils import construct_matrix_iterators
 from ggs import draw_node_graph, GenericGraphSearch
 from reprep import Report, MIME_PNG
 import os
 import random
-from diffeoplan.library.analysis.covering.diffeo_cover_visualization import get_nodes_distance_matrix, \
-    edges_type_to_color, plot_3d_graph, get_embedding_mds, plot_2d_graph
 
-def dp_memoize_instance(f):
-    memoize = memoize_limited(max_size=None, max_mem_MB=100)
-    return memoize(f)
+class DiffeoActionL2iwNormalized(DiffeoActionDistance):
+
+    @contract(ds=DiffeoStructure)
+    def __init__(self, ds):
+        #self.ds = ds
+        #self.dist = dist
+        self.scale = ds.scalew
         
-
-class DiffeoCover(GenericGraphSearch):
+    def distance(self, a1, a2):
+        d = diffeoaction_distance_L2_infow(a1, a2)
+        #d = self.dist.distance(a1, a2) 
+        dn = d / self.scale
+        return dn 
+        
+class DiffeoCoverExp(DiffeoTreeSearch):
     
-    def __init__(self, id_dds, dds, ds, collapse_threshold, min_visibility=0.5,
-                 debug_it=1000, max_it=1000):
-        '''
-        
-        :param id_dds:
-        :param dds:
-        :param ds:
-        :param collapse_threshold: info distance for two plans to be the same node 
-        :param debug_it: Number of iterations for drawing debug graph.
-        '''
+    @contract(collapse_metric=DiffeoActionDistance, collapse_threshold='>=0')
+    def __init__(self, collapse_metric, collapse_threshold=0, debug_iterations=10,
+                      **kwargs):
+        print kwargs
+        super(DiffeoCoverExp, self).__init__(**kwargs)
         self.collapse_threshold = collapse_threshold
-        self.dds = dds
-        self.ds = ds
-        self.id_dds = id_dds
-        self.debug_graph_iterations = debug_it
-        self.max_it = max_it
-        self.min_visibility = min_visibility
-        from geometry import formatm
-        logger.info(formatm('samew', self.ds.samew,
-                            'oppow', self.ds.oppositew,
-                            'swapw', self.ds.swappablew))
-        
-        GenericGraphSearch.__init__(self)
+        self.collapse_metric = collapse_metric
+        self.debug_graph_iterations = debug_iterations
     
-    ######## GenericGraphSearch interface
-    def next_node(self, node, action):
-        child = node + (action,)
-        return tuple(self.ds.get_canonical(child))
-    
-    def available_actions(self, node): #@UnusedVariable
-        if self.iterations >= self.max_it:
-            return []
-        if self.visibility(node) < self.min_visibility:
-            return []
-        nactions = len(self.dds.actions)
-        return range(nactions)
-
     def choose_open_nodes(self, nodes):
+        # TODO: change to smaller
         return self.max_visibility_first(nodes)
     
+    def max_visibility_first(self, nodes):
+        v = map(self.visibility, nodes)
+        i = np.argmax(v)
+        return nodes[i]
+     
+    @dp_memoize_instance
+    def plan_distance(self, plan1, plan2, d=None):
+        if d is None:
+            d = self.collapse_metric.distance
+        a1 = self.plan2action(plan1)
+        a2 = self.plan2action(plan2)
+        dn = d(a1, a2)        
+        return dn
+     
+    def get_matches(self, n, nodes):
+        """ Returns a list of equivalent nodes that match ``n``. """
+        distances = [(self.plan_distance(n, x), x) for x in nodes]
+        distances.sort(key=lambda c: c[0])
+        self.info('Distances to %s (threhsold %s)' % 
+                  (self.node_friendly(n), self.collapse_threshold))
+        
+        show = distances
+        if len(show) > 5:
+            show = show[:5]
+        for d, x in show:
+            if d <= self.collapse_threshold:
+                match = '< %s' % self.collapse_threshold
+            else:
+                match = '' 
+            self.info('- %5.5f  %s %s' % (d, self.node_friendly(x), match))
+            
+        return [n for (d, n) in distances if d <= self.collapse_threshold]
+
+
     @dp_memoize_instance
     @contract(plan1='seq(int)', plan2='seq(int)')
     def node_compare(self, plan1, plan2):
@@ -65,9 +81,11 @@ class DiffeoCover(GenericGraphSearch):
         plan2 = tuple(plan2)
         if plan1 == plan2:
             return True
+
+        if super(DiffeoCoverExp, self).node_compare(plan1, plan2):
+            return True
         
-        dn = self.plan_distance(plan1, plan2, diffeoaction_distance_L2_infow) / self.ds.scalew
-        
+        dn = self.plan_distance(plan1, plan2)
         match = dn < self.collapse_threshold
         if match:
             #print('%10g  %4d %4d' % (dn, len(plan1), len(plan2)))
@@ -90,7 +108,7 @@ class DiffeoCover(GenericGraphSearch):
         logger.info('#%4d closed %4d open %4d [minvis: %.4g] pop %s' % 
               (self.iterations, len(self.closed), len(self.open_nodes),
                np.min(all_visibility),
-               plan_friendly(node)))
+               self.node_friendly(node)))
         if (self.iterations + 1) % self.debug_graph_iterations == 0:
             self.save_graph()
 
@@ -99,40 +117,6 @@ class DiffeoCover(GenericGraphSearch):
 
     ######## / GenericGraphSearch interface
     
-    def max_visibility_first(self, nodes):
-        v = map(self.visibility, nodes)
-        i = np.argmax(v)
-        return nodes[i]
-    
-    @dp_memoize_instance
-    @contract(plan='tuple', returns=DiffeoAction)
-    def compute_action(self, plan):
-        if len(plan) == 0:
-            shape = self.dds.actions[0].diffeo.get_shape()
-            identity_cmd = np.array([0, 0])
-            return DiffeoAction.identity('id', shape, identity_cmd) # XXX
-        
-        last = self.dds.actions[plan[-1]]
-        if len(plan) == 1:
-            return last
-        else:
-            rest = self.compute_action(plan[:-1])
-            return DiffeoAction.compose(last, rest)
-         
-    @dp_memoize_instance
-    @contract(plan='tuple', returns=Diffeomorphism2D)
-    def compute_diffeomorphism(self, plan):
-        action = self.compute_action(plan)
-        return action.get_diffeo2d_forward()
-    
-    @dp_memoize_instance
-    @contract(returns='>=0')
-    def visibility(self, plan):
-        if len(plan) == 0:
-            return 1
-        diffeo = self.compute_diffeomorphism(plan)
-        return np.mean(diffeo.variance) 
-     
     def go(self):
         first = ()
         return GenericGraphSearch.go(self, first)
@@ -146,7 +130,6 @@ class DiffeoCover(GenericGraphSearch):
         logger.info('Writing to %r' % filename)
         r.to_html(filename)
 
-        
     def draw_graph(self, r):
         
         def label_plan_length(n):
@@ -205,8 +188,8 @@ class DiffeoCover(GenericGraphSearch):
         random.shuffle(all_plans)
         random_plans = all_plans[:3]
         for pi, ref_plan in enumerate(random_plans):
-            color_func = lambda p2: self.plan_distance(ref_plan, p2,
-                                            diffeoaction_distance_L2_infow)
+            color_func = lambda p2: self.plan_distance(ref_plan, p2)
+                                            #diffeoaction_distance_L2_infow)
             name = 'random%d' % pi
             with f.data_file(name, MIME_PNG) as filename:
                 draw_node_graph(filename=filename,
@@ -215,13 +198,7 @@ class DiffeoCover(GenericGraphSearch):
                         #label_func=lambda x: '%.2f' % self.visibility(x),
                         label_func=nolabel,
                         color_func=color_func)
-            
-
-    @dp_memoize_instance
-    def plan_distance(self, p1, p2, action_distance):
-        a1 = self.compute_action(p1)
-        a2 = self.compute_action(p2)
-        return action_distance(a1, a2)
+             
         
     def get_plans_sorted(self):
         plans = list(self.G.nodes())
@@ -229,10 +206,10 @@ class DiffeoCover(GenericGraphSearch):
         return plans
     
     def get_distance_matrix(self, plans, action_distance):
-        n = len(plans)
-        D_ij = lambda i, j: self.plan_distance(plans[i], plans[j],
-                                               action_distance)
-        D = construct_matrix((n, n), D_ij)
+        D_ij = lambda p1, p2: action_distance(
+                                            self.plan2action(p1),
+                                            self.plan2action(p2))
+        D = construct_matrix_iterators((plans, plans), D_ij)
         return plans, D                         
         
     def set_edge_field_to_plan_distance(self, field_name, function):

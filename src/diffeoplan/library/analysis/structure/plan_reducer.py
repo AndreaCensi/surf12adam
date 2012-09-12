@@ -3,6 +3,7 @@ from boot_agents.misc_utils import iterate_indices
 from collections import deque
 from diffeoplan.utils import memoize_instance as memoize
 from geometry import formatm
+from collections import defaultdict
 
 __all__ = ['PlanReducer']
 
@@ -12,7 +13,8 @@ class PlanReducer(object):
     def __init__(self):
         self._null = set() # a
         self._commutes = set() # (a1,a2)
-        self._inverse = set()
+        self._inverse = set() # (a1,a2)
+        self._inverse_for = defaultdict(set)
         self._same = dict() 
         
     def set_null(self, a):
@@ -23,7 +25,9 @@ class PlanReducer(object):
         self._commutes.add((b, a))
 
     def set_inverse(self, a, b):
-        self._inverse.add((a, b))    
+        self._inverse.add((a, b)) 
+        self._inverse_for[a].add(b)   
+        self._inverse_for[b].add(a)
 
     def set_same(self, a, b):
         if not a in self._same:
@@ -81,8 +85,14 @@ class PlanReducer(object):
                 pr.set_inverse(li, lj)
         return pr
         
-        
-          
+    def action_has_inverse(self, action):
+        """ Returns true if the action has an inverse """
+        return len(self._inverse_for[action]) == 0
+    
+    def action_get_inverse(self, action):
+        return min(list(self._inverse_for[action]))
+    
+    
     @memoize
     @contract(plan='tuple', returns='tuple')
     def get_canonical(self, plan):
@@ -137,3 +147,8 @@ class PlanReducer(object):
                 
         return tuple(current)
         
+
+
+#def make_set():
+#    # cannot use lambda because not pickable
+#    return set()

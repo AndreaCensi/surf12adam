@@ -61,3 +61,66 @@
                 1, 2, 4, 5,
                 1, 2, 4, 5]
 
+
+- id: "t_M1_${dds}"
+  desc: Minimap test
+  code:
+  - diffeoplan.library.FromImages
+  - tcname: "t_M1_${dds}"
+    id_discdds: "${dds}"
+    image1: png-minimapv-01
+    image2: png-minimapv-03
+    true_plan: [2]
+
+- id: "t_M2_${dds}"
+  desc: Minimap test
+  code:
+  - diffeoplan.library.FromImages
+  - tcname: "t_M2_${dds}"
+    id_discdds: "${dds}"
+    image1: png-minimapv-01
+    image2: png-minimapv-04
+    true_plan: [2, 2]
+
+- id: "t_M3_${dds}"
+  desc: Minimap test
+  code:
+  - diffeoplan.library.FromImages
+  - tcname: "t_M3_${dds}"
+    id_discdds: "${dds}"
+    image1: png-minimapv-01
+    image2: png-minimapv-05
+    true_plan: [2, 2, 2]
+
+- id: "t_M4_${dds}"
+  desc: Minimap test
+  code:
+  - diffeoplan.library.FromImages
+  - tcname: "t_M4_${dds}"
+    id_discdds: "${dds}"
+    image1: png-minimapv-01
+    image2: png-minimapv-06
+    true_plan: [2, 2, 2, 2]
+
+
+- id: "t_M5_${dds}"
+  desc: Minimap test
+  code:
+  - diffeoplan.library.FromImages
+  - tcname: "t_M5_${dds}"
+    id_discdds: "${dds}"
+    image1: png-minimapv-01
+    image2: png-minimapv-02
+    true_plan: [2, 2, 2, 2, 2]
+
+- id: t_m1_dcl4r128 
+- id: t_m2_dcl4r128 
+- id: t_m3_dcl4r128 
+- id: t_m4_dcl4r128 
+- id: t_m5_dcl4r128
+- id: t_m1_dcl4r80
+- id: t_m2_dcl4r80
+- id: t_m3_dcl4r80
+- id: t_m4_dcl4r80
+- id: t_m5_dcl4r80
+

@@ -1,6 +1,6 @@
 
 - id: "begc3"
-  desc: "BEGC3 := Bi-dir search; pre-filter equiv; greedy; L2W collapse; ${n} iterations."
+  desc: "BEGC3 := Bi-dir search; pre-filter equiv; greedy; L2W collapse."
   code:
   - diffeoplan.library.InformedPlannerGreedy
   - bidirectional: True
@@ -8,15 +8,16 @@
     metric_collapse: &metric_collapse L2w
     metric_collapse_threshold: &metric_collapse_threshold 0.001
     max_depth: &max_depth 15
-    max_iterations: &max_iterations 1000
-    max_time: &max_time 3600
-    max_memory_MB: &max_memory_MB 50
+    max_iterations: &max_iterations 10000
+    # 5 minutes
+    max_time: &max_time 300 
+    max_memory_MB: &max_memory_MB 100
     diffeo_structure_params: &diffeo_structure_params
         tolerance: 0.04 # threshold for two commands to be commutative, etc.
     metric_attractor: *metric_goal # could choose a different one in principle
 
 - id: "betc3"
-  desc: "BETC1 := Bi-dir search; pre-filter equiv; greedy-tree; L2W collapse; ${n} iterations."
+  desc: "BETC1 := Bi-dir search; pre-filter equiv; greedy-tree; L2W collapse."
   code:
   - diffeoplan.library.InformedPlannerGreedyTree
   - bidirectional: True

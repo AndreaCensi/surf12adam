@@ -33,5 +33,13 @@ def show_discdds_geo_main(config, parser):
 
 def show_diffeo_structure(dds, report, tolerance):
     ds = DiffeoStructure(dds, tolerance=tolerance)
-    ds.display(report.section('distances'))
-         
+    with report.subsection('display') as r:
+        ds.display(r)
+    
+    with report.subsection('show_reduction_steps') as r:
+        ds.show_reduction_steps(r, max_nsteps=5)
+        
+    with report.subsection('show_reduction') as r:
+        ds.show_reduction(r)
+
+

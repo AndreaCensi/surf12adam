@@ -4,7 +4,7 @@ from reprep import Report
 import os
 
 @declare_command('show-tc', 'show-tc [-o <dir>] [<tc1> <tc2> ...]')
-def show_tc(config, parser): #@UnusedVariable
+def dp_show_tc_main(config, parser): #@UnusedVariable
     """ Displays the test cases. """ 
     parser.add_option("-o", "--output", help="Output directory",
                       default='out/dp-show-tc/')

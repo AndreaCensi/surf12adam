@@ -1,10 +1,12 @@
 from . import DiffeoAction, np, contract, UncertainImage, logger
+from bootstrapping_olympics.utils import raise_x_not_found
 from diffeoplan.library.discdds import (diffeoaction_comm_distance_L2_infow,
     diffeoaction_comm_distance_L2, diffeoaction_anti_distance_L2_infow,
     diffeoaction_anti_distance_L2, diffeoaction_distance_L2_infow,
-    diffeoaction_distance_L2)
+    diffeoaction_distance_L2, plan_friendly)
 from diffeoplan.utils import construct_matrix
 from reprep import Report
+
 
 class DiffeoSystem():
     """
@@ -67,7 +69,7 @@ class DiffeoSystem():
         """ Creates the DiffeoAction for the given composition. """
         self.check_valid_plan(plan)
         a = self.actions[plan[0]]
-        for i in plan:
+        for i in plan[1:]: # big bug was found here 
             a_i = self.actions[i]
             a = DiffeoAction.compose(a, a_i) # XXX: check
         return a
@@ -107,10 +109,18 @@ class DiffeoSystem():
                          'other code. I will return the command 0.')
             return 0
     
-    @contract(returns='list[N](array)', plan='seq[N](int,>=0)')
+    @contract(plan='seq[N](int,>=0)', returns='list[>=N](array)')
     def indices_to_commands(self, plan):
-        """ Converts from indices to the original commands. """
-        return [self.actions[x].original_cmd for x in plan]
+        """ Converts from indices to the original commands. 
+        
+            Note that because one DiffeoAction can correspond to more
+            than one commands, the result might have a longer length.
+        """
+        cmd = []
+        for x in plan:
+            x_cmds = self.actions[x].get_original_cmds()
+            cmd.extend(x_cmds)
+        return cmd
   
     @contract(report=Report)#, image=UncertainImage)
     def display(self, report, image=None):
@@ -158,3 +168,39 @@ class DiffeoSystem():
     def actions_comm_distance_L2_infow(self):
         return self.actions_distance(diffeoaction_comm_distance_L2_infow)
     
+    def plan_friendly_labels(self, plan):
+        """ Returns a friendly string using the actions' labels """
+        names = []
+        # tmp fix for some previous mistake
+        # TODO: remove
+        for i, a in enumerate(self.actions):
+            if 'Uninterpreted' in a.label:
+                label = '%d' % i
+            else:
+                label = a.label
+            names.append(label)
+        # names = [a.label for a in self.actions]
+        
+        return plan_friendly(plan, names=names)
+    
+    @contract(label='str', returns='int,>=0')
+    def index_from_label(self, label):
+        """ Get the index of the action with a given label. """
+        for i, a in enumerate(self.actions):
+            if a.label == label:
+                return i
+        raise_x_not_found('label', label, [a.label for a in self.actions])
+            
+    @contract(labels='seq(str|int)', returns='tuple(int)')
+    def plan_from_labels(self, labels):
+        """ Converts a list of labels to the integer representation.
+            It also accepts integers directly to mean the actions. 
+         """
+        def convert(x):
+            if isinstance(x, int):
+                if x < 0 or x >= len(self.actions):
+                    msg = 'Invalid index %s in %s' % (x, labels)
+                    raise ValueError(msg)
+                return x
+            return self.index_from_label(x) 
+        return map(convert, labels)

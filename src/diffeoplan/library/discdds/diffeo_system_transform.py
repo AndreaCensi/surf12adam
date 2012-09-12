@@ -41,13 +41,14 @@ def make_hard_choices(dds, info_threshold=0.5, use_isomorphism_heuristics=True,
             variance = (dd.variance > info_threshold).astype('float')
         return Diffeomorphism2D(dd.d, variance)
     
+            
     def make_hard_action(a):
-        label = a.label + '_inv'
+        label = a.label
         diffeo = make_hard(a.get_diffeo2d_backward())
         diffeo_inv = make_hard(a.get_diffeo2d_forward())
         original_cmd = a.original_cmd
         return DiffeoAction(label, diffeo, diffeo_inv, original_cmd)
     
     actions = map(make_hard_action, dds.actions)
-    label = dds.label + '_inv'    
+    label = dds.label + '_hard'    
     return DiffeoSystem(label, actions)

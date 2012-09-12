@@ -14,19 +14,6 @@ class InformedPlannerGreedy(InformedPlanner):
         super(InformedPlannerGreedy, self).plan_init(y0, y1)
         self.start_tree.set_attractor(y1)
         self.goal_tree.set_attractor(y0)
-
-#        true_plan = (0, 0, 0, 0, 0)
-#        
-#        self.info('temporary:')
-#        for i in range(len(true_plan)):
-#            p = true_plan[:i + 1]
-#            d = self.start_tree.distance_to_attractor(p)
-#            d2 = self.goal_tree.distance_to_attractor(p)
-#            self.info('- %10f  %s' % (d, p))
-#            self.info('- %10f ' % (d2))
-#
-#            self.info(' con distance %s' % self.connector.distance(p, ()))
-#            self.info('              %s' % self.connector.distance((), p))
             
     def init_start_tree(self, y0):
         dts = DiffeoTreeSearchImageGreedy(metric_attractor=self.metric_attractor,

@@ -1,2 +1,2 @@
 from .. import logger
-from . import main
+from . import dp_makedds
