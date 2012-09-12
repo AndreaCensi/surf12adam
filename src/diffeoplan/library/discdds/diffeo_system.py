@@ -85,7 +85,7 @@ class DiffeoSystem():
                        (str(plan), len(self.actions)))
                 raise ValueError(msg) 
     
-    @contract(us='seq[N](array)', returns='list[N](int)')
+    @contract(us='list[N](array)', returns='list[N](int)')
     def commands_to_indices(self, us):
         """ Given the sequence of commands (e.g. [[0,0,+100], [0,100,0],...]),
             return the corresponding indices. """
@@ -99,9 +99,9 @@ class DiffeoSystem():
             if same:
                 return i
             
-        msg = 'Could not find action corresponding to command %s.\n' % u
+        msg = 'Could not find action corresponding to command %s.\n' % str(u)
         msg += 'This DiffeoSystem has %s' % [a.original_cmd for a in self.actions]
-        if False:
+        if True:
             raise ValueError(msg)
         else:
             logger.error(msg)
@@ -204,3 +204,14 @@ class DiffeoSystem():
                 return x
             return self.index_from_label(x) 
         return map(convert, labels)
+    
+    def plan_with_simple_actions(self, plan):
+        """ Tries to write a plan using the simplest actions available
+            instead of the composite ones. """
+        # first convert to commands
+        commands = self.indices_to_commands(plan)
+        #print('commands: %s' % str(commands))
+        # then assume each simple command has an action
+        return tuple(self.commands_to_indices(commands)) 
+            
+            

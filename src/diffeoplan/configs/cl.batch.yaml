@@ -12,6 +12,44 @@
   - t_m5_dcl4r80
 
 
+- id: test_tr1_cl_5
+  desc: ""
+  algorithms:
+  - betcb3 # expand bracket
+  testcases:
+  - t_m1_dcl4r80
+  - t_m2_dcl4r80
+  - t_m3_dcl4r80
+  - t_m4_dcl4r80
+  - t_m5_dcl4r80
+
+- id: test_tr1_cl_6
+  desc: ""
+  algorithms:
+  - betcb3 # expand bracket
+  testcases:
+  - t_m1_dcl4r128
+  - t_m2_dcl4r128
+  - t_m3_dcl4r128
+  - t_m4_dcl4r128
+  - t_m5_dcl4r128
+
+
+- id: test_tr1_cl_7
+  desc: ""
+  algorithms:
+  - begc3
+  - betc3
+  - betcb3 # expand bracket
+  - begcb3 # expand bracket
+
+  testcases:
+  - t_m1_dcl4r128
+  - t_m2_dcl4r128
+  - t_m3_dcl4r128
+  - t_m4_dcl4r128
+  - t_m5_dcl4r128
+
 - id: test_tr1_cl_4
   desc: ""
   algorithms:
@@ -28,3 +66,8 @@
   - t_m3_dcl4r80_addbra1 
   - t_m4_dcl4r80_addbra1
   - t_m5_dcl4r80_addbra1
+  - t_m1_dcl4r80_addbra2  # all brackets
+  - t_m2_dcl4r80_addbra2 
+  - t_m3_dcl4r80_addbra2 
+  - t_m4_dcl4r80_addbra2
+  - t_m5_dcl4r80_addbra2

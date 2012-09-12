@@ -11,33 +11,54 @@ __all__ = ['PlanReducer']
 class PlanReducer(object):
     
     def __init__(self):
+        # all actions
+        self._all_actions = set()
         self._null = set() # a
         self._commutes = set() # (a1,a2)
         self._inverse = set() # (a1,a2)
         self._inverse_for = defaultdict(set)
-        self._same = dict() 
+        self._same = defaultdict(set) 
         
     def set_null(self, a):
+        self._all_actions.add(a)
         self._null.add(a) 
         
     def set_commute(self, a, b):
+        self._all_actions.add(a)
+        self._all_actions.add(b)
         self._commutes.add((a, b))    
         self._commutes.add((b, a))
 
     def set_inverse(self, a, b):
+        self._all_actions.add(a)
+        self._all_actions.add(b)
         self._inverse.add((a, b)) 
         self._inverse_for[a].add(b)   
         self._inverse_for[b].add(a)
 
     def set_same(self, a, b):
-        if not a in self._same:
-            self._same[a] = []
-        if not b in self._same:
-            self._same[b] = []
-        self._same[a].append(b)    
-        self._same[b].append(a)
+        self._all_actions.add(a)
+        self._all_actions.add(b)
+        self._same[a].add(b)    
+        self._same[b].add(a)
 
     
+    @contract(returns='list(tuple(int,int))')
+    def get_inverse_pairs(self):
+        """ Returns all pairs of inverses. """
+        # XXX: this has several assumptions to be worked out
+        seen = set()
+        res = []
+        for a in self._all_actions:
+            if a in seen:
+                continue
+            inverses = self._inverse_for[a]
+            inverse = min(inverses)
+            res.append((a, inverse))
+            seen.add(a)
+            seen.update(inverses)
+        return res
+        
     def null(self, a):
         return a in self._null
 

@@ -54,8 +54,8 @@ class DiffeoTreeSearchImageGreedyTree(DiffeoTreeSearchImage):
         
     def log_chosen_dist(self, open_nodes, closeness, chosen,
                          chosen_dist, other_closest): #@UnusedVariable
-        self.info('open_nodes: %s' % open_nodes)
-        self.info('Distances: %s' % closeness)
+        #self.info('open_nodes: %s' % open_nodes)
+        #self.info('Distances: %s' % closeness)
         self.info('Greedily-tree opening dist %f plan %s close to %s' % 
                   (chosen_dist, self.node_friendly(chosen),
                    self.other_tree.node_friendly(other_closest)))

@@ -12,11 +12,24 @@ __all__ = ['GenericGraphPlanner']
  
 class GenericGraphPlanner(DiffeoPlanningAlgo):
     
+    @contract(bidirectional='bool',
+              metric_collapse_threshold='>=0')
     def __init__(self, bidirectional,
                  metric_goal,
                  metric_collapse, metric_collapse_threshold,
                  max_depth=10000, max_iterations=10000, max_time=120,
-                 max_memory_MB=25):
+                 max_memory_MB=25,):
+        '''
+        
+        :param bidirectional:
+        :param metric_goal:
+        :param metric_collapse:
+        :param metric_collapse_threshold:
+        :param max_depth:
+        :param max_iterations:
+        :param max_time:
+        :param max_memory_MB:
+        '''
         super(GenericGraphPlanner, self).__init__()
         self.bidirectional = bidirectional
         config = get_current_config()
@@ -60,10 +73,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         self.start_tree.set_min_visibility(self.min_visibility)
         self.goal_tree.set_min_visibility(self.min_visibility)
                 
-        # make one call to initialize memoization
-        self.start_tree.plan2image(())
         self.start_tree.memoize_cache.set_max_memory_MB(self.max_memory_MB)
-        self.goal_tree.plan2image(())
         self.goal_tree.memoize_cache.set_max_memory_MB(self.max_memory_MB)
         
         plan0 = ()
@@ -72,10 +82,10 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
 
         self.connector = self.init_connector(self.start_tree, self.goal_tree)
 
+        # Initialize logging system
         self.log_add_child('start_tree', self.start_tree)
         self.log_add_child('goal_tree', self.goal_tree)
         self.log_add_child('connector', self.connector)
-
         self.log_planning_init()
 
     @contract(y0=UncertainImage, y1=UncertainImage,
@@ -160,13 +170,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
     def log_connections_found(self, connections):
         self.info('Found %d connections' % len(connections))
         for c in connections:
-            self.info(' - %s' % c.__str__())
-#            between %s and %s dist_pr %s dist_br %s' % 
-#                      (self.start_tree.node_friendly(c.n1),
-#                       self.goal_tree.node_friendly(c.n2),
-#                       c.distance_prediction,
-#                       c.distance_branch))
-#            
+            self.info(' - %s' % c.__str__()) 
 
     def log_planning_init(self):
         self.info('Planning started')

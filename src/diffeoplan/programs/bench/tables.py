@@ -50,7 +50,7 @@ def jobs_tables_by_sample_groups(samples_groups, rm, tables):
         id_statstable, stats = s
         
         r = comp(table_by_rows,
-                 "bysamplegroups-%s-%s" % (id_sample_group, id_statstable),
+                 "bysamplegroups-%s-%s" % (sanitize(id_sample_group), id_statstable),
                  samples=samples,
                  rows_field='id_algo', # group by algorithm
                  cols_fields=stats, # which statistics for each col
@@ -63,7 +63,10 @@ def jobs_tables_by_sample_groups(samples_groups, rm, tables):
         
         rm.add(r, 'bysamplegroups', **report_attrs)
         
-        
+def sanitize(s):
+    s = s.replace('=', '-')
+    return s
+
 @contract(allstats=StoreResults, rm=ReportManager,
           tables='dict(str:list(str))')
 def jobs_tables_by_sample_rows_algo(allstats, rm, tables):

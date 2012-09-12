@@ -19,7 +19,8 @@ def plan_friendly(plan, names=None, empty='<>', use_exponent=False):
         return empty
     
     if names is None:
-        names = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l']
+        names = [chr(ord('a') + x) for x in range(26)]
+        #names = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'l']
     
     def cmd(u, n):
         if use_exponent:

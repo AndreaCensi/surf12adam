@@ -16,7 +16,9 @@ import os
 @declare_command('dist-stats',
                  'dist-stats -d <distances> -s  <streams> ... ')
 def dp_dist_stats(config, parser): #@UnusedVariable
-    
+    parser.add_option("-o", "--output", default='out/dp-dist-stats',
+                      help="Output directory")
+
     parser.add_option("-d", "--distances", default='*',
                       help="Comma-separated list of distances. Can use *.")
     parser.add_option("-s", "--streams", default='*',
@@ -37,7 +39,7 @@ def dp_dist_stats(config, parser): #@UnusedVariable
     logger.info('Using streams: %s' % streams)
     
     id_comb = ','.join(streams) + '-' + ','.join(distances)
-    outdir = 'out/dp-dist-stats/%s' % id_comb
+    outdir = os.path.join(options.output, id_comb)
     storage = os.path.join(outdir, 'compmake')
     use_filesystem(storage)
     read_rc_files()
