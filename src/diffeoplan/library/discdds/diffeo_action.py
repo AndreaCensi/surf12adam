@@ -25,6 +25,9 @@ class DiffeoAction():
         self.diffeo_inv = diffeo_inv
         self.original_cmd = original_cmd
     
+    def __str__(self):
+        return "DiffeoAction(%s, %s)" % (self.label, self.get_original_cmds())
+    
     def inverse(self):
         """ Return the action with swapped diffeomorphisms. """
         # label = '(i%s)' % self.label
@@ -85,17 +88,19 @@ class DiffeoAction():
         report.data('original_cmd', self.original_cmd)
         
         with report.subsection('forward') as s1:
-            self.diffeo.display(s1) 
+            self.diffeo.display(s1)
+             
         with report.subsection('backward') as s2:
             self.diffeo_inv.display(s2)
         
     @staticmethod
     def compose(a1, a2):
-        label = '%s+%s' % (a1.label, a2.label)
-        diffeo = Diffeomorphism2D.compose(a1.diffeo, a2.diffeo)
-        # note the order is inverted
-        diffeo_inv = Diffeomorphism2D.compose(a2.diffeo_inv, a1.diffeo_inv)
-        # XXX: double check the order
+        label = '%s%s' % (a1.label, a2.label)
+        # This is the correct order
+        diffeo = Diffeomorphism2D.compose(a2.diffeo, a1.diffeo)
+        diffeo_inv = Diffeomorphism2D.compose(a1.diffeo_inv, a2.diffeo_inv)
+        #diffeo = Diffeomorphism2D.compose(a1.diffeo, a2.diffeo)
+        #diffeo_inv = Diffeomorphism2D.compose(a2.diffeo_inv, a1.diffeo_inv)
         original_cmds = a1.get_original_cmds() + a2.get_original_cmds()
         return DiffeoAction(label, diffeo, diffeo_inv, original_cmds)
         
