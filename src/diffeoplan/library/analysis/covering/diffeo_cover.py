@@ -10,13 +10,14 @@ import os
 import random
 from diffeoplan.library.analysis.covering.diffeo_cover_visualization import get_nodes_distance_matrix, \
     edges_type_to_color, plot_3d_graph, get_embedding_mds, plot_2d_graph
+from diffeoplan.utils.with_internal_log import WithInternalLog
 
 def dp_memoize_instance(f):
     memoize = memoize_limited(max_size=None, max_mem_MB=100)
     return memoize(f)
         
 
-class DiffeoCover(GenericGraphSearch):
+class DiffeoCover(GenericGraphSearch, WithInternalLog):
     
     def __init__(self, id_dds, dds, ds, collapse_threshold, min_visibility=0.5,
                  debug_it=1000, max_it=1000):
@@ -28,6 +29,7 @@ class DiffeoCover(GenericGraphSearch):
         :param collapse_threshold: info distance for two plans to be the same node 
         :param debug_it: Number of iterations for drawing debug graph.
         '''
+        WithInternalLog.__init__(self)
         self.collapse_threshold = collapse_threshold
         self.dds = dds
         self.ds = ds
@@ -36,7 +38,9 @@ class DiffeoCover(GenericGraphSearch):
         self.max_it = max_it
         self.min_visibility = min_visibility
         from geometry import formatm
-        logger.info(formatm('samew', self.ds.samew,
+        self.info('Min_visibility: %s' % min_visibility)
+        self.info('collapse_threshold: %s' % collapse_threshold)
+        self.info(formatm('samew', self.ds.samew,
                             'oppow', self.ds.oppositew,
                             'swapw', self.ds.swappablew))
         
@@ -144,7 +148,7 @@ class DiffeoCover(GenericGraphSearch):
         self.draw_graph(r)
         filename = os.path.join(outdir, 'graphs.html')
         logger.info('Writing to %r' % filename)
-        r.to_html(filename)
+        r.to_html(filename, write_pickle=True)
 
         
     def draw_graph(self, r):

@@ -32,10 +32,12 @@ class DistanceNorm():
     def __str__(self):
         return 'L%d' % self.order
 
+
 @contract(x='array', order='int,>=1', returns='>=0')
 def element_by_element_norm(x, order):
     """ Note that np.linalg.norm does something different. """
     return np.power(np.sum(np.power(np.abs(x), order)), 1.0 / order)
+
 
 @contract(x='array(>=0,<=1)', order='int,>=1', returns='>=0,<=1')
 def element_by_element_norm_scaled(x, order):

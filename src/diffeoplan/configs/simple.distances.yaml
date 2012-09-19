@@ -28,11 +28,11 @@
   - size: [40, 30]
     neighborarea: [2, 2]
 
-- id: "c${id_distance}"
-  desc: "Distance ${id_distance} on cropped image."
+- id: "c${distance}"
+  desc: "Distance ${distance} on cropped image."
   code:
   - diffeoplan.library.DistanceCrop
-  - distance: "${id_distance}"
+  - distance: "${distance}"
     top: 0.25
     left: 0.25
     right: 0.25

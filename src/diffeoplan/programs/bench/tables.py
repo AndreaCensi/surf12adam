@@ -1,8 +1,7 @@
 from . import Stats, contract
-from compmake import comp
+from compmake import comp, comp_store
 from itertools import product
 from reprep.report_utils import ReportManager, StoreResults, table_by_rows
-from compmake.ui.user_utils import comp_store
 
 
 def results2stats_dict(results):
@@ -23,7 +22,10 @@ def make_samples_groups(allstats):
     
     # First we create samples by deltas
     for delta, samples in allstats.groups_by_field_value('true_plan_length'):
-        sample_groups['true_plan_length=%s' % delta] = samples
+        id_group = 'true_plan_length_%s' % delta
+        sample_groups[id_group] = samples
+        Stats.describe(id_group, 'Samples with true plan of length %s' % delta,
+                       '|p_{\circ}| = %d' % delta)
     
     # TODO: group also by discdds
 

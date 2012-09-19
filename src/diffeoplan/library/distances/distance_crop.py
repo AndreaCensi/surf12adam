@@ -1,3 +1,4 @@
+from . import logger
 from contracts import contract
 from diffeoplan.configuration import get_current_config
 
@@ -13,9 +14,17 @@ class DistanceCrop:
         self.right = right
         self.bottom = bottom
         self.left = left
-        self.other = get_current_config().distances.instance(distance)
+        self.id_distance = distance
+        
+        self.other = get_current_config().distances.instance(self.id_distance)
+        
+        self.other2 = get_current_config().distances.instance(self.id_distance)
         
     def distance(self, y0, y1):
-        y0 = y0.crop(self.top, self.right, self.bottom, self.left)
-        y1 = y1.crop(self.top, self.right, self.bottom, self.left)
-        return self.other.distance(y0, y1)
+        y0c = y0.crop(self.top, self.right, self.bottom, self.left)
+        y1c = y1.crop(self.top, self.right, self.bottom, self.left)
+        d = self.other2.distance(y0, y1) # TMP
+        dc = self.other.distance(y0c, y1c)
+        logger.debug('Distance cropped %s: %s  uncropped %s' % 
+                     (self.id_distance, dc, d))
+        return dc

@@ -13,7 +13,7 @@ class DistanceNormWeighted(DistanceNorm):
     def __str__(self):
         return 'L%dw' % self.order
     
-    @contract(y0=UncertainImage, y1=UncertainImage, returns='float,>=0')
+    @contract(y0=UncertainImage, y1=UncertainImage, returns='float,>=0,<=1')
     def distance(self, y0, y1):
         diff = self.error_field(y0, y1)
         

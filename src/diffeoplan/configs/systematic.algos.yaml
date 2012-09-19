@@ -93,6 +93,35 @@
     max_depth: *max_depth
     diffeo_structure_params: *diffeo_structure_params
 
+- id: "bngc1_it${n}"
+  desc: "BNGC1 := Bi-dir search; greedy; L2W collapse; ${n} iterations."
+  code:
+  - diffeoplan.library.InformedPlannerGreedy
+  - bidirectional: True
+    metric_goal: *metric_goal
+    metric_collapse: *metric_collapse
+    metric_collapse_threshold: *metric_collapse_threshold
+    max_iterations: "${n}"
+    max_depth: *max_depth
+    diffeo_structure_params: &no_ds
+        tolerance: -1 # threshold for two commands to be commutative, etc.
+
+    metric_attractor: *metric_goal # could choose a different one in principle
+
+- id: "bntc1_it${n}"
+  desc: "BNTC1 := Bi-dir search; greedy-tree; L2W collapse; ${n} iterations."
+  code:
+  - diffeoplan.library.InformedPlannerGreedyTree
+  - bidirectional: True
+    metric_goal: *metric_goal
+    metric_collapse: *metric_collapse
+    metric_collapse_threshold: *metric_collapse_threshold
+    max_iterations: "${n}"
+    max_depth: *max_depth
+    diffeo_structure_params: *no_ds
+    metric_attractor: *metric_goal # could choose a different one in principle
+
+
 - id: "begc1_it${n}"
   desc: "BEGC1 := Bi-dir search; pre-filter equiv; greedy; L2W collapse; ${n} iterations."
   code:
@@ -119,6 +148,20 @@
     diffeo_structure_params: *diffeo_structure_params
     metric_attractor: *metric_goal # could choose a different one in principle
 
+- id: "betcb1_it${n}"
+  desc: "BETCB1 := Bi-dir search; pre-filter equiv; greedy-tree; L2W collapse; ${n} iterations; bracket"
+  code:
+  - diffeoplan.library.InformedPlannerGreedyTree
+  - bidirectional: True
+    metric_goal: *metric_goal
+    metric_collapse: *metric_collapse
+    metric_collapse_threshold: *metric_collapse_threshold
+    max_iterations: "${n}"
+    max_depth: *max_depth
+    diffeo_structure_params: *diffeo_structure_params
+    metric_attractor: *metric_goal # could choose a different one in principle
+    pre_expand: ['bracket']
+
 ######## Try L2
 - id: "betc2_it${n}"
   desc: "Bi-dir search; L2 goal; pre-filter equiv; greedy-tree; L2 collapse; ${n} iterations."
@@ -132,6 +175,8 @@
     max_depth: *max_depth
     diffeo_structure_params: *diffeo_structure_params
     metric_attractor: *metric_goal # could choose a different one in principle
+
+
 
 - id: "begc2_it${n}"
   desc: "Bi-dir search; L2 goal; pre-filter equiv; greedy; L2 collapse; ${n} iterations."

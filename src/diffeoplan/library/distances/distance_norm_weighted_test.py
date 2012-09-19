@@ -1,8 +1,43 @@
-from . import DistanceNorm, DistanceNormWeighted
+from . import DistanceNorm, DistanceNormWeighted, np
 from .. import UncertainImage
-from geometry.utils.numpy_backport import assert_allclose
-import numpy as np
+from geometry.utils import assert_allclose
 
+def test_distance_norm_weighted3():
+    def random_uncertain_image(shape=(20, 30)):
+        return UncertainImage(np.random.rand(*shape), np.round(np.random.rand(*shape)))
+    
+    L2w = DistanceNormWeighted(2)
+    y1 = random_uncertain_image()
+    y2 = random_uncertain_image()
+    d = L2w.distance(y1, y2)
+    assert 0 <= d <= 1
+    
+def test_distance_norm_weighted2():
+    
+    shape = (5, 3)
+    one = np.ones(shape)
+    zero = 0 * one
+
+    L2w = DistanceNormWeighted(2)
+    L1w = DistanceNormWeighted(1)
+
+    r = np.random.rand(*shape)
+    
+    # two equal but with strange uncertainty
+    y1 = UncertainImage(r, np.round(np.random.rand(*shape)))
+    y2 = UncertainImage(r, np.round(np.random.rand(*shape)))
+    
+    assert_allclose(L2w.distance(y1, y2), 0)
+    assert_allclose(L1w.distance(y1, y2), 0)
+    
+    
+    # two completely different but with strange uncertainty
+    y1 = UncertainImage(one, np.round(np.random.rand(*shape)))
+    y2 = UncertainImage(zero, np.round(np.random.rand(*shape)))
+    
+    assert_allclose(L2w.distance(y1, y2), 1)
+    assert_allclose(L1w.distance(y1, y2), 1)
+    
 def test_distance_norm_weighted1():
     
     shape = (5, 3)

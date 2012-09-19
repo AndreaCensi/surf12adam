@@ -30,6 +30,6 @@ def write_report_files(report, basename):
         os.makedirs(dirname)
         
     logger.info('Writing to %r.' % filename)
-    report.to_html(filename)
+    report.to_html(filename, write_pickle=True)
 
 

@@ -107,6 +107,8 @@ def job_report(subsets, store, rm):
         rm.add(report, 'main', subset=id_subset)
             
     
+#dp_predstats_fig = dict(figsize=(3.3, 1.5))
+dp_predstats_fig = dict(figsize=(6.6, 3))
         
 def report_statistics_all(id_sub, stats, perc=10, W=0.2):
     records = stats['records']
@@ -123,7 +125,7 @@ def report_statistics_all(id_sub, stats, perc=10, W=0.2):
     colors = list(islice(cycle(['r', 'g', 'b', 'k', 'y', 'm']), 50))
     
 
-    with f.plot('distance_order') as pylab:
+    with f.plot('distance_order', **dp_predstats_fig) as pylab:
         ax = pylab.subplot(111)
         for i, id_d in enumerate(id_distances):
             which = records['id_distance'] == id_d
@@ -147,7 +149,7 @@ def report_statistics_all(id_sub, stats, perc=10, W=0.2):
         pylab.axis((0.5, 0.5 + np.max(delta), -0.024, 1.2))
         legend_put_below(ax)
 
-    with f.plot('distance') as pylab:
+    with f.plot('distance', **dp_predstats_fig) as pylab:
         ax = pylab.subplot(111)
         for i, id_d in enumerate(id_distances):
             which = records['id_distance'] == id_d
@@ -188,10 +190,10 @@ def report_statistics(id_sub, stats):
         pylab.ylabel('distance')
         pylab.axis((-1, np.max(delta) + 1, -0.05, np.max(distance)))
         
-    with f.plot('with_stats') as pylab:
+    with f.plot('with_stats', **dp_predstats_fig) as pylab:
         fancy_error_display(pylab, delta, distance, 'g')
 
-    with f.plot('distance_order') as pylab:
+    with f.plot('distance_order', **dp_predstats_fig) as pylab:
         fancy_error_display(pylab, delta, order, color='k')
         
     f = r.figure(cols=1)        
@@ -204,7 +206,8 @@ def report_statistics(id_sub, stats):
     return r
 
 def fancy_error_display(pylab, xs, ys, color, perc=10, label=None):
-    pylab.scatter(xs, ys, s=20, c=color, edgecolors='none', alpha=0.01)
+    pylab.scatter(xs, ys, s=20, c=color, edgecolors='none', alpha=0.03,
+                  rasterized=True) # 0.01
 
     for i, x in enumerate(set(xs)):
         which = xs == x

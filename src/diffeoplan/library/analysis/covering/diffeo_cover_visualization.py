@@ -61,7 +61,7 @@ def plot_3d_graph(pylab, G, plan2point, plan2color, edges2color=None):
         logger.error('Cannot use colorbar')
         logger.exception(e)
 
-def plot_2d_graph(pylab, G, plan2point, plan2color, edges2color=None):
+def plot_2d_graph(pylab, G, plan2point, plan2color, edges2color=None, s=120):
     if edges2color is None:
         edges2color = lambda n1, n2: [0, 0, 0] #@UnusedVariable
         
@@ -69,13 +69,13 @@ def plot_2d_graph(pylab, G, plan2point, plan2color, edges2color=None):
         
     for pi, pj, ec in get_edges_points_and_color(G, plan2point, edges2color):
         coords = np.vstack((pi, pj)).T
-        pylab.plot(coords[0], coords[1], linestyle='-', color=ec)
+        pylab.plot(coords[0], coords[1], linestyle='-', color=ec, zorder=1)
         
     n = len(G)
     P = np.array(map(plan2point, G)).T
     assert_allclose(P.shape, (2, n))
     color = map(plan2color, G)
-    pylab.scatter(P[0], P[1], s=40, c=color, cmap=cm)
+    pylab.scatter(P[0], P[1], s=s, c=color, cmap=cm, zorder=3)
     pylab.axis('equal')            
     turn_all_axes_off(pylab)
     pylab.colorbar()

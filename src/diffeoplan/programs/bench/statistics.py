@@ -5,8 +5,8 @@ from diffeoplan.library import (DistanceNormWeighted, DistanceNorm, plan_friendl
 from itertools import chain
 from reprep.report_utils import (FunctionWithDescription, WithDescription,
     symbol_desc_from_docstring, symbol_desc_from_string)
+from reprep.utils import frozendict2
 import itertools
-from reprep.utils.frozen import frozendict2
 
 class Statistic(FunctionWithDescription):
     pass
@@ -19,6 +19,7 @@ class Stats:
     
     images = {}
     distances = {}
+    misc_descriptions = {}
     
     @staticmethod
     @contract(returns='dict(str:WithDescription)')
@@ -44,8 +45,15 @@ class Stats:
                 if desc is None:
                     logger.warning('No description entry %r.' % k)
                 s[k] = WithDescription(name=k, desc=desc, symbol=symbol)
-                #print k, s[k]            
+                #print k, s[k]
+                
+        s.update(Stats.misc_descriptions)            
         return s
+
+    @staticmethod
+    def describe(name, desc, symbol):
+        s = WithDescription(name=name, desc=desc, symbol=symbol)
+        Stats.misc_descriptions[name] = s
         
     @staticmethod
     def describe_image(name, desc, symbol):
@@ -61,9 +69,9 @@ Stats.describe_image('y0', 'Start image', 'y_0')
 Stats.describe_image('y1', 'Goal image', 'y_1')
 Stats.describe_image('py0', 'Predicted start using plan', 'p\cdot y_0')
 Stats.describe_image('ipy1', 'Predicted goal using plan inverse', 'p^{-1}\cdot y_1')
-Stats.describe_image('ty0', 'Predicted start using true plan', 't\cdot y_0')
-Stats.describe_image('ty0', 'Predicted start using true plan', 't\cdot y_0')
-Stats.describe_image('ity1', 'Predicted goal using true plan inverse', 't^{-1}\cdot y_0')
+Stats.describe_image('ty0', 'Predicted start using true plan', 'p_{\circ}\cdot y_0')
+Stats.describe_image('ty0', 'Predicted start using true plan', 'p_{\circ}\cdot y_0')
+Stats.describe_image('ity1', 'Predicted goal using true plan inverse', 'p_{\circ}^{-1}\cdot y_0')
 
         
 
@@ -128,7 +136,7 @@ def plan_string_tex(stats):
 
 @add_statistics
 def true_plan_string(stats):
-    """ t := True plan """
+    """ p_{\circ} := True plan """
     true_plan = stats['tc'].true_plan 
     if true_plan is None:
         return None
@@ -137,7 +145,7 @@ def true_plan_string(stats):
 
 @add_statistics
 def true_plan_string_tex(stats):
-    """ t := True plan """
+    """ p_{\circ} := True plan """
     true_plan = stats['tc'].true_plan 
     if true_plan is None:
         return None
@@ -364,12 +372,24 @@ Stats.tables_for_multi_sample = {
         'plan_found/mean/perc',
         'plan_length/mean/f1',
         'plan_time/mean/f1',
-        'num_states_evaluated/mean/d',
-        'num_closed/mean/d',
-        'num_open/mean/d',
-        'num_created/mean/d',
-        'num_redundant/mean/d',
-        'num_collapsed/mean/d',
+        'num_states_evaluated/mean/f1',
+        'num_closed/mean/f1',
+        'num_open/mean/f1',
+        'num_created/mean/f1',
+        'num_redundant/mean/f1',
+        'num_collapsed/mean/f1',
+    ],
+    'tr1_resources': [
+#        'plan_found/num',
+#        'plan_found/mean/perc',
+#        'plan_length/mean/f1',
+        'plan_time/mean/f1',
+        'num_states_evaluated/mean/f1',
+#        'num_closed/mean/d',
+#        'num_open/mean/d',
+#        'num_created/mean/d',
+#        'num_redundant/mean/d',
+#        'num_collapsed/mean/d',
     ],
                                  
                                  

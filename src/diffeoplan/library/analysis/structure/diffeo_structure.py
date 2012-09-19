@@ -3,6 +3,8 @@ from boot_agents.diffeo import (diffeo_to_rgb_angle, diffeo_to_rgb_norm,
     scalaruncertainty2rgb)
 from boot_agents.misc_utils import iterate_indices
 from diffeoplan.library.discdds import DiffeoAction, plans_of_max_length
+import reprep
+from reprep.plot_utils.axes import x_axis_extra_space
 
 __all__ = ['DiffeoStructure']
 
@@ -230,12 +232,24 @@ class DiffeoStructure():
                 
         """
         report.text('explanation', caption)
-        with f.plot('reduction') as pylab:
+        xp = range(1, 6)
+        params = dict(figsize=(4.5, 4.5))
+        with f.plot('reduction', **params) as pylab:
             pylab.semilogy(nsteps, nplans, 's-', label='naive')
-            pylab.semilogy(nsteps, ncplans, 's-', label='reduced')
-            pylab.legend()
+            pylab.semilogy(nsteps, ncplans, 'o-', label='reduced')
+            pylab.legend(loc='upper left')
+            pylab.xticks(xp, xp)
             pylab.xlabel('plan length (L)')
             pylab.ylabel('number of plans (P)')
+            x_axis_extra_space(pylab)
+
+        with f.plot('reduction2', **params) as pylab:
+            pylab.semilogy(nsteps, nplans, 's-', label='naive')
+            pylab.semilogy(nsteps, ncplans, 'o-', label='reduced')
+            pylab.xticks(xp, xp)
+            pylab.xlabel('plan length (L)')
+            pylab.ylabel('number of plans (P)')
+            x_axis_extra_space(pylab)
     
     def show_compositions(self, report):
         #f_ba = report.figure()

@@ -14,6 +14,7 @@ from reprep.plot_utils import ieee_spines
 from reprep.report_utils import StoreResults, ReportManager
 import numpy as np
 import os
+from diffeoplan.programs.distances.dp_dist_stats import dp_predstats_fig
 
 @declare_command('pred-stats',
                  'pred-stats -d <distances> -s <streams> --dds discdds')
@@ -92,8 +93,10 @@ def create_predstats_jobs(config, distances, streams, id_discdds, rm, maxd):
 
 def job_report(subsets, id_discdds, store, rm):
     records = comp(make_records, store)
-    for id_subset, distances in subsets.items():    
-        report = comp(report_predstats, id_discdds, id_subset, distances, records)
+    for id_subset, distances in subsets.items():
+        job_id = 'report_predstats-%s' % id_subset    
+        report = comp(report_predstats, id_discdds, id_subset, distances, records,
+                      job_id=job_id)
         rm.add(report, 'main', subset=id_subset)
             
             
@@ -126,8 +129,12 @@ def report_predstats(id_discdds, id_subset, id_distances, records):
     colors = list(islice(cycle(['r', 'g', 'b', 'k', 'y', 'm']), 50))
     delta = records['delta']
     W = 0.2
+
+    # Save the raw values
+    for i, id_d in enumerate(id_distances):
+        r.data(id_d, records[id_d])
     
-    with f.plot('values_order') as pylab:
+    with f.plot('values_order', **dp_predstats_fig) as pylab:
         ax = pylab.subplot(111)
 
         for i, id_d in enumerate(id_distances):
@@ -148,7 +155,7 @@ def report_predstats(id_discdds, id_subset, id_distances, records):
         pylab.axis((0.5, 0.5 + np.max(delta), -0.024, 1.2))
         legend_put_below(ax)
 
-    with f.plot('values') as pylab:
+    with f.plot('values', **dp_predstats_fig) as pylab:
         ax = pylab.subplot(111)
 
         for i, id_d in enumerate(id_distances):
