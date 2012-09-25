@@ -38,6 +38,7 @@ setup(name='surf12adam',
            'diffeo-learner = learner:diffeo_learner_main',
 #           'diffeo-tests = learner:diffeo_learner_main',
            'preprocess = learner:preprocessor_main',
+           'oneclick = learner:one_click_main',
         ]
     }
 )

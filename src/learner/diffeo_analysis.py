@@ -2,7 +2,7 @@
 Created on Aug 27, 2012
 Generates statistics images of diffeo estimator
 
-@author: adam
+@author: Adam Nilsson
 '''
 from PIL import Image #@UnresolvedImport
 import numpy as np
@@ -11,9 +11,8 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 import os
 import pickle
-import pdb
 
-# The peak plots are gennerated for the points in c_peak_list
+# The peak plots are generated for the points in c_peak_list
 c_peak_list = ((15, 15), (20, 15), (25, 15), (100, 100), (140, 120), (0, 0), (0, 60))
 
 class DiffeoAnalysis:
