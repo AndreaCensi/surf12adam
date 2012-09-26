@@ -10,6 +10,7 @@ from subprocess import PIPE
 from optparse import OptionParser
 import pdb
 import os
+import yaml
 
 class OneClick():
     def __init__(self, name, outdir, command_list, duration, size, area):
@@ -85,11 +86,20 @@ class OneClick():
 
     def run_preprocess(self):
         inname = self.outdir + 'raw-capture/' + self.name + '.raw.bag'
-#        size_str = str(self.size[0]) + 'x' + str(self.size[1])
-        pdb.set_trace()
+        size_str = str(self.size[0]) + 'x' + str(self.size[1])
         outname = self.outdir + 'processed_data/' # + '.processed.bag' #+ self.name + size_str 
         self.preprocessor = subprocess.Popen(["preprocess", "-i", inname, "-o", outname])
         self.preprocessor.wait()
+        stream = file(self.outdir + 'processed_data/' + 'oneclick.streams.yaml', 'w')
+        yaml.dump([{'code': ['diffeoplan.library.logs.BagStream',
+           {'files': [outname + self.name + '-' + size_str + '.processed.bag']}],
+          'id': self.name,
+          'desc': 'Streams for oneclick, pt64, 160x120 resolution.'}], stream)
+        
+    def run_learning(self):
+        stream = "oneclick_diffeo"
+        learner = "n35s"
+        self.learner = subprocess.Popen(["dp", "plearn", "-s", stream, "-l", learner, "-c", "clean *summarize*; parmake "])
 
 def info(string):
     print('\033[92mINFO:OneClick:     ' + string + '\033[0m')
@@ -131,3 +141,6 @@ def one_click_main():
     program.run_preprocess()
     program.run_learning()
     info('Done')
+    
+    
+
