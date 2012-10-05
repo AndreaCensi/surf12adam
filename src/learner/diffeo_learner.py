@@ -4,6 +4,7 @@ from PIL import Image #@UnresolvedImport
 from boot_agents.diffeo import (DiffeomorphismEstimator, diffeo_to_rgb_angle,
     diffeo_to_rgb_norm)
 from boot_agents.diffeo.learning import DiffeomorphismEstimatorFaster
+from boot_agents.diffeo.learning import DiffeomorphismEstimatorFasterProbability #@UnresolvedImport
 from diffeoplan.library import DiffeoAction, DiffeoSystem
 from diffeoplan.library.discdds.writing import ds_dump
 
@@ -150,3 +151,11 @@ class DiffeoLearner:
         #pdb.set_trace()
         
     
+
+class DiffeoLearnerProbability(DiffeoLearner):
+    def new_estimator(self):
+        if self.use_fast:
+            logger.warning('Using experimental diffeo estimator')
+            return DiffeomorphismEstimatorFasterProbability(**self.diffeo_estimator_params)
+        else:
+            return DiffeomorphismEstimator(**self.diffeo_estimator_params)

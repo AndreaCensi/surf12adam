@@ -38,6 +38,16 @@
     - ~/diffeo-data/processed-data/orbit-pt64-window1-160x120.processed.bag  
     - ~/diffeo-data/processed-data/orbit-pt64-window2-160x120.processed.bag  
     - ~/diffeo-data/processed-data/orbit-pt64-window3-160x120.processed.bag  
+  
+
+- id: orbit-pt64-40
+  desc: "Streams for orbit, pt64, 40x30 resolution."
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files: 
+    - ~/diffeo-data/processed-data/orbit-pt64-window1-40x30.processed.bag  
+    - ~/diffeo-data/processed-data/orbit-pt64-window2-40x30.processed.bag  
+    - ~/diffeo-data/processed-data/orbit-pt64-window3-40x30.processed.bag  
 
 
 
