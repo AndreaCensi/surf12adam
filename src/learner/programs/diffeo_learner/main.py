@@ -54,7 +54,7 @@ def diffeo_learner_main():
     if learner == 'No':
         ratios = (options.ratio, options.ratio)
         
-        learn = DiffeoLearner(ratios)
+        learn = DiffeoLearner(True, {'max_displ': ratios, 'inference_method': 'sim'})
     else:
         logger.info('Loading diffeomorphism estimators')
         if learner[:4] == 'http':
