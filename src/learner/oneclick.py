@@ -8,19 +8,18 @@ import time
 import atexit
 from subprocess import PIPE
 from optparse import OptionParser
-import pdb
 import os
 import yaml
 
 class OneClick():
-    def __init__(self, name, outdir, command_list, duration, size, area):
+    def __init__(self, name, outdir, command_list, duration, size, area, device):
         self.outdir = outdir
         self.name = name
         self.command_list = command_list
         self.duration = duration
         self.size = size
+        self.device = device
         
-#        print('$OUT = ' + os.environ["OUT"])
         
         if not os.path.exists(outdir):
             os.mkdir(outdir)
@@ -66,6 +65,7 @@ class OneClick():
     
     def start_usb_cam(self):
         subprocess.call(["rosparam", "set", "/usb_cam/pixel_format", "yuyv"])
+        subprocess.call(["rosparam", "set", "/usb_cam/video_device", self.device])
         self.usb_cam_node = subprocess.Popen(["rosrun", "usb_cam", "usb_cam_node"], stderr=PIPE)
         time.sleep(10)
         
@@ -96,10 +96,14 @@ class OneClick():
           'id': self.name,
           'desc': 'Streams for oneclick, pt64, 160x120 resolution.'}], stream)
         
-    def run_learning(self):
-        stream = "oneclick_diffeo"
+    def run_learning(self, stream):
         learner = "n35s"
         self.learner = subprocess.Popen(["dp", "plearn", "-s", stream, "-l", learner, "-c", "clean *summarize*; parmake "])
+    def stop_learning(self):
+        try:
+            self.learner.terminate()
+        except:
+            warning('Couldn\'t shut down learner, maybe not initialized.')
 
 def info(string):
     print('\033[92mINFO:OneClick:     ' + string + '\033[0m')
@@ -124,6 +128,14 @@ def one_click_main():
                       help="Size of processed image")
     parser.add_option("-a", "--area", default='[8, 8]',
                       help="Size of search area")
+    parser.add_option("-d", "--device", default='/dev/video0', help="Address to Orbit device")
+    parser.add_option("-m", "--mode", default='all',
+                      help="""all: run both the capture data, preprocess, learn and plan
+                      raw: run only capture data to get the raw log
+                      raw-process: run capture data and preprocess 
+                      data: skip the data capture
+                      """)
+    parser.add_option("--stream", default='oneclick_diffeo', help="name of ")
     
     options, _ = parser.parse_args()
     
@@ -135,11 +147,20 @@ def one_click_main():
                        command_list=options.command_list,
                        duration=int(options.duration),
                        size=size,
-                       area=area)
+                       area=area,
+                       device=options.device)
     atexit.register(program.terminate_data_capture)
-    program.run_capture_data()
-    program.run_preprocess()
-    program.run_learning()
+    atexit.register(program.stop_learning())
+    
+    if options.mode in ['all', 'raw', 'raw-process']:
+        program.run_capture_data()
+    
+    if options.mode in ['all', 'raw-process']:
+        program.run_preprocess()
+    
+    if options.mode in ['all', 'data']:
+        stream = options.stream
+        program.run_learning(stream)
     info('Done')
     
     
