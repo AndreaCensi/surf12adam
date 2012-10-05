@@ -7,17 +7,14 @@ from learner.programs.preprocessor.pre_processor import preprocess
 
 
 def preprocessor(args):
-    usage = "usage: %prog -i inputpath [-o outputdir] -s [W,H] -p string"
+    usage = "usage: %prog -i inputname [-o outputdir] -s [W,H] -z bool"
     parser = OptionParser(usage=usage, version="%prog 1.0")
     parser.add_option("-i", "--input",
-                      help="Path to input file (must be *.raw.bag)")
+                      help="Path and name to input file (must be *.raw.bag)")
     parser.add_option("-o", "--output",
                       help="Path to output directory")
-    parser.add_option("-p", "--namefix", default='',
-                      help='Additional string for output filename')
     parser.add_option("-s", "--size", default='[160,120]', help="Image size WxH")
-    parser.add_option("-z", "--zoom", default='True', help="Use zoom")
-#    parser.add_option("-zc", "--zoom_center", default=[0,0], help="Not Impl: Zoom center offset from mid image")
+    parser.add_option("-z", "--zoom", default='True', help="Use zoom (True, False)")
 
 
     options, other = parser.parse_args(args)
