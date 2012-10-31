@@ -17,6 +17,7 @@ from threading import Thread
 import numpy as np
 import pylab
 import pickle
+from diffeoplan.library.logs.rosbag.ros_conversions import *
 
 def main():
 #    print('starting')
@@ -27,10 +28,10 @@ commands = {'left': 3,
             'up': 0,
             'down': 2}
 state_map = {0: (0, 1), 1: (1, 0), 2:(0, -1), 3:(-1, 0)}
-area = {'left': 12,
-            'right': 12,
-            'up': 5,
-            'down': 5}
+area = {'left': 4,
+            'right': 4,
+            'up': 3,
+            'down': 3}
 
 class DiffeoPlanner():
     def __init__(self):
@@ -44,6 +45,9 @@ class DiffeoPlanner():
         # Initiate publisher for set goal and current
         self.goal_pub = rospy.Publisher(self.server_name + '/set_goal', sensor_msgs.msg.Image)
         self.current_pub = rospy.Publisher(self.server_name + '/set_current', sensor_msgs.msg.Image)
+        
+        # Publisher for distance
+        self.distance_pub = rospy.Publisher(self.node_name + '/distange_graph', sensor_msgs.msg.Image)
         
         # Create service to set goal
         goal_service = rospy.Service(self.node_name + '/set_goal',
@@ -145,7 +149,8 @@ class DiffeoPlanner():
                 
 #                self.distance_grid = pickle.load(open('distance_grid.pickle'))
 #                all_results = pickle.load(open('all_results.pickle'))
-                
+                pdb.set_trace()
+                self.plot_distance(all_results[0])
                 
                 self.draw_map()
                 self.draw_threshold()
@@ -212,7 +217,7 @@ class DiffeoPlanner():
         else:
             n = args[1]
         
-        itter_results = []
+        iter_results = []
         for i in range(n):
             print('run_one ' + str(i))
 #            pdb.set_trace()
@@ -229,40 +234,108 @@ class DiffeoPlanner():
             
             dist = self.get_distance(0).res
             
+            iter_result = {'i':i,
+                           'plan_found':tuple(plan),
+                           'plan_executed':plan_executed,
+                           'start_distance':dist0,
+                           'final_distance':dist,
+                           'predicted_distances':pred_dist,
+                           'y_0':y_0,
+                           'y_1':get_image_array(self.y_current)}
+            iter_results.append(iter_result)
             
-            itter_results.append({'i':i,
-                                  'plan_found':tuple(plan),
-                                 'plan_executed':plan_executed,
-                                 'start_distance':dist0,
-                                 'final_distance':dist,
-                                 'predicted_distances':pred_dist,
-                                 'y_0':y_0,
-                                 'y_1':get_image_array(self.y_current)})
-        run_result = {'itter_results':itter_results}
+            
+            image = self.update_distance_plot(iter_result)
+            ros_img = pil_to_imgmsg(image)
+#            ros_img = numpy_to_imgmsg(np.array(image))
+            self.distance_pub.publish(ros_img)
+            
+        run_result = {'iter_results':iter_results}
         return run_result
         
     def plot_distance(self, run_result):
-        Y_vals = np.zeros(len(run_result['itter_results']) + 1)
+        '''
         
-        for itter_result in run_result['itter_results']:
-            i = itter_result['i']
-            pred_dist = itter_result['predicted_distances']
-            print(str(pred_dist))
-            dist0 = itter_result['start_distance']
-            dist = itter_result['final_distance']
-            Y_vals[i] = dist0
-            if i == len(Y_vals) - 1:
-                Y_vals[i + 1] = dist
-            x_vals = range(i, i + len(pred_dist) + 1)
-            y_vals = (dist0,) + pred_dist
-            l_pred_style = {'color':'gray'}
-            pylab.plot(x_vals, y_vals, **l_pred_style)
+        :param run_result: is a dictionary with an iter_results list 
+        containing results for each iteration in the planning.
+        iter_result needs:
+            - start_distance: (for first iteration)
+            - final_distance: for all iterations
+            - i: index of iteration
+            - predicted_distances: distances for the predicted images from 
+              found plan
+        '''
+        
+        # Initiate new plot
+        self.Y_vals = None
+        pylab.figure()
+        
+        
+        # Update the plot for each iter_result
+        for iter_result in run_result['iter_results']:
+            self.update_distance_plot(iter_result)
             
-            l_style = {'color':'b',
-                       'linewidth':3}
-            pylab.plot(range(i + 1), Y_vals[:i + 1], **l_style)
-            pylab.savefig('dist_it' + str(i) + '.png')
-            
+    def update_distance_plot(self, iter_result):
+        print('next iter')
+        if not hasattr(self, 'Y_vals'):
+            Y_vals = None
+        else:
+            Y_vals = self.Y_vals
+        
+        # Get the threshold for planning module
+        try:
+            thresh = float(rospy.get_param(self.server_name + '/planning_thresholds')[0])
+        except:
+            thresh = 0
+            print('couldn\'t get threshold')
+#        pdb.set_trace()
+        # Process data
+        i = iter_result['i']
+        pred_dist = iter_result['predicted_distances']
+        print('itter ' + str(i) + '   ' + str(pred_dist))
+        dist0 = iter_result['start_distance']
+        
+        if Y_vals is None:
+            Y_vals = [dist0]
+        
+        dist = iter_result['final_distance']
+        
+        Y_vals.append(dist)
+        self.Y_vals = Y_vals
+        x_vals = range(i, i + len(pred_dist) + 1)
+#        pdb.set_trace()
+        y_vals = (Y_vals[i],) + pred_dist
+        
+        print('ready to plot')
+        
+        # Define some artist styles for plotting
+        l_pred_style = {'color':'gray',
+                        'marker':'o',
+                        'markersize':3}
+        l_style = {'color':'b',
+                   'linewidth':2,
+                   'marker':'o',
+                   'markersize':4}
+        t_style = {'linestyle':'--'}
+#        pdb.set_trace()
+        # Plot data
+        pylab.plot(x_vals, y_vals, **l_pred_style)
+        pylab.plot(range(len(Y_vals)), Y_vals, **l_style)
+        print('pass data')
+        # Plot threshold
+        pylab.axhline(thresh, **t_style)
+        print('pass axhline')
+        # Annotate plot
+        pylab.legend(['Predicted', 'True', 'Threshold'],
+                     loc=9, ncol=3)
+        pylab.xlabel('Planning Iteration')
+        pylab.ylabel('Distance to y_goal')
+        print('pass annotate')
+        # Save plot
+        pylab.savefig('dist_it' + str(i) + '.png')
+        print('done with this plot')
+        image = Image.open('dist_it' + str(i) + '.png')
+        return image
         
     def show_images(self):
         # Initiate services to get images
@@ -432,35 +505,41 @@ class DiffeoPlanner():
         
         all_results = []
         
-        starts = [(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2),
-                  (1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0),
-                  (1, 1, 2),
-                  (0, 3, 3, 3),
-                  (2, 2, 3, 3, 3, 3)]
+#        starts = [(1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2),
+#                  (1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0),
+#                  (1, 1, 2),
+#                  (0, 3, 3, 3),
+#                  (2, 2, 3, 3, 3, 3)]
+        starts = [(1, 1, 1)]
         for start in starts:
             self.track_state_home()
-            itter_results = []
+            iter_results = []
             self.track_state_move(start)
             executed = []
             for i in range(20):
                 state0 = self.state 
-                dist0 = get_distance(0)
+                dist0 = get_distance(0).res
                 print('run_one ' + str(i))
                 plan, plan_executed = self.run_one()
                 if plan == (-1,):
                     break
-                itter_results.append({'plan_found':tuple(plan),
+                
+                pred_dist = self.get_p_d(plan).array
+                
+                iter_results.append({'i':i,
+                                     'plan_found':tuple(plan),
                                      'plan_executed':plan_executed,
                                      'start_state':state0,
                                      'start_distance':dist0,
-                                     'final_distance':get_distance(0)})
+                                     'final_distance':get_distance(0).res,
+                                     'predicted_distances':pred_dist})
                 
                 time.sleep(1)
                 self.track_state(plan_executed)
                 for p in plan_executed:
                     executed.append(p)
             run_result = {'start_move': start,
-                          'itter_results':itter_results,
+                          'iter_results':iter_results,
                           'plan':executed}
             all_results.append(run_result)
         return all_results
@@ -478,16 +557,16 @@ class DiffeoPlanner():
 #        pdb.set_trace()
         for r, run_result in enumerate(all_results):
             
-            for i, itter_result in enumerate(run_result['itter_results']):
+            for i, iter_result in enumerate(run_result['iter_results']):
                 
                 # Plot the executed part
-                self.plot_plan_line(itter_result['start_state'],
-                               itter_result['plan_executed'],
+                self.plot_plan_line(iter_result['start_state'],
+                               iter_result['plan_executed'],
                                **executed_style)
                 
                 # Plot the found plan
-                self.plot_plan_line(itter_result['start_state'],
-                               itter_result['plan_found'],
+                self.plot_plan_line(iter_result['start_state'],
+                               iter_result['plan_found'],
                                **found_style)
                 
                 pylab.savefig('map_' + str(r) + '_it' + str(i) + '.png')
