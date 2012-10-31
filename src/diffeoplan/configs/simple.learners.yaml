@@ -7,6 +7,33 @@
       max_displ: [0.35, 0.35]
       inference_method: order
 
+- id: s35s
+  desc: State variant learner (35% displacement)
+  code: 
+  - learner.DiffeoLearnerState
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      inference_method: sim
+      
+- id: a35s
+  desc: Create animation of learning (35% displacement)
+  code: 
+  - learner.DiffeoLearnerAnimation
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      inference_method: sim
+      
+- id: s60s
+  desc: State variant learner (35% displacement)
+  code: 
+  - learner.DiffeoLearnerState
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.60, 0.60]
+      inference_method: sim
+
 - id: n25o
   desc: Normal learner (25% displacement)
   code: 
