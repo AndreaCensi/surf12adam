@@ -49,5 +49,13 @@
     - ~/diffeo-data/processed-data/orbit-pt64-window2-40x30.processed.bag  
     - ~/diffeo-data/processed-data/orbit-pt64-window3-40x30.processed.bag  
 
-
+- id: orbit-pt256z50-80
+  desc: "Streams for orbit, pt256, 80x60 resolution, zoom between 100 and 200 in size 50 steps."
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files: 
+    #- ~/diffeo-data/processed-data/z50/orbit-pt256z2-indoor.600s-80x60.processed.bag
+    - ~/diffeo-data/processed-data/z50/orbit-pt256z2-outdoor.600s1-80x60.processed.bag
+    #- ~/diffeo-data/processed-data/z50/orbit-pt256z2-window.600s-80x60.processed.bag
+    #- ~/diffeo-data/processed-data/z50/orbit-pt256z2-window.600s2-80x60.processed.bag
 
