@@ -1,6 +1,8 @@
 from . import contract, DiffeoSystemStateSpace, logger
 from diffeoplan.library.discdds.visualization.reals import Reals, \
     EuclideanMotions
+import numpy as np
+#import pdb
 
 
 @contract(returns=DiffeoSystemStateSpace)
@@ -17,7 +19,8 @@ def guess_state_space(id_discdds, dds):
     
     msg = 'Using default state space for %r.' % id_discdds
     logger.debug(msg)
-    ndim = dds.actions[0].get_original_cmds()[0].size
+#    pdb.set_trace()
+    ndim = np.array(dds.actions[0].get_original_cmds()[0]).size
     return Reals(ndim)
           
         
