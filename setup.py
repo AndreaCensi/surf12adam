@@ -40,6 +40,7 @@ setup(name='surf12adam',
            'preprocess = learner:preprocessor_main',
            'oneclick = learner:one_click_main',
            'dp-online = diffeoplan.programs.online:main',
+           'dp-ros = diffeoplan.programs.online:ros_main',
         ]
     }
 )

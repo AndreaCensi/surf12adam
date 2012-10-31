@@ -1,0 +1,14 @@
+<package>
+  <description brief="diffeo_planner">
+
+     diffeo_planner
+
+  </description>
+  <author>Adam</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/diffeo_planner</url>
+
+</package>
+
+
