@@ -45,6 +45,10 @@ class DiffeoplanConfigMaster(ConfigMaster):
         self.learners = self.add_class('learners', '*.learners.yaml',
                                      check_generic_code_desc,
                                      GenericCall())
+        
+        self.online_testcases = self.add_class('online_testcases', '*.online.yaml',
+                                     check_generic_code_desc,
+                                     GenericCall())
  
         self.sets = self.add_class('sets', '*.batch.yaml', check_valid_set)
   
