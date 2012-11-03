@@ -28,10 +28,10 @@ commands = {'left': 3,
             'up': 0,
             'down': 2}
 state_map = {0: (0, 1), 1: (1, 0), 2:(0, -1), 3:(-1, 0)}
-area = {'left': 4,
-            'right': 4,
-            'up': 3,
-            'down': 3}
+area = {'left': 6,
+            'right': 6,
+            'up': 5,
+            'down': 5}
 
 class DiffeoPlanner():
     def __init__(self):
@@ -47,7 +47,7 @@ class DiffeoPlanner():
         self.current_pub = rospy.Publisher(self.server_name + '/set_current', sensor_msgs.msg.Image)
         
         # Publisher for distance
-        self.distance_pub = rospy.Publisher(self.node_name + '/distange_graph', sensor_msgs.msg.Image)
+        self.distance_pub = rospy.Publisher(self.node_name + '/distance_graph', sensor_msgs.msg.Image)
         
         # Create service to set goal
         goal_service = rospy.Service(self.node_name + '/set_goal',
@@ -82,14 +82,18 @@ class DiffeoPlanner():
         
         while not rospy.is_shutdown():
             line = sys.stdin.readline().strip('\n')
+            args = line.split(' ')
             handled = False
             successful = False
-#            pdb.set_trace()
-            if line_match(line, 'run'):
+
+            if args[0] == 'run':
                 # Register handling of command
                 handled = True
-                
-                run_result = self.run_demo(line)
+                if len(args) > 1:
+                    n = int(args[1])
+                else:
+                    n = 10
+                run_result = self.run_demo(n)
                 pickle.dump(run_result, open('last_result.pickle', 'wb'))
                 
                 
@@ -99,7 +103,7 @@ class DiffeoPlanner():
             
             
             
-            if line_match(line, 'dshow'):
+            if args[0] == 'dshow':
                 # Register handling of command
                 handled = True
                 
@@ -109,7 +113,7 @@ class DiffeoPlanner():
                 # Register command handling successful
                 successful = True
             
-            if line_match(line, 'goal'):
+            if args[0] == 'goal':
                 # Register handling of command
                 handled = True
                 
@@ -118,7 +122,7 @@ class DiffeoPlanner():
                 # Register command handling successful
                 successful = True
                 
-            if line_match(line, 'start'):
+            if args[0] == 'start':
                 # Register handling of command
                 handled = True
                 
@@ -127,7 +131,7 @@ class DiffeoPlanner():
                 # Register command handling successful
                 successful = True
                 
-            if line_match(line, 'show'):
+            if args[0] == 'show':
                 # Register handling of command
                 handled = True
                 
@@ -136,31 +140,34 @@ class DiffeoPlanner():
                 # Register command handling successful
                 successful = True
                 
-            if line_match(line, 'demo'):
+            if args[0] == 'demo':
                 handled = True
                 
-                self.track_state_home()
                 
-                self.distance_grid = self.scan_environment_distances()
-                pickle.dump(self.distance_grid, open('distance_grid.pickle', 'wb'))
+ 
+                if 'last' in args:
+                    self.distance_grid = pickle.load(open('distance_grid.pickle'))
+                    all_results = pickle.load(open('all_results.pickle'))                
+                else:
+                    self.track_state_home()
+                    self.distance_grid = self.scan_environment_distances()
+                    pickle.dump(self.distance_grid, open('distance_grid.pickle', 'wb'))
+                    
+                    all_results = self.demo_with_map()
+                    pickle.dump(all_results, open('all_results.pickle', 'wb'))
                 
-                all_results = self.demo_with_map()
-                pickle.dump(all_results, open('all_results.pickle', 'wb'))
-                
-#                self.distance_grid = pickle.load(open('distance_grid.pickle'))
-#                all_results = pickle.load(open('all_results.pickle'))
-                pdb.set_trace()
+#                pdb.set_trace()
                 self.plot_distance(all_results[0])
                 
                 self.draw_map()
                 self.draw_threshold()
                 self.draw_results(all_results)
-                pylab.savefig('final.png')
+#                pylab.savefig('final.png')
                 
                 # Register command handling successful
                 successful = True
                 
-            if line_match(line, 'scan'):
+            if args[0] == 'scan':
                 # Register handling of command
                 handled = True
                 
@@ -172,7 +179,7 @@ class DiffeoPlanner():
                 # Register command handling successful
                 successful = True
                 
-            if line_match(line, 'call'):
+            if args[0] == 'call':
                 # Register handling of command
                 handled = True
                 
@@ -189,7 +196,7 @@ class DiffeoPlanner():
                 else:
                     print('Not enough arguments')
                     
-            if line_match(line, 'set'):
+            if args[0] == 'set':
                 # Register handling of command
                 handled = True
                 
@@ -210,13 +217,13 @@ class DiffeoPlanner():
             if not successful:
                 print('Failed to execute command')
         
-    def run_demo(self, line):
-        args = line.split(' ')
-        if len(args) <= 1:
-            n = 10
-        else:
-            n = args[1]
-        
+    def run_demo(self, n):
+#        args = line.split(' ')
+#        if len(args) <= 1:
+#            n = 10
+#        else:
+#            n = args[1]
+        pylab.figure()
         iter_results = []
         for i in range(n):
             print('run_one ' + str(i))
@@ -246,9 +253,9 @@ class DiffeoPlanner():
             
             
             image = self.update_distance_plot(iter_result)
-            ros_img = pil_to_imgmsg(image)
+#            ros_img = pil_to_imgmsg(image)
 #            ros_img = numpy_to_imgmsg(np.array(image))
-            self.distance_pub.publish(ros_img)
+#            self.distance_pub.publish(ros_img)
             
         run_result = {'iter_results':iter_results}
         return run_result
@@ -273,9 +280,19 @@ class DiffeoPlanner():
         
         # Update the plot for each iter_result
         for iter_result in run_result['iter_results']:
-            self.update_distance_plot(iter_result)
+            self.update_distance_plot(iter_result, annotate=False)
             
-    def update_distance_plot(self, iter_result):
+            
+        # Initiate new plot
+        self.Y_vals = None
+        pylab.figure()
+        
+        
+        # Update the plot for each iter_result
+        for iter_result in run_result['iter_results']:
+            self.update_distance_plot(iter_result, annotate=True)
+            
+    def update_distance_plot(self, iter_result, annotate=False):
         print('next iter')
         if not hasattr(self, 'Y_vals'):
             Y_vals = None
@@ -326,16 +343,28 @@ class DiffeoPlanner():
         pylab.axhline(thresh, **t_style)
         print('pass axhline')
         # Annotate plot
-        pylab.legend(['Predicted', 'True', 'Threshold'],
-                     loc=9, ncol=3)
-        pylab.xlabel('Planning Iteration')
-        pylab.ylabel('Distance to y_goal')
-        print('pass annotate')
-        # Save plot
-        pylab.savefig('dist_it' + str(i) + '.png')
+#        if not 'annotate' in locals():
+#            annotate = False
+        if not 'name' in locals():
+            name = ''
+             
+        if annotate:
+            pylab.legend(['Predicted', 'True', 'Threshold'],
+                         loc=9, ncol=3)
+            pylab.xlabel('Planning Iteration')
+            pylab.ylabel('Distance to y_goal')
+    
+            pylab.savefig('dist_it' + str(i) + '.png')
+        else:
+            pylab.savefig('dist_it' + str(i) + '_noannotations.png')
+        
         print('done with this plot')
-        image = Image.open('dist_it' + str(i) + '.png')
-        return image
+        try:
+            image_array = iter_result['y_1']
+            Image.fromarray(image_array).save('y1_it' + str(i) + '.png')
+        except:
+            print('No image y1')
+        return True
         
     def show_images(self):
         # Initiate services to get images
@@ -450,6 +479,7 @@ class DiffeoPlanner():
         levels = np.linspace(0, np.max(distance_grid))
         X, Y = np.meshgrid(range(-area['left'], area['right'] + 1), range(-area['down'], area['up'] + 1))
 #        pylab.imshow(distance_grid.transpose())
+        pylab.figure()
         pylab.contourf(X.transpose(),
                        Y.transpose(),
                        distance_grid,
@@ -510,7 +540,7 @@ class DiffeoPlanner():
 #                  (1, 1, 2),
 #                  (0, 3, 3, 3),
 #                  (2, 2, 3, 3, 3, 3)]
-        starts = [(1, 1, 1)]
+        starts = [(1, 1,0,0), (3,3,0,0), (0,0,0)]
         for start in starts:
             self.track_state_home()
             iter_results = []
@@ -563,6 +593,7 @@ class DiffeoPlanner():
                 self.plot_plan_line(iter_result['start_state'],
                                iter_result['plan_executed'],
                                **executed_style)
+                pylab.annotate(str(i), xy=iter_result['start_state'], xytext=(5,5), textcoords='offset points')
                 
                 # Plot the found plan
                 self.plot_plan_line(iter_result['start_state'],
@@ -572,6 +603,7 @@ class DiffeoPlanner():
                 pylab.savefig('map_' + str(r) + '_it' + str(i) + '.png')
     
     def plot_plan_line(self, state0, plan, **lineargs):
+        print('plot line')
         new_state = state0
         states = [state0]
         for p in plan:
@@ -584,6 +616,7 @@ class DiffeoPlanner():
         for i, st in enumerate(states):
             ret[:, i] = st
         pylab.plot(ret[0, :], ret[1, :], **lineargs)
+        
 
 class UI(Thread):
     def __init__(self, img, imc):
