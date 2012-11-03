@@ -14,7 +14,7 @@ def preprocessor(args):
     parser.add_option("-o", "--output",
                       help="Path to output directory")
     parser.add_option("-s", "--size", default='[160,120]', help="Image size WxH")
-    parser.add_option("-z", "--zoom", default='True', help="Use zoom (True, False)")
+    parser.add_option("-z", "--zoom", default=None, help="Limits for zoom values and scaling factor for zoomer")
 
 
     options, other = parser.parse_args(args)
@@ -49,13 +49,19 @@ def preprocessor(args):
     
     info_list = basename.split('-')
     
-    zoom = eval(options.zoom)
-
-    # if zoom is not used, then remove z* from command name
-    if zoom:
-        pass
-        #out_info = '_' + str(output_size).replace(' ', '').replace(',', 'x').replace('(', '').replace(')', '') + '_zoom'
+    # If zoom property is given, then use zoom. Evaluate zoomer parameters
+    if options.zoom is not None:
+        try:
+            vals = eval(options.zoom)
+            min_zoom = vals[0]
+            max_zoom = vals[1]
+            zoom_factor = vals[2]
+            zoom = True
+        except:
+            # 
+            zoom = False
     else:
+        # if zoom is not used, then remove z* from command name
         info_list[1] = info_list[1][:info_list[1].index('z')] 
 #        out_info = '_' + str(output_size).replace(' ', '').replace(',', 'x').replace('(', '').replace(')', '') + '_nozoom'
 
@@ -78,7 +84,7 @@ def preprocessor(args):
     
     preprocess(bag, output, output_size,
                 use_zoom=zoom,
-                min_zoom=100, max_zoom=200)
+                min_zoom=min_zoom, max_zoom=max_zoom, zoom_factor=zoom_factor)
     
     # pproc.validate_bag(output)
 

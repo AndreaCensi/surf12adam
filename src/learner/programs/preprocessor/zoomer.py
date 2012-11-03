@@ -3,12 +3,12 @@ import numpy as np
 from PIL import Image #@UnresolvedImport
 from procgraph_pil.pil_operations import resize
 from diffeoplan.library.logs.rosbag.bag_reader import get_image_array
-factor = 5
+#factor = 25
 
 class Zoomer:
     
     @contract(min_zoom='>=100,x', max_zoom='>=x', use_zoom='bool')
-    def __init__(self, min_zoom, max_zoom, use_zoom, output_size):
+    def __init__(self, min_zoom, max_zoom, use_zoom, output_size, zoom_factor):
         self.min_zoom = min_zoom
         self.max_zoom = max_zoom
         self.use_zoom = use_zoom
@@ -18,6 +18,7 @@ class Zoomer:
         self.use_zoom = use_zoom
         self.queue_image = []
         self.queue_command = []
+        self.factor = zoom_factor
         
         self.current_zoom = min_zoom
     
@@ -40,7 +41,7 @@ class Zoomer:
 
         if self.use_zoom or zoom == 0:
             
-            next_zoom = self.current_zoom + zoom * factor 
+            next_zoom = self.current_zoom + zoom * self.factor 
             self.current_zoom = np.clip(next_zoom, self.min_zoom, self.max_zoom)
     
             if next_zoom != self.current_zoom:
