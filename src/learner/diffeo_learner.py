@@ -4,6 +4,7 @@ from PIL import Image #@UnresolvedImport
 from boot_agents.diffeo import (DiffeomorphismEstimator, diffeo_to_rgb_angle,
     diffeo_to_rgb_norm)
 from boot_agents.diffeo.learning import DiffeomorphismEstimatorFaster
+from boot_agents.diffeo.learning import DiffeomorphismEstimatorAnimation #@UnresolvedImport
 from boot_agents.diffeo.learning import DiffeomorphismEstimatorFasterProbability #@UnresolvedImport
 from diffeoplan.library import DiffeoAction, DiffeoSystem
 from diffeoplan.library.discdds.writing import ds_dump
@@ -150,8 +151,69 @@ class DiffeoLearner:
             #Image.fromarray(diffeo_to_rgb_angle(D.d)).save('diffeoimages/dir'+str(delta[0])+','+str(delta[1])+'_n'+str(n)+'_image_'+image_str+'_phase.png')
         #pdb.set_trace()
         
+class DiffeoLearnerState(DiffeoLearner):
+    def __init__(self, use_fast, diffeo_estimator_params):
+        '''
+        
+        :param use_fast: Use DiffeomorphismEstimatorFaster.
+        '''
+        self.command_list = []
+        self.estimators = []
+        self.estimators_inv = []    
+        self.use_fast = use_fast
+        self.diffeo_estimator_params = diffeo_estimator_params
+        
+        self.state = 0
+        self.command_state_list = []
+        
+        
+    def command_state_index(self, command, state):
+        if not (command[0] == 0 or command[1] == 0):
+            command[2] = 0 
+        if not [command, state] in self.command_state_list:    
+            logger.info('Adding new command %s' % str(command))
+            self.command_state_list.append([command, state])
+            self.estimators.append(self.new_estimator())
+            self.estimators_inv.append(self.new_estimator())
+            
+        index = self.command_state_list.index([command, self.state])
+        return index
     
-
+    def update(self, Y0, U0, Y1):
+        self.state += U0[2]
+        logger.info('State is now: ' + str(self.state))
+        cmd_ind = self.command_state_index(U0, self.state)
+        #logger.info('Updating estimator %s' % str(cmd_ind))
+        for ch in range(3):
+            self.estimators[cmd_ind].update(Y0[:, :, ch], Y1[:, :, ch])
+            self.estimators_inv[cmd_ind].update(Y1[:, :, ch], Y0[:, :, ch])
+            
+    def summarize(self, prefix=''):
+        """
+            Summarizes all estimators
+            Output:
+                All summarized diffeomorphisms stored in self.diffeo_list
+        """
+        n = len(self.estimators)
+        action_list = [] 
+        
+        for i in range(n):
+            [command, state] = np.array(self.command_state_list[i])
+            name = prefix + str(list(command)).replace(' ', '') + 'st' + str(state)
+            diffeo = self.estimators[i].summarize()
+#            DiffeoAnalysis(self.estimators[i], name, self.estimators[i].shape,
+#                           self.estimators[i].lengths).make_images()
+#            pdb.set_trace()
+#            self.estimators[i].summarize_continuous(prefix + str(command) + '.png')
+            diffeo_inv = self.estimators_inv[i].summarize()
+            name = 'Uninterpreted Diffeomorphism' + str(i) + 'cmd' + str(command) + 'state' + str(state)
+            action = DiffeoAction(name, diffeo, diffeo_inv, command)
+            action_list.append(action)
+            
+        name = 'Uninterpreted Diffeomorphism System'
+        self.system = DiffeoSystem(name, action_list)
+        return self.system
+            
 class DiffeoLearnerProbability(DiffeoLearner):
     def new_estimator(self):
         if self.use_fast:
@@ -159,3 +221,15 @@ class DiffeoLearnerProbability(DiffeoLearner):
             return DiffeomorphismEstimatorFasterProbability(**self.diffeo_estimator_params)
         else:
             return DiffeomorphismEstimator(**self.diffeo_estimator_params)
+        
+class DiffeoLearnerAnimation(DiffeoLearner):
+    def new_estimator(self):    
+        if not hasattr(self, 'last_index'):
+            index = 0
+            logger.info('adding first estimator')
+        else:
+            index = self.last_index + 1
+            logger.info('adding new estimator')
+            
+        self.last_index = index
+        return DiffeomorphismEstimatorAnimation(index=index, **self.diffeo_estimator_params)
