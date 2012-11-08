@@ -135,6 +135,15 @@ def summarize(learner):
     return learner.summarize()
 
 def plearn_partial(config, id_learner, id_stream, i, n):
+    '''
+    Reads commands from a filtered stream and updates the corresponding learner.
+    
+    :param config:
+    :param id_learner:    id of a learner in <config>
+    :param id_stream:     id of a stream in <config> 
+    :param i:             index of this learner
+    :param n:             total number of threads/learners
+    '''
     stream = config.streams.instance(id_stream)
     learner = config.learners.instance(id_learner)
     logitems = stream.read_all()
@@ -158,7 +167,19 @@ def filter_every(it, i, n):
         count += 1 
     
 def filter_commands(it, i, n):
-    """ Only gives the i-th % n discovered commands """
+    '''
+    Only gives the i-th % n discovered commands
+    
+    :param it:   generator with all items from the log.
+    :param i:    index if the learner asking for commands.
+    :param n:    total number of learners/learning threads
+    read all (y0, u, y1) tuples from the generator it (from the specified log)
+    and sort out the items for learner number i. 
+    If number of commands and learners is the same, one learner will get one 
+    command.
+    If number of commands is less than number of learners, then the last 
+    filtered_commands will yield nothing.  
+    '''
     commands = []
       
     count = 0
