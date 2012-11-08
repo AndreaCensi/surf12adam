@@ -4,6 +4,7 @@ from PIL import Image #@UnresolvedImport
 from boot_agents.diffeo import (DiffeomorphismEstimator, diffeo_to_rgb_angle,
     diffeo_to_rgb_norm)
 from boot_agents.diffeo.learning import DiffeomorphismEstimatorFaster
+from boot_agents.diffeo.learning import DiffeomorphismEstimatorFFT #@UnresolvedImport
 from boot_agents.diffeo.learning import DiffeomorphismEstimatorAnimation #@UnresolvedImport
 from boot_agents.diffeo.learning import DiffeomorphismEstimatorFasterProbability #@UnresolvedImport
 from diffeoplan.library import DiffeoAction, DiffeoSystem
@@ -221,6 +222,15 @@ class DiffeoLearnerProbability(DiffeoLearner):
             return DiffeomorphismEstimatorFasterProbability(**self.diffeo_estimator_params)
         else:
             return DiffeomorphismEstimator(**self.diffeo_estimator_params)
+
+class DiffeoLearnerFFT(DiffeoLearner):
+    def new_estimator(self):
+        return DiffeomorphismEstimatorFFT(**self.diffeo_estimator_params)
+    def refine_init(self):
+        for estimator in self.estimators:
+            estimator.refine_init
+        for estimator in self.estimators_inv:
+            estimator.refine_init
         
 class DiffeoLearnerAnimation(DiffeoLearner):
     def new_estimator(self):    
