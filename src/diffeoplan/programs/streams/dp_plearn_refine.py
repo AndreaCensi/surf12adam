@@ -10,11 +10,12 @@ from diffeoplan.programs.streams.dp_plearn import filter_commands, report_dds, \
 from compmake import (batch_command, compmake_console, comp, read_rc_files,
     use_filesystem)
 from diffeoplan.programs.utils import declare_command
-from reprep import Report
 from reprep.report_utils import ReportManager
 import itertools
 import os
-import warnings
+import pickle
+from boot_agents.diffeo import diffeomorphism2d_continuous
+import sys
 
 @declare_command('rlearn',
                  'rlearn  [<stream1> ...]')
@@ -33,8 +34,13 @@ def plearn(config, parser): #@UnusedVariable
                       default='out/dp-plearn/')
     parser.add_option("-c", "--command",
                       help="Command to pass to compmake for batch mode")
+    parser.add_option("--show", default=None, help="Name of learners to report")
+#    parser.add_option("--debug", default=None, type='int',
+#                      help="Debug by only running $arg number of iterations.")
     options = parser.parse_options()
-     
+    if options.show is not None:
+        diffeomorphism2d_continuous.make_report(options.show.split(','))
+        sys.exit()
     nthreads = options.nthreads
     nrefine = options.nrefine
     
@@ -142,27 +148,31 @@ def plearn_partial(config, id_learner, id_stream, i, n, nrefine):
     '''
     stream = config.streams.instance(id_stream)
     learner = config.learners.instance(id_learner)
-    logitems = stream.read_all()
+    
+    logger.info('plearn_partial will refine %d times' % nrefine)
     
     for ri in range(nrefine):
         if ri > 0:
             learner.refine_init()
-        # filtered = filter_every(logitems, i, n)
+        
+        logitems = stream.read_all()
         filtered = filter_commands(logitems, i, n)
         nrecords = 0
         j = 0
         for y0, u, y1 in filtered:
             logger.info('Updating samp%d ref%d learner%d of %d' % (j, ri, i, n))
-            if j > 15:
-                logger.info('    Should break here!!!    ')
-                break
+
+#            if j > 5:
+#                logger.info('    Should break here!!!    ')
+#                break
+            
             j += 1
             learner.update(y0, u, y1)
             nrecords += 1
             if nrecords % 10 == 0:
                 logger.info('currently %d records' % nrecords)
-        logger.info('Total of %d records refined %d times' % (nrecords, nrefine))
+        logger.info('Total of %d records refined %d times' % (nrecords, ri))
+        pickle.dump(learner, open('learner%d_of%d_level%d.pickle' % (i, n, ri), 'wb'))
+    logger.info('Returning learner')
+    learner.summarize()
     return learner
-
-
- 

@@ -9,6 +9,7 @@ from boot_agents.diffeo.learning import DiffeomorphismEstimatorAnimation #@Unres
 from boot_agents.diffeo.learning import DiffeomorphismEstimatorFasterProbability #@UnresolvedImport
 from diffeoplan.library import DiffeoAction, DiffeoSystem
 from diffeoplan.library.discdds.writing import ds_dump
+import pdb
 
 
 class DiffeoLearner:
@@ -226,11 +227,13 @@ class DiffeoLearnerProbability(DiffeoLearner):
 class DiffeoLearnerFFT(DiffeoLearner):
     def new_estimator(self):
         return DiffeomorphismEstimatorFFT(**self.diffeo_estimator_params)
+    
     def refine_init(self):
-        for estimator in self.estimators:
-            estimator.refine_init
-        for estimator in self.estimators_inv:
-            estimator.refine_init
+#        pdb.set_trace()
+        for i in range(len(self.estimators)):
+            self.estimators[i].refine_init()
+        for i in range(len(self.estimators_inv)):
+            self.estimators_inv[i].refine_init()
         
 class DiffeoLearnerAnimation(DiffeoLearner):
     def new_estimator(self):    
