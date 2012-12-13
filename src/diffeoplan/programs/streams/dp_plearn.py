@@ -100,10 +100,10 @@ def jobs_plearn_comb(config, rm, outdir, id_learner, id_stream, nthreads,
                          job_id='learn-%s-%s-summarize-report' % (id_stream, id_learner))
     
     rm.add(learner_report, 'learner', id_learner=id_learner, id_stream=id_stream) 
-    rm.add(diffeo_report, 'dds', id_learner=id_learner, id_stream=id_stream) 
+    rm.add(diffeo_report, 'dds', id_learner=id_learner, id_stream=id_stream)
 
     comp(save_results, id_learner, id_stream, outdir, dds,
-         job_id='learn-%s-%s-summarize-save' % (id_stream, id_learner)) 
+         job_id='learn-%s-%s-summarize-save' % (id_stream, id_learner))
     
     
 def save_results(id_learner, id_stream, outdir, dds):
@@ -146,14 +146,23 @@ def plearn_partial(config, id_learner, id_stream, i, n):
     '''
     stream = config.streams.instance(id_stream)
     learner = config.learners.instance(id_learner)
-    logitems = stream.read_all()
+    learner.nthreads = n
+    learner.index = i
+    logitems = stream.read_all_state()
     
     # filtered = filter_every(logitems, i, n)
     filtered = filter_commands(logitems, i, n)
     nrecords = 0
-    for y0, u, y1 in filtered:
-        learner.update(y0, u, y1)
+#    for y0, u, y1, x0 in filtered:
+    for y0, u, y1, x0 in logitems: # use all items in log
+        logger.info('x0 = ' + str(x0))
+#        pdb.set_trace()
+        learner.update(y0, u, y1, x0)
         nrecords += 1
+        
+#        if nrecords >= 20:
+#            break
+        
         if nrecords % 10 == 0:
             logger.info('currently %d records' % nrecords)
     logger.info('Total of %d records' % nrecords)
@@ -185,7 +194,7 @@ def filter_commands(it, i, n):
     count = 0
     count_ours = 0
     for x in it:
-        _, u, _ = x
+        _, u, _, _ = x
         if not u in commands:
             commands.append(u)
         u_index = commands.index(u)

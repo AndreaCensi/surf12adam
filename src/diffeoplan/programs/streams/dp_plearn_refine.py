@@ -14,7 +14,7 @@ from reprep.report_utils import ReportManager
 import itertools
 import os
 import pickle
-from boot_agents.diffeo import diffeomorphism2d_continuous
+from boot_agents.diffeo import diffeomorphism2d_continuous #@UnresolvedImport
 import sys
 
 @declare_command('rlearn',
@@ -71,8 +71,6 @@ def jobs_plearn(config, rm, learners, streams, outdir, nthreads, nrefine):
         config.streams.instance(id_stream)
         #config.learners.instance(id_learner) # TODO: do in other way
         jobs_plearn_comb(config, rm, outdir, id_learner, id_stream, nthreads, nrefine)
-        
-
         
 def jobs_plearn_comb(config, rm, outdir, id_learner, id_stream, nthreads, nrefine,
                      intermediate_reports=True):
