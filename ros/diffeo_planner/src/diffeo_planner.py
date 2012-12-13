@@ -1,23 +1,19 @@
 #!/usr/bin/env python
-import rospy
-import time
-import sensor_msgs.msg
-import std_msgs.msg
-from std_msgs.msg import String
-import camera_actuator.srv
-import sys
-import pdb
-from diffeoplan.library.logs.rosbag.bag_reader import get_image_array
-from PIL import Image, ImageTk
-import Tkinter as TK
-from Tkinter import Label
 #import UI
-import threading
+from PIL import Image, ImageTk #@UnresolvedImport
+from Tkinter import Label
+from diffeoplan.library.logs.rosbag.bag_reader import get_image_array
 from threading import Thread
+import Tkinter as TK
+import camera_actuator.srv
 import numpy as np
-import pylab
 import pickle
-from diffeoplan.library.logs.rosbag.ros_conversions import *
+import pylab
+import sys
+import threading
+import time
+import rospy
+import sensor_msgs.msg
 
 def main():
 #    print('starting')
@@ -540,7 +536,7 @@ class DiffeoPlanner():
 #                  (1, 1, 2),
 #                  (0, 3, 3, 3),
 #                  (2, 2, 3, 3, 3, 3)]
-        starts = [(1, 1,0,0), (3,3,0,0), (0,0,0)]
+        starts = [(1, 1, 0, 0), (3, 3, 0, 0), (0, 0, 0)]
         for start in starts:
             self.track_state_home()
             iter_results = []
@@ -593,7 +589,7 @@ class DiffeoPlanner():
                 self.plot_plan_line(iter_result['start_state'],
                                iter_result['plan_executed'],
                                **executed_style)
-                pylab.annotate(str(i), xy=iter_result['start_state'], xytext=(5,5), textcoords='offset points')
+                pylab.annotate(str(i), xy=iter_result['start_state'], xytext=(5, 5), textcoords='offset points')
                 
                 # Plot the found plan
                 self.plot_plan_line(iter_result['start_state'],
