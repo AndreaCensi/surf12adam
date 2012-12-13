@@ -15,5 +15,6 @@ from .informed_planner import *
 from .informed_planner_greedy import *
 from .informed_planner_greedy_tree import *
 from .informed_planner_hierarchy import *
+from .sample_planner import *
 
 from .diffeo_cover_exp import *
