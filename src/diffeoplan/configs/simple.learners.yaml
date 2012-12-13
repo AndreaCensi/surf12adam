@@ -16,6 +16,27 @@
       max_displ: [0.35, 0.35]
       inference_method: sim
       
+- id: pix35s
+  desc: Pixelized learner (35% displacement)
+  code: 
+  - learner.DiffeoLearnerPixelized
+  #- nthreads: 1
+  #  max_nsensels: 1200
+  - use_fast: True
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      #sensels: [500, 501]
+      #sensels: [0, 1, 2, 40, 41, 42, 38, 39, 78, 79, 500, 501, 502, 503, 540, 541, 542, 543, 580, 581, 582, 583]
+      #sensels: [500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 
+      #           540, 541, 542, 543, 544, 545, 546, 547, 548, 549, 
+      #           580, 581, 582, 583, 584, 585, 586, 587, 588, 589]
+      #sensels: [500, 503, 506, 509, 512, 
+      #          580, 583, 586, 589, 592,
+      #          660, 663, 666, 669, 672,
+      #          740, 743, 746, 749, 742,
+      #          820, 823, 826, 829, 832]
+      inference_method: sim
+      
 - id: a35s
   desc: Create animation of learning (35% displacement)
   code: 
