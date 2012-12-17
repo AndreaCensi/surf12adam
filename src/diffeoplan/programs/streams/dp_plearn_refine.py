@@ -14,7 +14,7 @@ from reprep.report_utils import ReportManager
 import itertools
 import os
 import pickle
-from boot_agents.diffeo import diffeomorphism2d_continuous #@UnresolvedImport
+from boot_agents.diffeo import diffeomorphism2d_continuous
 import sys
 
 @declare_command('rlearn',

@@ -240,7 +240,7 @@ class DiffeoplanRosServer():
                         'orbit-pt256-160-n35s')
         
         rospy.set_param(self.node_name + '/id_algo',
-                        'gnbc1_it1000')
+                        'samp_t1_l5')
         
         rospy.set_param(self.node_name + '/planning_thresholds',
                         [0.12, 0])

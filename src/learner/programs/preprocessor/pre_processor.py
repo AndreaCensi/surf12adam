@@ -56,7 +56,7 @@ def write_stuff(bag, Y0, U, Y1, x=0):
     bag.write('U0', U[1], U[0])
     bag.write('Y1', y1msg, U[0])
     try:
-        bag.write('x', std_msgs.msg.Int64(int(x)), U[0])
+        bag.write('X0', std_msgs.msg.Int64(int(x)), U[0])
     except:
         pdb.set_trace()
 
