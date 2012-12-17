@@ -10,7 +10,6 @@ from diffeoplan.library.online.orbit_module import OrbitModule
 from diffeoplan.library.analysis.structure.diffeo_structure import DiffeoStructure
 from diffeoplan.library.online.online_stats import OnlineStats
 import numpy as np
-import pdb
 
 class OnlinePlanning():
     def __init__(self, id_discdds,
