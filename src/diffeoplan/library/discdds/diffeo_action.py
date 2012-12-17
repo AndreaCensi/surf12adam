@@ -13,17 +13,19 @@ class DiffeoAction():
               diffeo_inv=Diffeomorphism2D,
               label=str,
               original_cmd='None|array|list[>=1](array)')
-    def __init__(self, label, diffeo, diffeo_inv, original_cmd):
+    def __init__(self, label, diffeo, diffeo_inv, original_cmd, state=None):
         """
             :param label: A descriptive label for the command.
             :param diffeo: The diffeomorphism.
             :param diffeo_inv: The inverse of the diffeomorphism.
             :param original_cmd: A list of original commands (e.g. [[0,100],[0,100]])
+            :param state: optional argument to tell which state the action was learned at.
         """
         self.label = label
         self.diffeo = diffeo
         self.diffeo_inv = diffeo_inv
         self.original_cmd = original_cmd
+        self.state = state
     
     def __str__(self):
         return "DiffeoAction(%s, %s)" % (self.label, self.get_original_cmds())
@@ -82,8 +84,13 @@ class DiffeoAction():
         
     @contract(report=Report)
     def display(self, report, image=None): #@UnusedVariable
-        report.text('summary', 'Label: %s\noriginal: %s' % 
-                    (self.label, self.original_cmd))
+        if not hasattr(self, 'state'):
+            state_str = 'None'
+        else:
+            state_str = str(self.state)
+            
+        report.text('summary', 'Label: %s\noriginal: %s\nState: %s' % 
+                    (self.label, self.original_cmd, state_str))
         report.data('label', self.label)
         report.data('original_cmd', self.original_cmd)
         
