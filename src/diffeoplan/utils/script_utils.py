@@ -9,7 +9,8 @@ class UserError(Exception):
 
 
 def wrap_script_entry_point(function, logger,
-                            exceptions_no_traceback=(UserError,)):
+                            exceptions_no_traceback=(UserError,),
+                            args=None):
     """
         Wraps the main() of a script.
         For Exception: we exit with value 2.
@@ -18,8 +19,10 @@ def wrap_script_entry_point(function, logger,
          just print the error, and return 1.
         
     """
+    if args is None:
+        args = sys.argv[1:]
     try:
-        ret = function(sys.argv[1:])
+        ret = function(args)
         if ret is None:
             ret = 0
         sys.exit(ret)
