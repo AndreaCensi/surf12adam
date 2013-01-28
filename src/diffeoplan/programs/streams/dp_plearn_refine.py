@@ -16,10 +16,11 @@ import os
 import pickle
 from boot_agents.diffeo import diffeomorphism2d_continuous
 import sys
+import pdb
 
 @declare_command('rlearn',
                  'rlearn  [<stream1> ...]')
-def plearn(config, parser): #@UnusedVariable
+def rlearn(config, parser): #@UnusedVariable
     """ Displays the learned DDS """
     #parser.add_option("-i", "--id_image", help="ID image.", default='lena')
     parser.add_option("-n", "--nthreads", help="Number of threads",
@@ -31,7 +32,7 @@ def plearn(config, parser): #@UnusedVariable
     parser.add_option("-i", "--comb", default="default")
     parser.add_option("-l", "--learners", help="Learner config.", default="*")
     parser.add_option("-o", "--output", help="Output directory",
-                      default='out/dp-plearn/')
+                      default='out/dp-rlearn/')
     parser.add_option("-c", "--command",
                       help="Command to pass to compmake for batch mode")
     parser.add_option("--show", default=None, help="Name of learners to report")
@@ -55,7 +56,7 @@ def plearn(config, parser): #@UnusedVariable
     
     rm = ReportManager(os.path.join(outdir, 'reports'))
     
-    jobs_plearn(config, rm, learners, streams, outdir, nthreads, nrefine)
+    jobs_rlearn(config, rm, learners, streams, outdir, nthreads, nrefine)
     
     rm.create_index_job()
     
@@ -65,19 +66,19 @@ def plearn(config, parser): #@UnusedVariable
         compmake_console()
         return 0
     
-def jobs_plearn(config, rm, learners, streams, outdir, nthreads, nrefine):
+def jobs_rlearn(config, rm, learners, streams, outdir, nthreads, nrefine):
     for id_learner, id_stream in itertools.product(learners, streams):
         # try instancing them
         config.streams.instance(id_stream)
         #config.learners.instance(id_learner) # TODO: do in other way
-        jobs_plearn_comb(config, rm, outdir, id_learner, id_stream, nthreads, nrefine)
+        jobs_rlearn_comb(config, rm, outdir, id_learner, id_stream, nthreads, nrefine)
         
-def jobs_plearn_comb(config, rm, outdir, id_learner, id_stream, nthreads, nrefine,
+def jobs_rlearn_comb(config, rm, outdir, id_learner, id_stream, nthreads, nrefine,
                      intermediate_reports=True):
     partial = []
     for i in range(nthreads):
         job_id = 'learn-%s-%s-%sof%s' % (id_stream, id_learner, i + 1, nthreads)
-        learner_i = comp(plearn_partial, config, id_learner, id_stream, i, nthreads, nrefine,
+        learner_i = comp(rlearn_partial, config, id_learner, id_stream, i, nthreads, nrefine,
                          job_id=job_id)
         partial.append(learner_i)
         
@@ -98,7 +99,7 @@ def jobs_plearn_comb(config, rm, outdir, id_learner, id_stream, nthreads, nrefin
     current = partial[0]
     for i in range(1, nthreads):
         job_id = 'learn-%s-%s-join-%sof%s' % (id_stream, id_learner, i, nthreads - 1)
-        current = comp(plearn_join, current, partial[i], job_id=job_id)
+        current = comp(rlearn_join, current, partial[i], job_id=job_id)
     learner = current
     dds = comp(summarize, current,
                job_id='learn-%s-%s-summarize' % (id_stream, id_learner))
@@ -127,13 +128,13 @@ def save_results(id_learner, id_stream, outdir, dds):
     ds_dump(dds, resdir, id_dds, desc)
     
 
-def plearn_join(learner1, learner2):
+def rlearn_join(learner1, learner2):
     # TODO:
     learner1.merge(learner2)
     return learner1
 
 
-def plearn_partial(config, id_learner, id_stream, i, n, nrefine):
+def rlearn_partial(config, id_learner, id_stream, i, n, nrefine):
     '''
     Reads commands from a filtered stream and updates the corresponding learner.
     
@@ -146,8 +147,14 @@ def plearn_partial(config, id_learner, id_stream, i, n, nrefine):
     '''
     stream = config.streams.instance(id_stream)
     learner = config.learners.instance(id_learner)
+
+    # Check that the learner has support for refining
+    if not 'refine_init' in dir(learner):
+        logger.error("dp rlearn \tSpecified Learner does not support refined " + 
+        "learning f35s or r35s instead")
+        return False
     
-    logger.info('plearn_partial will refine %d times' % nrefine)
+    logger.info('rlearn_partial will refine %d times' % nrefine)
     
     for ri in range(nrefine):
         if ri > 0:
@@ -157,11 +164,11 @@ def plearn_partial(config, id_learner, id_stream, i, n, nrefine):
         filtered = filter_commands(logitems, i, n)
         nrecords = 0
         j = 0
-        for y0, u, y1 in filtered:
+        for y0, u, y1, _ in filtered:
             logger.info('Updating samp%d ref%d learner%d of %d' % (j, ri, i, n))
 
 #            if j > 5:
-#                logger.info('    Should break here!!!    ')
+#                logger.info('    Breaking for test purpose    ')
 #                break
             
             j += 1

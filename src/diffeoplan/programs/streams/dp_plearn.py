@@ -10,8 +10,7 @@ import os
 import warnings
 
 
-@declare_command('plearn',
-                 'plearn  [<stream1> ...]')
+@declare_command('plearn', 'plearn  [<stream1> ...]')
 def plearn(config, parser): #@UnusedVariable
     """ Displays the learned DDS """
     #parser.add_option("-i", "--id_image", help="ID image.", default='lena')
@@ -148,6 +147,7 @@ def plearn_partial(config, id_learner, id_stream, i, n):
     learner = config.learners.instance(id_learner)
     learner.nthreads = n
     learner.index = i
+
     logitems = stream.read_all_state()
     
     # filtered = filter_every(logitems, i, n)

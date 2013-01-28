@@ -52,6 +52,14 @@
   - learner.DiffeoLearnerFFT
   - use_fast: True 
     diffeo_estimator_params:
+      max_displ: [0.35, 0.35]            
+      
+- id: r35s
+  desc: Refined learning by PIL image interpolation (35% displacement)
+  code: 
+  - learner.DiffeoLearnerRefine
+  - use_fast: True 
+    diffeo_estimator_params:
       max_displ: [0.35, 0.35]
                   
 - id: f50s

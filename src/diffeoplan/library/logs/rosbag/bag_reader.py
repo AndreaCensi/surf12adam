@@ -70,12 +70,22 @@ def read_bag(bagfile):
 
     
 def read_bag_state(bagfile):
+    print('Read bag state')
     logger.info('Reading bag file %r' % bagfile)
     bag = rosbag.Bag(bagfile)
-    
+    # Check if the bag has states recorded
+    has_X0 = False
+    for topic, msg, t in bag.read_messages(topics=['X0']):
+        # If one state is read, then proceed with reading with states
+        has_X0 = True
+    logger.info('bagfile has state records: ' + str(has_X0))
+    if not has_X0:
+        state = None
+    else:
+        state = None
+        
     i = 0
     r = 0
-    state = None
     for topic, msg, t in bag.read_messages(topics=['Y0', 'Y1', 'U0', 'X0']):
         #logger.info('Reading cmd')
         if topic == 'Y0':
@@ -118,7 +128,7 @@ def read_bag_state(bagfile):
                                  ' ignoring message.')
                     r = 0
              
-        if r == 4: # then a complete image pair and command is read
+        if r == 4 or (not has_X0 and r == 3): # then a complete image pair and command is read
             #logger.info('Updating estimators %d' % i)
             i += 1
             Y0 = get_image_array(Y0_ros)
