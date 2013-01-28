@@ -2,7 +2,9 @@ from . import contract
 from .. import UncertainImage
 from boot_agents.diffeo import Diffeomorphism2D
 from reprep import Report
- 
+import numpy as np
+import numpy.linalg as la
+import itertools
     
 class DiffeoAction():
     """ 
@@ -111,4 +113,45 @@ class DiffeoAction():
         original_cmds = a1.get_original_cmds() + a2.get_original_cmds()
         return DiffeoAction(label, diffeo, diffeo_inv, original_cmds)
         
+    def update_uncertainty(self):
+        field = self.diffeo.d
+        field_inv = self.diffeo_inv.d
         
+        Y, X = np.meshgrid(range(field.shape[1]), range(field.shape[0]))
+    
+        D = np.zeros(X.shape + (2,))
+        D[:, :, 0] = field[:, :, 0] - X
+        D[:, :, 1] = field[:, :, 1] - Y
+        
+        D_inv = np.zeros(X.shape + (2,))
+        D_inv[:, :, 0] = field_inv[:, :, 0] - X
+        D_inv[:, :, 1] = field_inv[:, :, 1] - Y
+    
+        E = np.zeros(X.shape)
+        E_inv = np.zeros(X.shape)
+        
+        for c in itertools.product(range(X.shape[0]), range(X.shape[1])):
+            E[tuple(c)] = la.norm(D[c] + D_inv[tuple(D[c])]) / (1 + la.norm(D[c]))
+            E_inv[tuple(c)] = la.norm(D_inv[c] + D[tuple(D[c])]) / (1 + la.norm(D_inv[c]))
+        
+#        
+#        Eln = np.zeros(E.shape)
+#        Eln_inv = np.zeros(E_inv.shape)
+#        for c in itertools.product(range(X.shape[0]), range(X.shape[1])):
+#            x0 = np.clip(c[0] - 1, 0, X.shape[0] - 1)
+#            x1 = np.clip(c[0] + 1, 0, X.shape[0] - 1)
+#            y0 = np.clip(c[1] - 1, 0, X.shape[1] - 1)
+#            y1 = np.clip(c[1] + 1, 0, X.shape[1] - 1)
+#            
+#            Eln[tuple(c)] = np.std(E[x0:x1, y0:y1])
+#            Eln_inv[tuple(c)] = np.std(E_inv[x0:x1, y0:y1])
+#        
+#        E = np.clip(E, 0, np.percentile(E, 99))
+#        E_inv = np.clip(E_inv, 0, np.percentile(E_inv, 99))
+#        
+#        
+#        self.diffeo.variance = 1.0 - (Eln > np.std(Eln)).astype('int')
+#        self.diffeo_inv.variance = 1.0 - (Eln > np.std(Eln)).astype('int')
+        
+        self.diffeo.variance = 1 - E / np.max(E)
+        self.diffeo_inv.variance = 1 - E_inv / np.max(E_inv)

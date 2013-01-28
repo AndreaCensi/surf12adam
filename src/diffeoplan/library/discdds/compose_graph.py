@@ -10,6 +10,7 @@ import itertools
 import numpy as np
 from diffeoplan.library.discdds.diffeo_system import DiffeoSystem
 from diffeoplan.library.distances.distance_norm import DistanceNorm
+import pdb
 
 class ComposeGraph():
     def __init__(self, id_discdds, plan_length):
@@ -32,7 +33,7 @@ class ComposeGraph():
         # Initiate diffeo_structure
         diffeo_structure_threshold = 0.2
         self.diffeo_struct = DiffeoStructure(self.discdds, diffeo_structure_threshold)
-        
+#        pdb.set_trace()
         n = len(self.discdds.actions)
 
         
@@ -49,6 +50,8 @@ class ComposeGraph():
         
         logger.info('Total number of plans initially: %g ' % len(self.all_plans))
         logger.info('Number of plans after reduction: %g ' % len(self.plan_reduced))
+        print('Total number of plans initially: %g ' % len(self.all_plans))
+        print('Number of plans after reduction: %g ' % len(self.plan_reduced))
         
         self.generate_diffeo(self.plan_reduced)
         self.D = np.matrix(self.composed_discdds.actions_distance_L2())

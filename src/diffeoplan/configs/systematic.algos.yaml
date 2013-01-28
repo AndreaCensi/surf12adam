@@ -16,7 +16,7 @@
   code:
   - diffeoplan.library.SamplePlanner
   - metric_goal: L2
-    plan_time: 1
+    plan_time: 0.5
     plan_max_length: 5
     
 - id: "gnbc1_it${n}"

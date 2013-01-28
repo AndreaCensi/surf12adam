@@ -41,7 +41,8 @@ setup(name='surf12adam',
            'oneclick = learner:one_click_main',
            'dp-online = diffeoplan.programs.online:main',
            'dp-ros = diffeoplan.programs.online:ros_main',
-           'dp-compose = diffeoplan.library.discdds.compose_graph:main'
+           'dp-compose = diffeoplan.library.discdds.compose_graph:main',
+           'dds-explorer = diffeoplan.programs.dds_explorer.dds_explorer:main'
         ]
     }
 )
