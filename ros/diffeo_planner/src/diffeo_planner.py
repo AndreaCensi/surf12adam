@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #import UI
-from PIL import Image, ImageTk #@UnresolvedImport
+from PIL import Image #@UnresolvedImport
 from Tkinter import Label
 from diffeoplan.library.logs.rosbag.bag_reader import get_image_array
 from threading import Thread

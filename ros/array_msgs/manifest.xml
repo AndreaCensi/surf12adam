@@ -1,0 +1,14 @@
+<package>
+  <description brief="array_msgs">
+
+     array_msgs
+
+  </description>
+  <author>Adam</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/array_msgs</url>
+
+</package>
+
+

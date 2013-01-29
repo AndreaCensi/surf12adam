@@ -15,7 +15,7 @@ from diffeoplan.library.logs.rosbag.bag_reader import get_image_array
 import numpy as np
 import rospy
 import sensor_msgs.msg
-import camera_actuator.msg
+import array_msgs.msg
 import camera_actuator.srv
 import pdb
 import yaml
@@ -51,7 +51,7 @@ class DiffeoPlannerStandalone(DiffeoPlanner):
         rospy.Subscriber('/usb_cam/image_raw', sensor_msgs.msg.Image, self.incoming_image)
         
         cam_name = '/' + system['name']
-        self.cmd_publisher = rospy.Publisher(system['ROS_msg_topic'], camera_actuator.msg.IntArray)
+        self.cmd_publisher = rospy.Publisher(system['ROS_msg_topic'], array_msgs.msg.IntArray)
 
         self.stop_command = system['stop_command']
         
