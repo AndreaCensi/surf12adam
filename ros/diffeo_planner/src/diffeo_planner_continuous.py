@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import roslib; roslib.load_manifest('diffeo_planner')
 '''
 Created on Jan 18, 2013
 

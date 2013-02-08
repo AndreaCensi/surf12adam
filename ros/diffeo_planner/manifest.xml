@@ -8,6 +8,10 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/diffeo_planner</url>
+  <depend package="rospy"/>
+  <depend package="rosbag"/>
+  <depend package="array_msgs"/>
+  <depend package="sensor_msgs"/>
 
 </package>
 
