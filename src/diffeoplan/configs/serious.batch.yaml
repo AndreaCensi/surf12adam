@@ -1,4 +1,12 @@
 
+- id: test_sample
+  desc: "another random test"
+  algorithms:
+  - samp_t1_l5
+  testcases:
+  - tc_orbit-pt256-40-n35s_lena_d4_000
+  - tc_orbit-pt256-40-n35s_lena_d4_001
+  
 
 - id: torus1_d10
   desc: The torus is a system with only one possible action. 

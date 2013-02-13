@@ -56,16 +56,19 @@ def run_planning(id_algo, id_tc, testcase, algo):
 #        except:
 #            pass
 #        raise
+    if hasattr(algo, 'start_tree'):
+        cache_stats = {
+         'start_tree': algo.start_tree.get_cache_stats(),
+         'goal_tree': algo.goal_tree.get_cache_stats(),
+         'connector': algo.connector.get_cache_stats(),
+        }
+        algo.start_tree.clear_cache()
+        algo.goal_tree.clear_cache()
+        algo.connector.clear_cache()
+    else:
+        cache_stats = {}
     
-    cache_stats = {
-     'start_tree': algo.start_tree.get_cache_stats(),
-     'goal_tree': algo.goal_tree.get_cache_stats(),
-     'connector': algo.connector.get_cache_stats(),
-    }
     
-    algo.start_tree.clear_cache()
-    algo.goal_tree.clear_cache()
-    algo.connector.clear_cache()
     
     plan_time = time.clock() - t0
     

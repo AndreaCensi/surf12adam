@@ -1,4 +1,5 @@
 
+
 - id: "gnbn1_it${n}"
   desc: "GNBN1 := One-dir search; no pre-filtering; no post-filtering; ${n} iterations."
   code:
@@ -9,7 +10,15 @@
     metric_collapse_threshold: -1 # no collapse
     max_iterations: "${n}"
     max_depth: &max_depth 15
-
+    
+- id: "samp_t1_l${n}"
+  desc: "Sample based planner for max length ${n}"
+  code:
+  - diffeoplan.library.SamplePlanner
+  - metric_goal: L2
+    plan_time: 0.5
+    plan_max_length: 5
+    
 - id: "gnbc1_it${n}"
   desc: "GNBC1 := One-dir search; no pre-filtering; L2w post (0.1); ${n} iterations."
   code:

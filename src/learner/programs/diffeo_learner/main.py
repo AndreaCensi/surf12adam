@@ -32,6 +32,8 @@ def diffeo_learner_main():
                       help="Reuse learner")
     parser.add_option("-o", "--outlearner", default='No',
                       help="Save the learner")
+    parser.add_option("-r", "--refine", default=0,
+                      help="Refine the learning by running through the logs r times")
     options, args = parser.parse_args()
     
     if options.path is None:
@@ -54,7 +56,7 @@ def diffeo_learner_main():
     if learner == 'No':
         ratios = (options.ratio, options.ratio)
         
-        learn = DiffeoLearner(ratios)
+        learn = DiffeoLearner(True, {'max_displ': ratios, 'inference_method': 'sim'})
     else:
         logger.info('Loading diffeomorphism estimators')
         if learner[:4] == 'http':
@@ -68,29 +70,33 @@ def diffeo_learner_main():
     
     in_a_while = InAWhile(30)
     
-    for bagfile in args:
-        i = 0
-        for y0, u, y1 in read_bag(bagfile):    
-            logger.info('Iteration number %d' % i)
-            learn.update(y0, u, y1)
-            i += 1
+    
+    refine = int(options.refine)
+    for _ in range(refine):
+        for bagfile in args:
+            i = 0
+            for y0, u, y1 in read_bag(bagfile):    
+                logger.info('Iteration number %d' % i)
+                learn.update(y0, u, y1)
+                i += 1
+                
+                if in_a_while.its_time():
+                    display_current_results(learn, name, dirname, i)
+                    in_a_while.reset()
+                
+                if i > 15:
+                    break
             
-            if in_a_while.its_time():
-                display_current_results(learn, name, dirname, i)
-                in_a_while.reset()
-            
-#            if i > 15:
-#                break
-            
-    if outlearner == 'No':
-        pass
-    else:
-        logger.info('Saving learning agent to %s' % outlearner)
-        pickle.dump(learn, open(outlearner, 'wb'))
+        if outlearner == 'No':
+            pass
+        else:
+            logger.info('Saving learning agent to %s' % outlearner)
+            pickle.dump(learn, open(outlearner, 'wb'))
     
         
-    logger.info('Commands: %s' % learn.command_list)
-    learn.summarize(prefix=name)
+        logger.info('Commands: %s' % learn.command_list)
+        learn.summarize(prefix=name)
+        
     learn.analyze(prefix=name, folder='out/diffeo-analysis/')
     
     learn.diffeo_dump(dirname, name)

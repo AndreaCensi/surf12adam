@@ -8,3 +8,4 @@ from contracts import contract
 
 from .diffeo_learner import * 
 from .programs import *
+from .oneclick import *

@@ -18,7 +18,7 @@ class Reals(DiffeoSystemStateSpace):
     @contract(state='array[N]', command='array[N]')
     def integrate(self, state, command):
         assert state.size == self.ndim
-        assert command.size == self.ndim
+        assert np.array(command).size == self.ndim
         return state + command * self.dt
 
     @contract(state='array[N]', returns='array[2]')

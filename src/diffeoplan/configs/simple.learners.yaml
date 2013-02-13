@@ -7,6 +7,78 @@
       max_displ: [0.35, 0.35]
       inference_method: order
 
+- id: s35s
+  desc: State variant learner (35% displacement)
+  code: 
+  - learner.DiffeoLearnerState
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      inference_method: sim
+      
+- id: pix35s
+  desc: Pixelized learner (35% displacement)
+  code: 
+  - learner.DiffeoLearnerPixelized
+  #- nthreads: 1
+  #  max_nsensels: 1200
+  - use_fast: True
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      #sensels: [500, 501]
+      #sensels: [0, 1, 2, 40, 41, 42, 38, 39, 78, 79, 500, 501, 502, 503, 540, 541, 542, 543, 580, 581, 582, 583]
+      #sensels: [500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 
+      #           540, 541, 542, 543, 544, 545, 546, 547, 548, 549, 
+      #           580, 581, 582, 583, 584, 585, 586, 587, 588, 589]
+      #sensels: [500, 503, 506, 509, 512, 
+      #          580, 583, 586, 589, 592,
+      #          660, 663, 666, 669, 672,
+      #          740, 743, 746, 749, 742,
+      #          820, 823, 826, 829, 832]
+      inference_method: sim
+      
+- id: a35s
+  desc: Create animation of learning (35% displacement)
+  code: 
+  - learner.DiffeoLearnerAnimation
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      inference_method: sim
+            
+- id: f35s
+  desc: Learning by interpolating with fourier transforms (35% displacement)
+  code: 
+  - learner.DiffeoLearnerFFT
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]            
+      
+- id: r35s
+  desc: Refined learning by PIL image interpolation (35% displacement)
+  code: 
+  - learner.DiffeoLearnerRefine
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+                  
+- id: f50s
+  desc: Learning by interpolating with fourier transforms (35% displacement)
+  code: 
+  - learner.DiffeoLearnerFFT
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.5, 0.5]
+      
+- id: s60s
+  desc: State variant learner (35% displacement)
+  code: 
+  - learner.DiffeoLearnerState
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.60, 0.60]
+      inference_method: sim
+
 - id: n25o
   desc: Normal learner (25% displacement)
   code: 
@@ -61,6 +133,24 @@
     diffeo_estimator_params:
       max_displ: [0.35, 0.35]
       inference_method: sim
+      
+- id: p35s
+  desc: Probability learner (35% displacement)
+  code: 
+  - learner.DiffeoLearnerProbability
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      inference_method: sim
+
+- id: c35s
+  desc: Continuous Probability learner (35% displacement)
+  code: 
+  - learner.DiffeoLearnerProbability
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      inference_method: quad
 
 - id: n25s
   desc: Normal learner (25% displacement)

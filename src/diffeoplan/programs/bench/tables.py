@@ -1,4 +1,4 @@
-from . import Stats, contract
+from . import Stats, contract, logger
 from compmake import comp, comp_store
 from itertools import product
 from reprep.report_utils import ReportManager, StoreResults, table_by_rows
@@ -8,7 +8,11 @@ def results2stats_dict(results):
     """ Applies all possible statistics to the results (output of run_planning_stats). """
     res = {}
     for x in Stats.statistics:
-        res[x] = Stats.statistics[x].function(results)
+        try:
+            res[x] = Stats.statistics[x].function(results)
+        except:
+            logger.info('stats error')
+            res[x] = -1
     return res
 
 

@@ -14,6 +14,7 @@ from .logcases import *
 from .distances import *
 from .ddsgeo import *
 from .streams import *
+from .covariance import *
 
 
 from .main import *

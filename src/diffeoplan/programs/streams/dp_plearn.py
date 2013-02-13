@@ -10,8 +10,7 @@ import os
 import warnings
 
 
-@declare_command('plearn',
-                 'plearn  [<stream1> ...]')
+@declare_command('plearn', 'plearn  [<stream1> ...]')
 def plearn(config, parser): #@UnusedVariable
     """ Displays the learned DDS """
     #parser.add_option("-i", "--id_image", help="ID image.", default='lena')
@@ -100,10 +99,10 @@ def jobs_plearn_comb(config, rm, outdir, id_learner, id_stream, nthreads,
                          job_id='learn-%s-%s-summarize-report' % (id_stream, id_learner))
     
     rm.add(learner_report, 'learner', id_learner=id_learner, id_stream=id_stream) 
-    rm.add(diffeo_report, 'dds', id_learner=id_learner, id_stream=id_stream) 
+    rm.add(diffeo_report, 'dds', id_learner=id_learner, id_stream=id_stream)
 
     comp(save_results, id_learner, id_stream, outdir, dds,
-         job_id='learn-%s-%s-summarize-save' % (id_stream, id_learner)) 
+         job_id='learn-%s-%s-summarize-save' % (id_stream, id_learner))
     
     
 def save_results(id_learner, id_stream, outdir, dds):
@@ -135,16 +134,35 @@ def summarize(learner):
     return learner.summarize()
 
 def plearn_partial(config, id_learner, id_stream, i, n):
+    '''
+    Reads commands from a filtered stream and updates the corresponding learner.
+    
+    :param config:
+    :param id_learner:    id of a learner in <config>
+    :param id_stream:     id of a stream in <config> 
+    :param i:             index of this learner
+    :param n:             total number of threads/learners
+    '''
     stream = config.streams.instance(id_stream)
     learner = config.learners.instance(id_learner)
-    logitems = stream.read_all()
+    learner.nthreads = n
+    learner.index = i
+
+    logitems = stream.read_all_state()
     
     # filtered = filter_every(logitems, i, n)
     filtered = filter_commands(logitems, i, n)
     nrecords = 0
-    for y0, u, y1 in filtered:
-        learner.update(y0, u, y1)
+#    for y0, u, y1, x0 in filtered:
+    for y0, u, y1, x0 in logitems: # use all items in log
+        logger.info('x0 = ' + str(x0))
+#        pdb.set_trace()
+        learner.update(y0, u, y1, x0)
         nrecords += 1
+        
+#        if nrecords >= 20:
+#            break
+        
         if nrecords % 10 == 0:
             logger.info('currently %d records' % nrecords)
     logger.info('Total of %d records' % nrecords)
@@ -158,13 +176,25 @@ def filter_every(it, i, n):
         count += 1 
     
 def filter_commands(it, i, n):
-    """ Only gives the i-th % n discovered commands """
+    '''
+    Only gives the i-th % n discovered commands
+    
+    :param it:   generator with all items from the log.
+    :param i:    index if the learner asking for commands.
+    :param n:    total number of learners/learning threads
+    read all (y0, u, y1) tuples from the generator it (from the specified log)
+    and sort out the items for learner number i. 
+    If number of commands and learners is the same, one learner will get one 
+    command.
+    If number of commands is less than number of learners, then the last 
+    filtered_commands will yield nothing.  
+    '''
     commands = []
       
     count = 0
     count_ours = 0
     for x in it:
-        _, u, _ = x
+        _, u, _, _ = x
         if not u in commands:
             commands.append(u)
         u_index = commands.index(u)

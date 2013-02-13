@@ -1,0 +1,13 @@
+name:                 'youbot_arm'
+num_actuators:        8
+min_actuator_values:  [-.25, -.25, -.25, -.1, -.1, -.1, -.1, -.1]
+max_actuator_values:  [ .25,  .25,  .25,  .1,  .1,  .1,  .1,  .1]
+stop_command:         [ 0,   0,   0,   0,   0,   0,   0,   0 ]
+ROS_msg_topic:        '/youbot/velocity_instruction'
+frequency:            10
+command_list:         [[ .25, 0, 0, 0, 0],
+                       [-.25, 0, 0, 0, 0],
+                       [0,  .25, 0, 0, 0],
+                       [0, -.25, 0, 0, 0],
+                       [0, 0, 0, .2, 0],
+                       [0, 0, 0, -.2, 0]]

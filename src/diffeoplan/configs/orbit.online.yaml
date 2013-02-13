@@ -1,0 +1,59 @@
+- id: otc160_l${m}_n${n}
+  desc: "Online testcase with plan_length $m num_plans $n for orbit-pt256-160-n35s"
+  code: 
+  - diffeoplan.library.online.OpenPlanning
+  - id_discdds: orbit-pt256-160-n35s
+    diffeo_structure_threshold: 0.2
+    id_algo: gnbc1_it1000
+    plan_length: "${m}"
+    num_tests: "${n}"
+    get_planning_thresholds: get_planning_thresholds_estimate
+    plans: 'random'
+
+- id: otc80_l${m}_n${n}
+  desc: "Online testcase with plan_length $m and num_plans $n for orbit-pt256-80-n35s"
+  code: 
+  - diffeoplan.library.online.OpenPlanning
+  - id_discdds: orbit-pt256-80-n35s
+    diffeo_structure_threshold: 0.2
+    id_algo: gnbc1_it1000
+    plan_length: "${m}"
+    num_tests: "${n}"
+    get_planning_thresholds: get_planning_thresholds_estimate
+    plans: 'random'
+
+- id: otct160_l${m}_n${n}
+  desc: "Online testcase with plan_length $m and num_plans $n for orbit-pt256-160-n35s, threshold strategy true"
+  code: 
+  - diffeoplan.library.online.OpenPlanning
+  - id_discdds: orbit-pt256-160-n35s
+    diffeo_structure_threshold: 0.2
+    id_algo: gnbc1_it1000
+    plan_length: "${m}"
+    num_tests: "${n}"
+    get_planning_thresholds: get_planning_thresholds_true
+    plans: 'random'
+
+- id: otct80_l${m}_n${n}
+  desc: "Online testcase with plan_length $m and num_plans $n for orbit-pt256-80-n35s, threshold strategy true"
+  code: 
+  - diffeoplan.library.online.OpenPlanning
+  - id_discdds: orbit-pt256-80-n35s
+    diffeo_structure_threshold: 0.2
+    id_algo: gnbc1_it1000
+    plan_length: "${m}"
+    num_tests: "${n}"
+    get_planning_thresholds: get_planning_thresholds_true
+    plans: 'random'
+    
+- id: ctc80_l${m}_n${n}
+  desc: "Online closed testcase with plan_length $m and num_plans $n for orbit-pt256-80-n35s"
+  code: 
+  - diffeoplan.library.online.ClosedPlanning
+  - id_discdds: orbit-pt256-80-n35s
+    diffeo_structure_threshold: 0.2
+    id_algo: gnbc1_it1000
+    plan_length: "${m}"
+    num_tests: "${n}"
+    get_planning_thresholds: get_planning_thresholds_estimate
+    plans: 'random'

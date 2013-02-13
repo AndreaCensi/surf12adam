@@ -107,7 +107,7 @@ class DiffeoSystemBounds2:
                 continue
             com = self.make_commutator(prev1, prev2)
             #print('[%s, %s] -> %s ' % (prev1, prev2, com))
-            closest, md = self.minimum_dist_to_set(com, prev + generated)
+            _, md = self.minimum_dist_to_set(com, prev + generated)
             #print('%s md %s to %s' % (com, md, closest))
             if md < threshold:
                 #print('%s matches %s' % (com, closest))
@@ -116,7 +116,7 @@ class DiffeoSystemBounds2:
                 generated.append(com)
         
         print('Length %d generated %d:' % (length, len(generated)))
-        for i, g in enumerate(generated):
+        for _, g in enumerate(generated):
             print(' - %s' % str(g))
             
         return generated + prev

@@ -1,0 +1,60 @@
+- id: length_algo
+  desc: "generate plots with algorithms success rate vs. plan_length"
+  type: graph_errorbar
+  args:
+    captions: ['Comparison of algorithms success rate',
+              'Comparison of algorithms correct commands ratio',
+              'Comparison of algorithms plan found ratio',
+              'Distance between result and goal']
+    x_axis: plan_length
+    functions: ['success', 'plan_correct_ratio', 'plan_found_ratio', 'result_goal_distance']
+    categorize: id_algo
+
+- id: length_discdds
+  type: graph_errorbar
+  args:
+    captions: ['Comparison of discdds, success rate',
+              'Comparison of discdds, correct commands ratio',
+              'Comparison of discdds, plan found ratio',
+              'Distance between result and goal']
+    x_axis: plan_length
+    functions: ['success', 'plan_correct_ratio', 'plan_found_ratio', 'result_goal_distance']
+    categorize: id_discdds
+    
+- id: length_thresh
+  type: graph_errorbar
+  args:
+    captions: ['Comparison of threshold strategies, success rate',
+              'Comparison of threshold strategies, correct commands ratio',
+              'Comparison of threshold strategies, plan found ratio',
+              'Comparison of threshold strategies, plan remaining length',
+              'Comparison of threshold strategies, plan wrong length']
+    x_axis: plan_length
+    functions: ['success', 'plan_correct_ratio', 'plan_found_ratio','plan_remaining_length', 'plan_wrong_length']
+    categorize: get_planning_thresholds
+
+- id: length_env
+  type: graph_errorbar
+  args:
+    captions: ['Comparison of environments, success rate',
+              'Comparison of environments, correct commands ratio',
+              'Comparison of environments, plan found ratio',
+              'Distance between result and goal']
+    x_axis: plan_length
+    functions: ['success', 'plan_correct_ratio', 'plan_found_ratio', 'result_goal_distance']
+    categorize: env
+
+    
+- id: closed
+  type: graph_errorbar
+  args:
+    captions: ['Comparison of environments, success rate',
+              'Comparison of environments, correct commands ratio',
+              'Comparison of environments, plan found ratio',
+              'Comparison of environments, plan remaining length',
+              'Comparison of environments, plan wrong length']
+    x_axis: plan_length
+    functions: ['result_goal_distance']
+    categorize: plan_length
+    require:
+      method: ClosedPlanning
