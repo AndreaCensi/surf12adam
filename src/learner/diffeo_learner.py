@@ -5,9 +5,10 @@ from boot_agents.diffeo import (DiffeomorphismEstimator, diffeo_to_rgb_angle,
     diffeo_to_rgb_norm)
 from boot_agents.diffeo.learning import DiffeomorphismEstimatorFaster
 from boot_agents.diffeo.learning import DiffeomorphismEstimatorFFT 
-from boot_agents.diffeo.learning import DiffeomorphismEstimatorRefine 
+from boot_agents.diffeo.learning import DiffeomorphismEstimatorRefine #@UnresolvedImport
+from boot_agents.diffeo.learning import DiffeomorphismEstimatorRefineFast #@UnresolvedImport
 from boot_agents.diffeo.learning import DiffeomorphismEstimatorAnimation
-from boot_agents.diffeo.learning import DiffeomorphismEstimatorFasterProbability
+from boot_agents.diffeo.learning import DiffeomorphismEstimatorFasterStatistics #@UnresolvedImport
 from boot_agents.diffeo.learning import DiffeomorphismEstimatorPixelized
 from diffeoplan.library import DiffeoAction, DiffeoSystem
 from diffeoplan.library.discdds.writing import ds_dump
@@ -191,97 +192,40 @@ class DiffeoLearner:
         ds_dump(self.system, path, name, "Learned")
         
             
-    # TODO: remove
-    def show_diffeomorphisms(self):
-        for i in range(len(self.estimators)): #estr in self.estimators:
-            D = self.estimators[i].summarize()
-            cmd = self.command_list[i]
-            save_path = '.'
-            #Image.fromarray(diffeo_to_rgb_angle(D.d)).show()
-            pim = Image.fromarray(diffeo_to_rgb_angle(D.d)) 
-            pim.save(save_path + 'cmd' + str(cmd).replace(' ', '') + 'angle.png')
-            pim = Image.fromarray(diffeo_to_rgb_norm(D.d))
-            pim.save(save_path + 'cmd' + str(cmd).replace(' ', '') + 'nomr.png')
-            pim = Image.fromarray((D.variance * 255).astype(np.uint8))
-            pim.save(save_path + 'cmd' + str(cmd).replace(' ', '') + 'variance.png')
-            #Image.fromarray(diffeo_to_rgb_angle(D.d)).save('diffeoimages/dir'+str(delta[0])+','+str(delta[1])+'_n'+str(n)+'_image_'+image_str+'_phase.png')
-        #pdb.set_trace()
-        
-#class DiffeoLearnerState(DiffeoLearner):
-#    def __init__(self, use_fast, diffeo_estimator_params):
-#        '''
-#        
-#        :param use_fast: Use DiffeomorphismEstimatorFaster.
-#        '''
-#        self.command_list = []
-#        self.estimators = []
-#        self.estimators_inv = []    
-#        self.use_fast = use_fast
-#        self.diffeo_estimator_params = diffeo_estimator_params
-#        
-#        self.state = 0
-#        self.command_state_list = []
-#        
-#        
-#    def command_state_index(self, command, state):
-#        if not (command[0] == 0 or command[1] == 0):
-#            command[2] = 0 
-#        if not [command, state] in self.command_state_list:    
-#            logger.info('Adding new command %s' % str(command))
-#            self.command_state_list.append([command, state])
-#            self.estimators.append(self.new_estimator())
-#            self.estimators_inv.append(self.new_estimator())
-#            
-#        index = self.command_state_list.index([command, self.state])
-#        return index
+#    # TODO: remove
+#    def show_diffeomorphisms(self):
+#        for i in range(len(self.estimators)): #estr in self.estimators:
+#            D = self.estimators[i].summarize()
+#            cmd = self.command_list[i]
+#            save_path = '.'
+#            #Image.fromarray(diffeo_to_rgb_angle(D.d)).show()
+#            pim = Image.fromarray(diffeo_to_rgb_angle(D.d)) 
+#            pim.save(save_path + 'cmd' + str(cmd).replace(' ', '') + 'angle.png')
+#            pim = Image.fromarray(diffeo_to_rgb_norm(D.d))
+#            pim.save(save_path + 'cmd' + str(cmd).replace(' ', '') + 'nomr.png')
+#            pim = Image.fromarray((D.variance * 255).astype(np.uint8))
+#            pim.save(save_path + 'cmd' + str(cmd).replace(' ', '') + 'variance.png')
+#            #Image.fromarray(diffeo_to_rgb_angle(D.d)).save('diffeoimages/dir'+str(delta[0])+','+str(delta[1])+'_n'+str(n)+'_image_'+image_str+'_phase.png')
 #    
-#    def update(self, Y0, U0, Y1):
-#        self.state += U0[2]
-#        logger.info('State is now: ' + str(self.state))
-#        cmd_ind = self.command_state_index(U0, self.state)
-#        #logger.info('Updating estimator %s' % str(cmd_ind))
-#        for ch in range(3):
-#            self.estimators[cmd_ind].update(Y0[:, :, ch], Y1[:, :, ch])
-#            self.estimators_inv[cmd_ind].update(Y1[:, :, ch], Y0[:, :, ch])
-#            
-#    def summarize(self, prefix=''):
-#        """
-#            Summarizes all estimators
-#            Output:
-#                All summarized diffeomorphisms stored in self.diffeo_list
-#        """
-#        n = len(self.estimators)
-#        action_list = [] 
-#        
-#        for i in range(n):
-#            state = self.state_list[i]
-#            command = np.array(self.command_list[i])
-#            name = prefix + str(list(command)).replace(' ', '') + 'st' + str(state)
-#            diffeo = self.estimators[i].summarize()
-##            DiffeoAnalysis(self.estimators[i], name, self.estimators[i].shape,
-##                           self.estimators[i].lengths).make_images()
-##            pdb.set_trace()
-##            self.estimators[i].summarize_continuous(prefix + str(command) + '.png')
-#            diffeo_inv = self.estimators_inv[i].summarize()
-#            name = 'Uninterpreted Diffeomorphism' + str(i) + 'cmd' + str(command) + 'state' + str(state)
-#            action = DiffeoAction(name, diffeo, diffeo_inv, command)
-#            action_list.append(action)
-#            
-#        name = 'Uninterpreted Diffeomorphism System'
-#        self.system = DiffeoSystem(name, action_list)
-#        return self.system
             
-class DiffeoLearnerProbability(DiffeoLearner):
+class DiffeoLearnerStatistics(DiffeoLearner):
     def new_estimator(self):
-        if self.use_fast:
-            logger.warning('Using experimental diffeo estimator')
-            return DiffeomorphismEstimatorFasterProbability(**self.diffeo_estimator_params)
-        else:
-            return DiffeomorphismEstimator(**self.diffeo_estimator_params)
+        return DiffeomorphismEstimatorFasterStatistics(**self.diffeo_estimator_params)
 
-class DiffeoLearnerFFT(DiffeoLearner):
+#class DiffeoLearnerFFT(DiffeoLearner):
+#    def new_estimator(self):
+#        return DiffeomorphismEstimatorFFT(**self.diffeo_estimator_params)
+#    
+#    def refine_init(self):
+##        pdb.set_trace()
+#        for i in range(len(self.estimators)):
+#            self.estimators[i].refine_init()
+#        for i in range(len(self.estimators_inv)):
+#            self.estimators_inv[i].refine_init()
+
+class DiffeoLearnerRefine(DiffeoLearner):
     def new_estimator(self):
-        return DiffeomorphismEstimatorFFT(**self.diffeo_estimator_params)
+        return DiffeomorphismEstimatorRefine(**self.diffeo_estimator_params)
     
     def refine_init(self):
 #        pdb.set_trace()
@@ -289,10 +233,10 @@ class DiffeoLearnerFFT(DiffeoLearner):
             self.estimators[i].refine_init()
         for i in range(len(self.estimators_inv)):
             self.estimators_inv[i].refine_init()
-
-class DiffeoLearnerRefine(DiffeoLearner):
+            
+class DiffeoLearnerRefineFast(DiffeoLearner):
     def new_estimator(self):
-        return DiffeomorphismEstimatorRefine(**self.diffeo_estimator_params)
+        return DiffeomorphismEstimatorRefineFast(**self.diffeo_estimator_params)
     
     def refine_init(self):
 #        pdb.set_trace()

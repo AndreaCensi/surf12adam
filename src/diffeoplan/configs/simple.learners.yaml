@@ -46,29 +46,18 @@
       max_displ: [0.35, 0.35]
       inference_method: sim
             
-- id: f35s
-  desc: Learning by interpolating with fourier transforms (35% displacement)
-  code: 
-  - learner.DiffeoLearnerFFT
-  - use_fast: True 
-    diffeo_estimator_params:
-      max_displ: [0.35, 0.35]            
+
       
-- id: r35s
-  desc: Refined learning by PIL image interpolation (35% displacement)
+- id: ystat35s
+  desc: Learner (35% displacement) with image statistics
   code: 
-  - learner.DiffeoLearnerRefine
+  - learner.DiffeoLearnerStatistics
   - use_fast: True 
     diffeo_estimator_params:
       max_displ: [0.35, 0.35]
-                  
-- id: f50s
-  desc: Learning by interpolating with fourier transforms (35% displacement)
-  code: 
-  - learner.DiffeoLearnerFFT
-  - use_fast: True 
-    diffeo_estimator_params:
-      max_displ: [0.5, 0.5]
+      inference_method: sim
+      
+
       
 - id: s60s
   desc: State variant learner (35% displacement)

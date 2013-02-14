@@ -160,8 +160,8 @@ def plearn_partial(config, id_learner, id_stream, i, n):
         learner.update(y0, u, y1, x0)
         nrecords += 1
         
-#        if nrecords >= 20:
-#            break
+        if nrecords >= 9:
+            break
         
         if nrecords % 10 == 0:
             logger.info('currently %d records' % nrecords)

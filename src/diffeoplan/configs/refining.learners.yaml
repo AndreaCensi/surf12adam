@@ -1,0 +1,78 @@
+- id: f35s
+  desc: Learning by interpolating with fourier transforms (35% displacement)
+  code: 
+  - learner.DiffeoLearnerRefine
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: fft     
+      resolution: [11,11]
+      refine_factor: 1.5       
+      
+- id: f35sfine
+  desc: Learning by interpolating with fourier transforms (35% displacement)
+  code: 
+  - learner.DiffeoLearnerRefine
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: fft 
+      resolution: [21,29]
+      refine_factor: 1.5           
+      
+      
+- id: fast35s
+  desc: Fast refined learning by PIL image interpolation (35% displacement)
+  code: 
+  - learner.DiffeoLearnerRefineFast
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: fast-bilinear
+      resolution: [5, 5]
+      refine_factor: 1.5
+
+- id: r35s-bl
+  desc: Refined learning by PIL image interpolation (35% displacement)
+  code: 
+  - learner.DiffeoLearnerRefine
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: standard-bilinear
+      resolution: [11,11]
+      refine_factor: 1.5
+      
+- id: r35s-bc
+  desc: Refined learning by PIL image interpolation (35% displacement)
+  code: 
+  - learner.DiffeoLearnerRefine
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: standard-bicubic
+      resolution: [11,11]
+      refine_factor: 1.5
+      
+- id: r35sfine-bl
+  desc: Refined learning by PIL image interpolation (35% displacement)
+  code: 
+  - learner.DiffeoLearnerRefine
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: standard-bilinear
+      resolution: [21,21]
+      refine_factor: 1.5
+      
+- id: r35sfine-bc
+  desc: Refined learning by PIL image interpolation (35% displacement)
+  code: 
+  - learner.DiffeoLearnerRefine
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: standard-bilinear
+      resolution: [21,21]
+      refine_factor: 1.5
+        
