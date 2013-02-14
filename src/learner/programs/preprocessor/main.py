@@ -50,7 +50,7 @@ def preprocessor(args):
     info_list = basename.split('-')
     
     # If zoom property is given, then use zoom. Evaluate zoomer parameters
-    if options.zoom is not None:
+    if hasattr(options, 'zoom'):
         try:
             vals = eval(options.zoom)
             min_zoom = vals[0]
@@ -61,6 +61,7 @@ def preprocessor(args):
             # 
             zoom = False
     else:
+        zoom = False
         # if zoom is not used, then remove z* from command name
         info_list[1] = info_list[1][:info_list[1].index('z')] 
 #        out_info = '_' + str(output_size).replace(' ', '').replace(',', 'x').replace('(', '').replace(')', '') + '_nozoom'
@@ -81,11 +82,13 @@ def preprocessor(args):
 
     logger.info('Reading from: %s' % bag)
     logger.info('Writing to:   %s' % output)
-    
-    preprocess(bag, output, output_size,
-                use_zoom=zoom,
-                min_zoom=min_zoom, max_zoom=max_zoom, zoom_factor=zoom_factor)
-    
+    if zoom:
+        preprocess(bag, output, output_size,
+                   use_zoom=zoom,
+                   min_zoom=min_zoom, max_zoom=max_zoom, zoom_factor=zoom_factor)
+    else:
+        preprocess(bag, output, output_size,
+                   use_zoom=False)
     # pproc.validate_bag(output)
 
 
