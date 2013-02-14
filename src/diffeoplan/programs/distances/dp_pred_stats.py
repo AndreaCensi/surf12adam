@@ -37,31 +37,32 @@ def dp_predstats_main(config, parser):
     
     options = parser.parse_options()
     
-    id_discdds = options.dds
     
     if not options.streams:
         msg = 'Please specify streams using -s.'
         raise UserError(msg)
     
-    if not id_discdds:
+    if not options.dds:
         msg = 'Please specify which discdds to use.'
         raise UserError(msg)
     
     distances = config.distances.expand_names(options.distances)
     streams = config.streams.expand_names(options.streams)
+    dds = config.streams.expand_names(options.dds)
     
     logger.info('Using distances: %s' % distances)
     logger.info('Using streams: %s' % streams)
-    logger.info('Using discdds: %s' % id_discdds)
-    
-    outdir = '%s/%s' % (options.output, id_discdds)
+    logger.info('Using discdds: %s' % dds)
+
+    outdir = '%s/%s' % (options.output, options.dds)
     storage = os.path.join(outdir, 'compmake')
     use_filesystem(storage)
     read_rc_files()
     
     rm = ReportManager(os.path.join(outdir, "reports"))
-    
-    create_predstats_jobs(config=config, distances=distances,
+
+    for id_discdds in dds:    
+        create_predstats_jobs(config=config, distances=distances,
                           id_discdds=id_discdds,
                           streams=streams, rm=rm, maxd=10)
     rm.create_index_job()
@@ -76,10 +77,13 @@ def create_predstats_jobs(config, distances, streams, id_discdds, rm, maxd):
     # Compmake storage for results
     store = StoreResults()
     
+    # Try to instance it 
+    # dds = config.discdds.instance(id_discdds) 
+    
     for delta in range(1, maxd):
         for i, id_stream in enumerate(streams):
-            key = dict(delta=delta, id_stream=id_stream)
-            job_id = 'pred-log%s-delta%s' % (i, delta)
+            key = dict(delta=delta, id_stream=id_stream, id_discdds=id_discdds)
+            job_id = 'pred-%s-log%s-delta%s' % (id_discdds, i, delta)
             
             store[key] = comp(compute_predstats,
                               config, id_discdds,
@@ -87,17 +91,16 @@ def create_predstats_jobs(config, distances, streams, id_discdds, rm, maxd):
                               job_id=job_id)
      
     subsets = create_subsets(distances)
-    
-    job_report(subsets, id_discdds, store, rm)
+    job_report_one(subsets, id_discdds, store, rm)
     
 
-def job_report(subsets, id_discdds, store, rm):
+def job_report_one(subsets, id_discdds, store, rm):
     records = comp(make_records, store)
     for id_subset, distances in subsets.items():
-        job_id = 'report_predstats-%s' % id_subset    
+        job_id = 'report_predstats-%s-%s' % (id_discdds, id_subset)    
         report = comp(report_predstats, id_discdds, id_subset, distances, records,
                       job_id=job_id)
-        rm.add(report, 'main', subset=id_subset)
+        rm.add(report, 'main', id_discdds=id_discdds, subset=id_subset)
             
             
             
