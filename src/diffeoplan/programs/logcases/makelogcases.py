@@ -78,7 +78,7 @@ def make_plan(sequence, simplify=True):
         u = simplify_plan(u)
         #logger.info('Plan simplified: %s' % str(u))
 
-    return LogItem(y0=y0, u=u, y1=y1)
+    return LogItem(y0=y0, u=u, y1=y1, x0=None)
 
 
 def simplify_plan(plan0):

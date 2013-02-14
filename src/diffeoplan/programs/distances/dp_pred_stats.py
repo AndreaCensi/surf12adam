@@ -15,6 +15,7 @@ from reprep.report_utils import StoreResults, ReportManager
 import numpy as np
 import os
 from diffeoplan.programs.distances.dp_dist_stats import dp_predstats_fig
+import pdb
 
 @declare_command('pred-stats',
                  'pred-stats -d <distances> -s <streams> --dds discdds')
@@ -185,6 +186,7 @@ def compute_predstats(config, id_discdds, id_stream, delta, id_distances):
     dtype = [(x, 'float32') for x in id_distances]
     
     results = []
+#    pdb.set_trace()
     for logitem in iterate_testcases(stream.read_all(), delta):
         assert_allclose(len(logitem.u), delta)
         y0 = UncertainImage(logitem.y0)
