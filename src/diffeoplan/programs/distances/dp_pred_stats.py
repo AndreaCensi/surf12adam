@@ -15,12 +15,12 @@ from reprep.report_utils import StoreResults, ReportManager
 import numpy as np
 import os
 from diffeoplan.programs.distances.dp_dist_stats import dp_predstats_fig
-import pdb
+
 
 @declare_command('pred-stats',
                  'pred-stats -d <distances> -s <streams> --dds discdds')
 def dp_predstats_main(config, parser): 
-    
+    """ Computes prediction performances for different DDS. """
     parser.add_option("-o", "--output", default='out/dp-pred-stats',
                       help="Output directory")
 

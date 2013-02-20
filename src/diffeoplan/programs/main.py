@@ -8,7 +8,7 @@ from diffeoplan.configuration import DiffeoplanConfigMaster
 import contracts
 
 MAIN_CMD_NAME = 'dp'
-commands_list = "\n".join(['    %-16s   %s' % 
+commands_list = "\n".join(['    %-20s   %s' % 
                            #(f.short_usage, f.__doc__)
                            (cmd, str(Storage.commands[cmd].__doc__).strip())
                            for cmd in sorted(Storage.commands)])
@@ -19,7 +19,7 @@ usage_pattern = """
 
 See the manual at 
 
-    http://github.com/AndreaCensi/surf12adam/wiki/dp
+    http://github.com/AndreaCensi/surf12adam/wiki/
     
 Available commands:
 

@@ -1,28 +1,22 @@
-'''
-Created on Nov 7, 2012
-
-@author: adam
-'''
 from . import logger
-from diffeoplan.library.discdds.writing import ds_dump
-from diffeoplan.programs.streams.dp_plearn import filter_commands, report_dds, \
-    report_learner, summarize
+from .dp_plearn import filter_commands, report_dds, report_learner, summarize
+from boot_agents.diffeo import diffeomorphism2d_continuous
 from compmake import (batch_command, compmake_console, comp, read_rc_files,
     use_filesystem)
+from diffeoplan.library.discdds.writing import ds_dump
 from diffeoplan.programs.utils import declare_command
 from reprep.report_utils import ReportManager
 import itertools
 import os
-import pickle
-from boot_agents.diffeo import diffeomorphism2d_continuous
-import sys
 import pdb
+import pickle
+import sys
 
 @declare_command('rlearn',
                  'rlearn  [<stream1> ...]')
-def rlearn(config, parser): #@UnusedVariable
-    """ Displays the learned DDS """
-    #parser.add_option("-i", "--id_image", help="ID image.", default='lena')
+def rlearn(config, parser):  # @UnusedVariable
+    
+    # parser.add_option("-i", "--id_image", help="ID image.", default='lena')
     parser.add_option("-n", "--nthreads", help="Number of threads",
                       type='int', default='4')
     parser.add_option("-r", "--nrefine", help="Number of time to refine learning",
@@ -70,7 +64,7 @@ def jobs_rlearn(config, rm, learners, streams, outdir, nthreads, nrefine):
     for id_learner, id_stream in itertools.product(learners, streams):
         # try instancing them
         config.streams.instance(id_stream)
-        #config.learners.instance(id_learner) # TODO: do in other way
+        # config.learners.instance(id_learner) # TODO: do in other way
         jobs_rlearn_comb(config, rm, outdir, id_learner, id_stream, nthreads, nrefine)
         
 def jobs_rlearn_comb(config, rm, outdir, id_learner, id_stream, nthreads, nrefine,

@@ -1,14 +1,13 @@
 from . import logger, np
 from .diffeo_analysis import DiffeoAnalysis
-from PIL import Image #@UnresolvedImport
-from boot_agents.diffeo import (DiffeomorphismEstimator, diffeo_to_rgb_angle,
-    diffeo_to_rgb_norm)
+
+from boot_agents.diffeo import (DiffeomorphismEstimator)
 from boot_agents.diffeo.learning import DiffeomorphismEstimatorFaster
-from boot_agents.diffeo.learning import DiffeomorphismEstimatorFFT 
-from boot_agents.diffeo.learning import DiffeomorphismEstimatorRefine #@UnresolvedImport
-from boot_agents.diffeo.learning import DiffeomorphismEstimatorRefineFast #@UnresolvedImport
+# from boot_agents.diffeo.learning import DiffeomorphismEstimatorFFT 
 from boot_agents.diffeo.learning import DiffeomorphismEstimatorAnimation
-from boot_agents.diffeo.learning import DiffeomorphismEstimatorFasterStatistics #@UnresolvedImport
+# from boot_agents.diffeo.learning import DiffeomorphismEstimatorFasterStatistics
+# from boot_agents.diffeo.learning import DiffeomorphismEstimatorRefine 
+# from boot_agents.diffeo.learning import DiffeomorphismEstimatorRefineFast
 from boot_agents.diffeo.learning import DiffeomorphismEstimatorPixelized
 from diffeoplan.library import DiffeoAction, DiffeoSystem
 from diffeoplan.library.discdds.writing import ds_dump
@@ -118,15 +117,19 @@ class DiffeoLearner:
         
     def update(self, Y0, U0, Y1, X0=None):
         cmd_ind = self.estimator_index(U0, None)
-        #logger.info('Updating estimator %s' % str(cmd_ind))
-        for ch in range(3):
-            if X0 is None:
-                self.estimators[cmd_ind].update(Y0[:, :, ch], Y1[:, :, ch])
-                self.estimators_inv[cmd_ind].update(Y1[:, :, ch], Y0[:, :, ch])
-            else:
-                self.estimators[cmd_ind].update(Y0[:, :, ch], Y1[:, :, ch], U0, X0)
-                self.estimators_inv[cmd_ind].update(Y1[:, :, ch], Y0[:, :, ch], U0, X0)
-            
+        if Y0.ndim == 3:
+            # if there are 3 channels...
+            for ch in range(3):
+                if X0 is None:
+                    self.estimators[cmd_ind].update(Y0[:, :, ch], Y1[:, :, ch])
+                    self.estimators_inv[cmd_ind].update(Y1[:, :, ch], Y0[:, :, ch])
+                else:
+                    self.estimators[cmd_ind].update(Y0[:, :, ch], Y1[:, :, ch], U0, X0)
+                    self.estimators_inv[cmd_ind].update(Y1[:, :, ch], Y0[:, :, ch], U0, X0)
+        else:
+            assert Y0.ndim == 2
+            self.estimators[cmd_ind].update(Y0[:, :], Y1[:, :])
+                
                             
     def summarize(self, prefix=''):
         """
@@ -212,12 +215,12 @@ class DiffeoLearnerStatistics(DiffeoLearner):
     def new_estimator(self):
         return DiffeomorphismEstimatorFasterStatistics(**self.diffeo_estimator_params)
 
-#class DiffeoLearnerFFT(DiffeoLearner):
+# class DiffeoLearnerFFT(DiffeoLearner):
 #    def new_estimator(self):
 #        return DiffeomorphismEstimatorFFT(**self.diffeo_estimator_params)
 #    
 #    def refine_init(self):
-##        pdb.set_trace()
+# #        pdb.set_trace()
 #        for i in range(len(self.estimators)):
 #            self.estimators[i].refine_init()
 #        for i in range(len(self.estimators_inv)):

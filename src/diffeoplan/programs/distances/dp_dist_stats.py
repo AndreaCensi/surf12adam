@@ -16,6 +16,7 @@ import os
 @declare_command('dist-stats',
                  'dist-stats -d <distances> -s  <streams> ... ')
 def dp_dist_stats(config, parser): #@UnusedVariable
+    """ Computes statistics for images distances for different plan steps. """
     parser.add_option("-o", "--output", default='out/dp-dist-stats',
                       help="Output directory")
 

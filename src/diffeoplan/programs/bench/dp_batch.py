@@ -8,7 +8,7 @@ import os
 @declare_command('batch',
                  'batch <sets> -c command')
 def dp_batch_main(config, parser):
-
+    """ Runs batch planning experiments from batch configuration files. """
     parser.add_option("-o", "--output", default='out/dp-batch',
                       help="Output directory")
 

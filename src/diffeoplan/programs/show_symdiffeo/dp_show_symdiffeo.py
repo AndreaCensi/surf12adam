@@ -8,7 +8,7 @@ import os
 @declare_command('show-symdiffeo',
                  'show-symdiffeo  [-i <image>] [-r <resolution>] [<diffeo1> <diffeo2> ...]')
 def show_symdiffeo(config, parser): #@UnusedVariable
-    """ Displays a symbolically-defined DDS """
+    """ Creates a report for symbolically-defined DDS. """
     parser.add_option("-o", "--output", help="Output directory",
                       default='out/dp-show-symdiffeo/')
     parser.add_option("-i", "--id_image", help="ID image.", default='lena')

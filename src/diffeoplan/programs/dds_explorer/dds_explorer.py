@@ -1,17 +1,10 @@
-'''
-Created on Jan 9, 2013
-
-@author: adam
-'''
 from optparse import OptionParser
-from diffeoplan.library.images.uncertain_image import UncertainImage
 import numpy as np
 import numpy.linalg as la
 import pdb
 import pickle
 import urllib
-import pylab
-from PIL import Image #@UnresolvedImport
+from PIL import Image  # @UnresolvedImport
 import itertools
 from scipy.signal import convolve2d
 
