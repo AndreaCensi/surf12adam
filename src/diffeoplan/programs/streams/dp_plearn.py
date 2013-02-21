@@ -8,13 +8,16 @@ from reprep.report_utils import ReportManager
 import itertools
 import os
 import warnings
+import multiprocessing
 
 
 @declare_command('plearn', 'plearn  [<stream1> ...]')
-def plearn(config, parser):  # @UnusedVariable
+def plearn(config, parser): 
+    """ Learn the diffeomorphisms in parallel. """
     # parser.add_option("-i", "--id_image", help="ID image.", default='lena')
+    ncpus = multiprocessing.cpu_count()
     parser.add_option("-n", "--nthreads", help="Number of threads",
-                      type='int', default='4')
+                      type='int', default=ncpus)
     parser.add_option("-s", "--streams", help="Which streams to use.",
                       default="*")
     parser.add_option("-i", "--comb", default="default")
@@ -34,7 +37,6 @@ def plearn(config, parser):  # @UnusedVariable
     storage = os.path.join(outdir, 'compmake')
     use_filesystem(storage)
     read_rc_files()
-    
     
     rm = ReportManager(os.path.join(outdir, 'reports'))
     
@@ -112,24 +114,35 @@ def save_results(id_learner, id_stream, outdir, dds):
     
 
 def plearn_join(learner1, learner2):
-    # TODO:
+#    if not learner1.initialized():
+#        # not even one command
+#        return learner2
+#    elif not learner2.initialized():
+#        return learner1
+#    else:
     learner1.merge(learner2)
     return learner1
 
 def report_learner(id_report, learner):
-    # TODO:
     r = Report(id_report)
-    learner.display(r)
+    if learner is None:
+        msg = 'Not display %r because not initialized' % id_report
+        logger.info(msg)
+        r.text('notice', 'Not initialized')
+    else:
+        learner.display(r)
     return r
 
 def report_dds(id_report, dds):
-    # TODO:
     r = Report(id_report)
     dds.display(r)
     return r
 
-
 def summarize(learner):
+#    if not learner.initialized():
+#        logger.info('Not summarizing because not initialized.')
+#        return None
+#    else:
     return learner.summarize()
 
 def plearn_partial(config, id_learner, id_stream, i, n):
@@ -152,18 +165,15 @@ def plearn_partial(config, id_learner, id_stream, i, n):
     # filtered = filter_every(logitems, i, n)
     filtered = filter_commands(logitems, i, n)
     nrecords = 0
-#    for y0, u, y1, x0 in filtered:
-    for y0, u, y1, x0 in logitems:  # use all items in log
+    for y0, u, y1, x0 in filtered:
+#    for y0, u, y1, x0 in logitems:  # use all items in log
         logger.info('x0 = ' + str(x0))
-#        pdb.set_trace()
+        
         learner.update(y0, u, y1, x0)
-        nrecords += 1
-        
-        if nrecords >= 9:
-            break
-        
+        nrecords += 1 
         if nrecords % 10 == 0:
             logger.info('currently %d records' % nrecords)
+
     logger.info('Total of %d records' % nrecords)
     return learner
 
