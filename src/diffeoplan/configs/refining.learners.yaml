@@ -29,7 +29,42 @@
     diffeo_estimator_params:
       max_displ: [0.35, 0.35]
       refine_method: fast-bilinear
-      resolution: [5, 5]
+      resolution: [11,15]
+      refine_factor: 1.5
+      
+      
+- id: fast35s-55
+  desc: Fast refined learning by PIL image interpolation (35% displacement)
+  code: 
+  - learner.DiffeoLearnerRefineFast
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: fast-bilinear
+      resolution: [5,5]
+      refine_factor: 1.5
+      
+- id: fast35s-bc
+  desc: Fast refined learning by PIL image interpolation (35% displacement)
+  code: 
+  - learner.DiffeoLearnerRefineFast
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: fast-bicubic
+      resolution: [11,15]
+      refine_factor: 1.5
+      
+      
+- id: fasttest
+  desc: Fast refined learning by PIL image interpolation (35% displacement)
+  code: 
+  - learner.DiffeoLearnerRefineFast
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: fast-bilinear
+      resolution: [25, 25]
       refine_factor: 1.5
 
 - id: r35s-bl
