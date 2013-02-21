@@ -4,11 +4,10 @@ from .diffeo_analysis import DiffeoAnalysis
 from boot_agents.diffeo import (DiffeomorphismEstimator)
 from boot_agents.diffeo.learning import DiffeomorphismEstimatorFaster
 # from boot_agents.diffeo.learning import DiffeomorphismEstimatorFFT 
-from boot_agents.diffeo.learning import DiffeomorphismEstimatorAnimation
-# from boot_agents.diffeo.learning import DiffeomorphismEstimatorFasterStatistics
-# from boot_agents.diffeo.learning import DiffeomorphismEstimatorRefine 
-# from boot_agents.diffeo.learning import DiffeomorphismEstimatorRefineFast
-from boot_agents.diffeo.learning import DiffeomorphismEstimatorPixelized
+#from boot_agents.diffeo.learning import DiffeomorphismEstimatorAnimation
+from boot_agents.diffeo.learning import DiffeomorphismEstimatorRefine 
+from boot_agents.diffeo.learning import DiffeomorphismEstimatorRefineFast
+#from boot_agents.diffeo.learning import DiffeomorphismEstimatorPixelized
 from diffeoplan.library import DiffeoAction, DiffeoSystem
 from diffeoplan.library.discdds.writing import ds_dump
 import pdb
