@@ -11,9 +11,8 @@ import warnings
 
 
 @declare_command('plearn', 'plearn  [<stream1> ...]')
-def plearn(config, parser): #@UnusedVariable
-    """ Displays the learned DDS """
-    #parser.add_option("-i", "--id_image", help="ID image.", default='lena')
+def plearn(config, parser):  # @UnusedVariable
+    # parser.add_option("-i", "--id_image", help="ID image.", default='lena')
     parser.add_option("-n", "--nthreads", help="Number of threads",
                       type='int', default='4')
     parser.add_option("-s", "--streams", help="Which streams to use.",
@@ -54,7 +53,7 @@ def jobs_plearn(config, rm, learners, streams, outdir, nthreads):
     for id_learner, id_stream in itertools.product(learners, streams):
         # try instancing them
         config.streams.instance(id_stream)
-        #config.learners.instance(id_learner) # TODO: do in other way
+        # config.learners.instance(id_learner) # TODO: do in other way
         jobs_plearn_comb(config, rm, outdir, id_learner, id_stream, nthreads)
         
 def jobs_plearn_comb(config, rm, outdir, id_learner, id_stream, nthreads,
@@ -154,7 +153,7 @@ def plearn_partial(config, id_learner, id_stream, i, n):
     filtered = filter_commands(logitems, i, n)
     nrecords = 0
 #    for y0, u, y1, x0 in filtered:
-    for y0, u, y1, x0 in logitems: # use all items in log
+    for y0, u, y1, x0 in logitems:  # use all items in log
         logger.info('x0 = ' + str(x0))
 #        pdb.set_trace()
         learner.update(y0, u, y1, x0)

@@ -8,7 +8,7 @@ import os
 @declare_command('show-discdds-fill',
                  'show-discdds-fill [<discdds1> <discdds2> ...]')
 def show_discdds_fill_main(config, parser):
-    """ Displays the intrinsic geometry of a learned DDS """
+    
     parser.add_option("-o", "--output", help="Output directory",
                       default='out/dp-show-discdds-fill/')
     parser.add_option("-t", "--tolerance", help="Normalized tolerance",

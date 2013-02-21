@@ -23,7 +23,7 @@ def make_logcases(config, id_stream, n, delta, id_tc_pattern,
         tc = TestCase(id_tc=id_tc, id_discdds=id_discdds,
                       y0=I0, y1=I1, true_plan=plan)
         # TODO: add field desc
-        #desc = 'Sampled from stream %s, i=%s for seed %s.' % (i, seed)
+        # desc = 'Sampled from stream %s, i=%s for seed %s.' % (i, seed)
         yield tc
 
 
@@ -53,7 +53,6 @@ def reservoir_sample(sequence, N, seed):
         if i < N:
             reservoir.append(x)
         else:
-    
             # Randomly replace elements in the reservoir
             # with a decreasing probability.              
             # Choose an integer between 0 and index (inclusive)                
@@ -72,11 +71,11 @@ def make_plan(sequence, simplify=True):
     y1 = sequence[-1].y1
     # intermediate commands (ground truth plan)
     u = [np.array(m_i.u) for m_i in sequence]
-    #logger.info('Sequence of %d images' % len(sequence))
-    #logger.info('Plan: %s' % str(u))
+    # logger.info('Sequence of %d images' % len(sequence))
+    # logger.info('Plan: %s' % str(u))
     if simplify:        
         u = simplify_plan(u)
-        #logger.info('Plan simplified: %s' % str(u))
+        # logger.info('Plan simplified: %s' % str(u))
 
     return LogItem(y0=y0, u=u, y1=y1, x0=None)
 
@@ -94,7 +93,7 @@ def simplify_plan(plan0):
             plan.remove(d)
             plan.remove(dm)
     
-    #logger.info('u: %s -> %s' % (plan0, plan))
+    # logger.info('u: %s -> %s' % (plan0, plan))
     plan1 = map(np.array, plan)
     return plan1
     

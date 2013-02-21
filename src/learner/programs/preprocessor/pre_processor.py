@@ -36,16 +36,16 @@ def preprocess(infile, outfile, output_size,
                                       threshold=diff_threshold)
     
     out_bag = rosbag.Bag(outfile, 'w')
-    i = 0
+#    i = 0
     for Y0, U, Y1 in tuples_stream:
-        write_stuff(out_bag, Y0, U, Y1, x=zoomer.current_zoom)
-        i += 1
+        write_tuple_to_bag(out_bag, Y0, U, Y1, x=zoomer.current_zoom)
+#        i += 1
 #        if i > 20:
 #            break
     out_bag.close()
 
       
-def write_stuff(bag, Y0, U, Y1, x=0):
+def write_tuple_to_bag(bag, Y0, U, Y1, x=0):
     # write to the bag
     y0msg = pil_to_imgmsg(Image.fromarray(Y0[1]))
     y0msg.header.stamp = U[0]

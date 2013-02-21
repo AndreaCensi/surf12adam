@@ -1,8 +1,3 @@
-'''
-Created on Oct 22, 2012
-
-@author: adam
-'''
 from . import logger
 from diffeoplan.configuration import get_current_config
 from diffeoplan.programs.bench.bench_jobs import init_algorithm

@@ -1,22 +1,16 @@
-'''
-Created on Dec 11, 2012
-
-@author: adam
-'''
 from . import logger
-import numpy as np
-from compmake import comp, batch_command, compmake_console, read_rc_files, use_filesystem
-from diffeoplan.programs.utils import declare_command
-from boot_agents.diffeo.learning import DiffeomorphismEstimatorPixelized #@UnresolvedImport
-
-import itertools
+from boot_agents.diffeo.learning import DiffeomorphismEstimatorPixelized
+from compmake import (comp, batch_command, compmake_console, read_rc_files,
+    use_filesystem)
 from diffeoplan.library.discdds.diffeo_action import DiffeoAction
 from diffeoplan.library.discdds.diffeo_system import DiffeoSystem
-import os
+from diffeoplan.programs.utils import declare_command
 from reprep import Report
 from reprep.report_utils import ReportManager
+import itertools
+import numpy as np
+import os
 import pdb
-
 
 @declare_command('pixlearn', 'pixlearn  [<stream1> ...]')
 def pixlearn(config, parser):
@@ -80,7 +74,7 @@ def pixlearn(config, parser):
     states = [[100]]
 
 
-    ## Parallel part of code
+    # # Parallel part of code
     # Initiate parallel learning
     group = []
     for i in range(nthreads):        
