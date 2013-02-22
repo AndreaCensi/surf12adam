@@ -160,7 +160,7 @@ class DiffeoLearner:
             action = DiffeoAction(name, diffeo, diffeo_inv, command, state)
             
             # Use new update uncertainty method if param specifies so
-            if self.update_uncertainty:
+            if hasattr(self, 'update_uncertainty') and self.update_uncertainty:
                 action.update_uncertainty()
                 
             action_list.append(action)
