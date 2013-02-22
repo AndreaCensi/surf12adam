@@ -10,11 +10,15 @@ from boot_agents.diffeo.learning import DiffeomorphismEstimatorRefineFast
 #from boot_agents.diffeo.learning import DiffeomorphismEstimatorPixelized
 from diffeoplan.library import DiffeoAction, DiffeoSystem
 from diffeoplan.library.discdds.writing import ds_dump
+import warnings
 import pdb
 
 
 class DiffeoLearner:
-    ''' Organizes a list of diffeomorphism estimators to learn the diffeomorphisms '''
+    ''' 
+        Keeps a list of diffeomorphism estimators to learn a diffeomorphism
+        for each command. 
+    '''
     
     def __init__(self, use_fast, diffeo_estimator_params):
         '''
@@ -33,7 +37,7 @@ class DiffeoLearner:
         
     def new_estimator(self):
         if self.use_fast:
-            logger.warning('Using experimental diffeo estimator')
+            warnings.warn('Using experimental diffeo estimator (faster)')
             return DiffeomorphismEstimatorFaster(**self.diffeo_estimator_params)
         else:
             return DiffeomorphismEstimator(**self.diffeo_estimator_params)
@@ -45,7 +49,6 @@ class DiffeoLearner:
         else:
             for i, command in enumerate(self.command_list):
                 state_list = np.array(self.state_list)
-#                pdb.set_trace()
                 if state_list[i, 0] <= state and state <= state_list[i, 1]:
                     # Then we found the correct index
                     return i
@@ -55,7 +58,7 @@ class DiffeoLearner:
                 
             # If the command, state combination was not found, then initiate a 
             # new estimator
-            index = len(self.command_list)
+            # index = len(self.command_list)
             state_interv = [state, state]
             logger.info('Adding new command %s for states in: %s' 
                         % (str(command), str(state_interv)))
@@ -63,9 +66,10 @@ class DiffeoLearner:
             self.state_list.append(state_interv)
             self.estimators.append(self.new_estimator())
             self.estimators_inv.append(self.new_estimator())
-            assert(len(self.command_list), len(self.state_list))
+            assert len(self.command_list)
+            assert len(self.state_list)
 #            return index
-            return 0
+            return 0  # AC: XXX: highly suspect
             
                     
     def command_index(self, command):
@@ -105,7 +109,6 @@ class DiffeoLearner:
             
             if command in self.command_list:
                 state_list = np.array(self.state_list)
-#                pdb.set_trace()
                 try:
                     if (state_list[self.command_list.index(command)] == state).all():
                         # Already have it
@@ -120,6 +123,7 @@ class DiffeoLearner:
         
     def update(self, Y0, U0, Y1, X0=None):
         cmd_ind = self.estimator_index(U0, None)
+        # XXX: cleaning up with state or not
         if Y0.ndim == 3:
             # if there are 3 channels...
             for ch in range(3):
@@ -131,7 +135,8 @@ class DiffeoLearner:
                     self.estimators_inv[cmd_ind].update(Y1[:, :, ch], Y0[:, :, ch], U0, X0)
         else:
             assert Y0.ndim == 2
-            self.estimators[cmd_ind].update(Y0[:, :], Y1[:, :])
+            self.estimators[cmd_ind].update(Y0, Y1)
+            self.estimators_inv[cmd_ind].update(Y1, Y0)
                 
                             
     def summarize(self, prefix=''):
