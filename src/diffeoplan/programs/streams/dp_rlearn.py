@@ -64,7 +64,7 @@ def rlearn(config, parser): #@UnusedVariable
     
     rm = ReportManager(os.path.join(outdir, 'reports'))
     
-    jobs_rlearn(config, rm, learners, streams, outdir, nthreads, nrefine, options.sensels)
+    diffeo_system = jobs_rlearn(config, rm, learners, streams, outdir, nthreads, nrefine, options.sensels)
     
     rm.create_index_job()
     
@@ -96,6 +96,21 @@ def jobs_rlearn(config, rm, learners, streams, outdir, nthreads, nrefine, sensel
         
         # Finally append the last learner_i
         diffeo_learners.append(learner_i)
+    
+    # Merge all learners on the last level
+    final_learner = comp(merge_learners, diffeo_learners)
+    
+    diffeo_system = comp(summarize, final_learner, job_id='learn-summarize')
+
+    learner_report = comp(report_learner, 'learner', final_learner,
+                          job_id='learn-report')
+    
+    diffeo_report = comp(report_dds, 'dds', diffeo_system,
+                         job_id='learn-summarize-report')
+    
+    rm.add(learner_report, 'learner', id_learner='final', id_stream='all')
+    rm.add(diffeo_report, 'dds', id_learner='final', id_stream='all')
+    
         
 def comp_append(original, new):
     pdb.set_trace()
@@ -253,31 +268,45 @@ def rlearn_partial(config, id_learner, id_stream, i, n, search_areas):
     logger.info('Using search area :' + str(search_areas))
     if search_areas is not None:
         learner.set_search_areas(search_areas[0])
+    
+    logitems = stream.read_all()
+    filtered = filter_commands(logitems, i, n)
+    nj = 0
+    for _, u, _, _ in filtered:
+        nj += 1
         
     logitems = stream.read_all()
     filtered = filter_commands(logitems, i, n)
     nrecords = 0
     j = 0
+    t0 = time.time()
     for y0, u, y1, _ in filtered:
-        logger.info('Updating samp%d learner%d of %d' % (j, i, n))
+        logger.debug('Updating samp%d learner%d of %d' % (j, i, n))
 
-#        if j > 100:
-#            logger.info('    Breaking for test purpose    ')
-#            break
-        
         j += 1
         learner.update(y0, u, y1)
         nrecords += 1
         if nrecords % 10 == 0:
-            logger.info('currently %d records' % nrecords)
+            logger.debug('currently %d records' % nrecords)
+            
+        # Progress bar
+        steps = 50
+        t = time.time() - t0
+        
+        t_text = ''
+        if t / 60 / 60 / 24 > 0:
+            t_text += ('%s days, ' % (t / 60 / 60 / 24))
+        if t % (60 * 60) > 0:
+            t_text += ('%s hours, ' % (t / 60 / 60))
+        if t % 60 > 0:
+            t_text += ('%s minutes and ' % (t / 60))
+        if t / 60 > 0:
+            t_text += ('%s minutes and ' % (t / 60))
+        progress = steps * j / nj
+        bar = '|' + '=' * progress + ' ' * (steps - progress) + '|'
+        p_text = (' %s %% (%s of %s records)' % (100 * j / nj, j, nj))
+        logger.info(bar + p_text)
     logger.info('Total of %d records' % (nrecords))
     
     learner.summarize()
     return learner
-    
-#    # Check that the learner has support for refining
-#    if not 'refine_init' in dir(learner):
-#        logger.error("dp rlearn \tSpecified Learner does not support refined " + 
-#        "learning f35s or r35s instead")
-#        return False
-    

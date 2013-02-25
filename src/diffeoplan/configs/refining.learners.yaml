@@ -31,18 +31,32 @@
       refine_method: fast-bilinear
       resolution: [11,15]
       refine_factor: 1.5
+      update_uncertainty: True
       
       
-- id: fast35s-55
-  desc: Fast refined learning by PIL image interpolation (35% displacement)
+- id: "fast${sa}s-${g}"
+  desc: Fast refined learning by PIL image interpolation variable displacement and search grid
   code: 
   - learner.DiffeoLearnerRefineFast
   - use_fast: True 
     diffeo_estimator_params:
-      max_displ: [0.35, 0.35]
+      max_displ: ["0.${sa}", "0.${sa}"]
       refine_method: fast-bilinear
-      resolution: [5,5]
-      refine_factor: 1.5
+      resolution: ["${g}", "${g}"]
+      refine_factor: 1.25
+      update_uncertainty: True
+            
+- id: "fast${sa}s-${g}-u"
+  desc: Fast refined learning by PIL image interpolation variable displacement and search grid and improved uncertainty estimation
+  code: 
+  - learner.DiffeoLearnerRefineFast
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: ["0.${sa}", "0.${sa}"]
+      refine_method: fast-bilinear
+      resolution: ["${g}", "${g}"]
+      refine_factor: 1.25
+      update_uncertainty: True
       
 - id: fast35s-bc
   desc: Fast refined learning by PIL image interpolation (35% displacement)
