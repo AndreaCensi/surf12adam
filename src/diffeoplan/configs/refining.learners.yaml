@@ -43,8 +43,9 @@
       max_displ: ["0.${sa}", "0.${sa}"]
       refine_method: fast-bilinear
       resolution: ["${g}", "${g}"]
-      refine_factor: 1.25
-      update_uncertainty: True
+      refine_factor: 1.3
+      update_uncertainty: False
+      info: {'plot_ranges': {'uncertainty_max':25}}
             
 - id: "fast${sa}s-${g}-u"
   desc: Fast refined learning by PIL image interpolation variable displacement and search grid and improved uncertainty estimation
@@ -55,7 +56,7 @@
       max_displ: ["0.${sa}", "0.${sa}"]
       refine_method: fast-bilinear
       resolution: ["${g}", "${g}"]
-      refine_factor: 1.25
+      refine_factor: 1.3
       update_uncertainty: True
       
 - id: fast35s-bc
@@ -124,4 +125,28 @@
       refine_method: standard-bilinear
       resolution: [21,21]
       refine_factor: 1.5
-        
+
+      
+- id: ldr35-64-test
+  desc: Test learner for landroid rangefinder 64x64 images native resolution
+  code:
+  - learner.DiffeoLearnerRefineFast
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: fast-bilinear
+      resolution: [23,23]
+      refine_factor: 1.5
+      update_uncertainty: True
+            
+- id: ldr35-128-test
+  desc: Test learner for landroid rangefinder 128x128 images native resolution
+  code:
+  - learner.DiffeoLearnerRefineFast
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: fast-bilinear
+      resolution: [45,45]
+      refine_factor: 1.5
+      update_uncertainty: True

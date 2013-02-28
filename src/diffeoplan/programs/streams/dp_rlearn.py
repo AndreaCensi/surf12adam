@@ -10,14 +10,12 @@ from diffeoplan.library.discdds.writing import ds_dump
 from diffeoplan.programs.streams.dp_plearn import filter_commands, report_dds, report_learner, summarize
 from diffeoplan.programs.utils import declare_command
 from reprep import Report
-from reprep.report_utils import ReportManager
+from reprep.report_utils import ReportManager, StoreResults
 import numpy as np
-import itertools
 import os
-import pdb
-import pickle
 import sys
 import time
+import pdb
 
 @declare_command('rlearn',
                  'rlearn  [<stream1> ...]')
@@ -80,13 +78,22 @@ def jobs_rlearn(config, rm, learners, streams, outdir, nthreads, nrefine, sensel
     # This agent will be limited to learn <nthreads> different commands, 
     # additional commands will be ignored.
     diffeo_learners = []
+    sub_learners = {}
+    
+#    store = StoreResults()
+    store = dict()
+    
     for i in range(nthreads):
         areas = None
+        learner_i = None
         for ref in range(nrefine):
             logger.info('using area %s for initialization' % areas)
             learner_i, areas = jobs_rlearn_refine_level(config, rm, learners,
                                                         streams, outdir,
-                                                        nthreads, i, ref, areas)
+                                                        nthreads, i, ref, areas, learner_i)
+#            key = dict(thread=i, ref=ref)
+            key = (i, ref)
+            store[key] = dict(learner=learner_i, areas=areas) 
 #            this_result = comp(comp_append, this_result, (learner_i, areas))
 ##            this_result.append((learner_i, areas))
 #            
@@ -96,6 +103,30 @@ def jobs_rlearn(config, rm, learners, streams, outdir, nthreads, nrefine, sensel
         
         # Finally append the last learner_i
         diffeo_learners.append(learner_i)
+
+    # Only the first one because it only supports one stream and one learner for now 
+    id_learner = learners[0]
+    id_stream = streams[0]
+    
+    # Merge all learners on each level
+    for ref in range(nrefine):
+        level_learners = []
+        for i in range(nthreads):
+#            key = dict(thread=i, ref=ref)
+            key = (i, ref)
+#            pdb.set_trace()
+            learner_ir = store[key]['learner']
+            level_learners.append(learner_ir)
+            
+        level_learner = comp(merge_learners, level_learners)
+        level_system = comp(summarize, level_learner,
+                            job_id='learn-summarize-refined%s' % ref)
+        level_dds_report = comp(report_dds, 'dds-refined%s' % ref, level_system,
+                                job_id='learn-summarize-refined%s-report' % ref)
+        comp(save_results, id_learner, id_stream, outdir, level_system, ref,
+             job_id='learn-refined%s-%s-%s-summarize-save' % (ref, id_stream, id_learner))
+        rm.add(level_dds_report, 'dds-refined%s' % ref,
+               id_learner='refined%s' % ref, id_stream='all')
     
     # Merge all learners on the last level
     final_learner = comp(merge_learners, diffeo_learners)
@@ -107,16 +138,18 @@ def jobs_rlearn(config, rm, learners, streams, outdir, nthreads, nrefine, sensel
     
     diffeo_report = comp(report_dds, 'dds', diffeo_system,
                          job_id='learn-summarize-report')
+
+    comp(save_results, id_learner, id_stream, outdir, diffeo_system,
+         job_id='learn-%s-%s-summarize-save' % (id_stream, id_learner))
     
     rm.add(learner_report, 'learner', id_learner='final', id_stream='all')
     rm.add(diffeo_report, 'dds', id_learner='final', id_stream='all')
     
         
-def comp_append(original, new):
-    pdb.set_trace()
-    return original.append(new)
+#def comp_append(original, new):
+#    return original.append(new)
         
-def jobs_rlearn_refine_level(config, rm, learners, streams, outdir, nthreads, i, ref, areas):
+def jobs_rlearn_refine_level(config, rm, learners, streams, outdir, nthreads, i, ref, areas, parent):
 #    learners_i = []
 #    pdb.set_trace()
     id_learner, id_stream = learners[0], streams[0]
@@ -128,7 +161,7 @@ def jobs_rlearn_refine_level(config, rm, learners, streams, outdir, nthreads, i,
     job_id = 'learn-%s-%s-%sof%s-refined%s' % (id_stream, id_learner, i + 1, nthreads, ref)
 
     learner_i = comp(rlearn_partial, config, id_learner, id_stream,
-                     i, nthreads, job_id=job_id, search_areas=areas)
+                     i, nthreads, job_id=job_id, search_areas=areas, parent=parent)
 
     
     dds = comp(summarize, learner_i,
@@ -147,17 +180,24 @@ def jobs_rlearn_refine_level(config, rm, learners, streams, outdir, nthreads, i,
     rm.add(learner_report, 'learner-%s-refined%s' % (i, ref), id_learner=id_learner, id_stream=id_stream)
     rm.add(diffeo_report, 'dds-%s-refined%s' % (i, ref), id_learner=id_learner, id_stream=id_stream)
 
-    comp(save_results, id_learner, id_stream, outdir, dds,
-         job_id='learn-%s-%s-%s-refined%s-summarize-save' % (id_stream, id_learner, i, ref))
+#    comp(save_results, id_learner, id_stream, outdir, dds,
+#         job_id='learn-%s-%s-%s-refined%s-summarize-save' % (id_stream, id_learner, i, ref))
     
     return  learner_i, comp(calculate_areas, learner_i, dds, ref + 1)
         
+def uncertainty_range(learner):
+    pass
 def merge_learners(learners):
     learner_0 = learners[0]
     for i in range(1, len(learners)):
         learner_0.merge(learners[i])
         
     return learner_0
+
+#def summarize(learner, variance_limit=None):
+#    dds = learner.summarize()
+#    return dds
+
 def calculate_areas(learner, dds, nrefine):
     return learner.calculate_areas(dds, nrefine)
     
@@ -238,10 +278,10 @@ def report_area_propagation(data_sequence, sensels, id_report):
     return report
             
     
-def save_results(id_learner, id_stream, outdir, dds):
-    id_dds = '%s-%s' % (id_stream, id_learner)
+def save_results(id_learner, id_stream, outdir, dds, level=''):
+    id_dds = '%s-%s-r%s' % (id_stream, id_learner, level)
     resdir = os.path.join(outdir, 'results')
-    desc = "Learned from stream %s and learner %s" % (id_stream, id_learner)
+    desc = "Learned from stream %s and learner %s with %s refinings" % (id_stream, id_learner, level)
     ds_dump(dds, resdir, id_dds, desc)
     
 
@@ -250,7 +290,7 @@ def rlearn_join(learner1, learner2):
     learner1.merge(learner2)
     return learner1
 
-def rlearn_partial(config, id_learner, id_stream, i, n, search_areas):
+def rlearn_partial(config, id_learner, id_stream, i, n, search_areas, parent):
     '''
     Reads commands from a filtered stream and updates the corresponding learner.
     
@@ -291,22 +331,35 @@ def rlearn_partial(config, id_learner, id_stream, i, n, search_areas):
             
         # Progress bar
         steps = 50
-        t = time.time() - t0
+        t = int((time.time() - t0) / j * nj)
         
         t_text = ''
-        if t / 60 / 60 / 24 > 0:
-            t_text += ('%s days, ' % (t / 60 / 60 / 24))
-        if t % (60 * 60) > 0:
-            t_text += ('%s hours, ' % (t / 60 / 60))
-        if t % 60 > 0:
-            t_text += ('%s minutes and ' % (t / 60))
+        if t / (60 * 60 * 24) > 0:
+            days = t / 60 / 60 / 24
+            t_text += (', %s days, ' % days)
+            t = t % (60 * 60 * 24)
+        if t / (60 * 60) > 0:
+            hours = t / (60 * 60)
+            t_text += ('%s hours, ' % hours)
+            t = t % (60 * 60)
         if t / 60 > 0:
-            t_text += ('%s minutes and ' % (t / 60))
+            mins = t / 60
+            t_text += ('%s minutes and ' % mins)
+#        if t / 60 > 0:
+        t_text += ('%s seconds remaining' % (t % 60))
         progress = steps * j / nj
         bar = '|' + '=' * progress + ' ' * (steps - progress) + '|'
         p_text = (' %s %% (%s of %s records)' % (100 * j / nj, j, nj))
-        logger.info(bar + p_text)
+        logger.info(bar + p_text + t_text)
     logger.info('Total of %d records' % (nrecords))
     
-    learner.summarize()
+#    pdb.set_trace()
+#    if parent is not None:
+#        if hasattr(parent, 'plot_ranges'):
+#            learner.plot_ranges = parent.plot_ranges
+#        else:
+#            learner.plot_ranges = 'requested'
+#    else:
+#        learner.plot_ranges = 'requested'
+#    learner.summarize()
     return learner
