@@ -1,0 +1,42 @@
+- id: T10Y128LDR13
+  desc: "Streams for LDR13, delta=1.0s, resolution 128"
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files:
+    - /mnt/bootrepo1/BIGDATA/201302-ldr/processed/T10Y128LDR13.processed.bag
+
+- id: T05Y128LDR13
+  desc: "Streams for LDR13, delta=0.5s, resolution 128"
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files:
+    - /mnt/bootrepo1/BIGDATA/201302-ldr/processed/T05Y128LDR13.processed.bag
+
+- id: T03Y128LDR13
+  desc: "Streams for LDR13, delta=0.3s, resolution 128"
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files:
+    - /mnt/bootrepo1/BIGDATA/201302-ldr/processed/T03Y128LDR13.processed.bag
+
+- id: T10Y64LDR13
+  desc: "Streams for LDR13, delta=1.0s, resolution 64"
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files:
+    - /mnt/bootrepo1/BIGDATA/201302-ldr/processed/T10Y64LDR13.processed.bag
+
+- id: T05Y64LDR13
+  desc: "Streams for LDR13, delta=0.5s, resolution 64"
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files:
+    - /mnt/bootrepo1/BIGDATA/201302-ldr/processed/T05Y64LDR13.processed.bag
+
+- id: T03Y64LDR13
+  desc: "Streams for LDR13, delta=0.3s, resolution 64"
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files:
+    - /mnt/bootrepo1/BIGDATA/201302-ldr/processed/T03Y64LDR13.processed.bag
+    

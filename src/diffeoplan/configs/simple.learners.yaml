@@ -114,6 +114,15 @@
       inference_method: order
 
 
+- id: n75s
+  desc: Normal learner (75% displacement)
+  code: 
+  - learner.DiffeoLearner
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.75, 0.75]
+      inference_method: sim
+
 - id: n35s
   desc: Normal learner (35% displacement)
   code: 
