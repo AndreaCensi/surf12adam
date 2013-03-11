@@ -5,6 +5,7 @@ from reprep import Report
 import numpy as np
 import numpy.linalg as la
 import itertools
+import pdb
     
 class DiffeoAction():
     """ 
@@ -113,7 +114,7 @@ class DiffeoAction():
         original_cmds = a1.get_original_cmds() + a2.get_original_cmds()
         return DiffeoAction(label, diffeo, diffeo_inv, original_cmds)
         
-    def update_uncertainty(self):
+    def update_uncertainty(self, length_score=None, angle_score=None):
         '''
         Update the uncertainties for the action by the improved uncertainty 
         classification based on comparing the diffeomorphism with its inverse. 
@@ -135,8 +136,30 @@ class DiffeoAction():
         E_inv = np.zeros(X.shape)
         
         for c in itertools.product(range(X.shape[0]), range(X.shape[1])):
-            E[tuple(c)] = la.norm(D[c] + D_inv[tuple(D[c])]) / (1 + la.norm(D[c]))
-            E_inv[tuple(c)] = la.norm(D_inv[c] + D[tuple(D[c])]) / (1 + la.norm(D_inv[c]))
-        
-        self.diffeo.variance = 1 - E / np.max(E)
-        self.diffeo_inv.variance = 1 - E_inv / np.max(E_inv)
+            v = D[c]
+            v_inv = D_inv[tuple(D[c])]
+            # Length score
+            lsc = length_score(v, v_inv)
+            # Angle score
+            asc = angle_score(v, v_inv)
+            
+            score = lsc * asc
+            if np.isnan(score):
+                pdb.set_trace()
+            E[tuple(c)] = score
+            
+            v = D_inv[c]
+            v_inv = D[tuple(D_inv[c])]
+            # Length score
+            lsc = length_score(v, v_inv)
+            # Angle score
+            asc = angle_score(v, v_inv)
+            
+            score = lsc * asc
+            if np.isnan(score):
+                pdb.set_trace()
+            E_inv[tuple(c)] = score
+            
+#        pdb.set_trace()
+        self.diffeo.variance = E
+        self.diffeo_inv.variance = E_inv
