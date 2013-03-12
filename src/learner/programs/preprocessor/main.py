@@ -3,12 +3,16 @@ from optparse import OptionParser
 from diffeoplan.utils.script_utils import UserError, wrap_script_entry_point
 import os
 from conf_tools.exceptions import ConfToolsException #@UnresolvedImport
-from learner.programs.preprocessor.pre_processor import preprocess
+from learner.programs.preprocessor.pre_processor import preprocess, \
+    preprocess_general
 
 
 def preprocessor(args):
     usage = "usage: %prog -i inputname [-o outputdir] -s [W,H] -z bool"
     parser = OptionParser(usage=usage, version="%prog 1.0")
+    parser.add_option("-d", "--device", default="orbit",
+                      help="Type of the device the raw data come from.")
+    
     parser.add_option("-i", "--input",
                       help="Path and name to input file (must be *.raw.bag)")
     parser.add_option("-o", "--output",
@@ -21,6 +25,12 @@ def preprocessor(args):
     if other:
         raise UserError('Spurious arguments %r.' % other)
 
+    if options.device == 'orbit':
+        preprocessor_orbit(options)
+    elif options.device == 'general':
+        preprocessor_general(options)
+
+def preprocessor_orbit(options):
     bag = options.input 
     
     if bag is None:
@@ -91,6 +101,49 @@ def preprocessor(args):
                    use_zoom=False)
     # pproc.validate_bag(output)
 
+def preprocessor_general(options):
+    '''
+    Analysis the data types in the raw bag to determine which are the commands
+    :param options:
+    '''
+    
+    bag = options.input 
+    
+    if bag is None:
+        msg = 'Must specify input file with -i.'
+        raise UserError(msg)
+
+    if not os.path.exists(bag):
+        msg = 'Filename %r does not exist.' % bag
+        raise UserError(msg)
+    
+    input_suffix = '.raw.bag'
+    
+    if not input_suffix in bag:
+        msg = 'I expect a %s as input, got %r.' % (input_suffix, bag)
+        raise UserError(msg)
+    
+    if options.output is None:
+        outdir = os.path.dirname(bag)
+        msg = 'No output dir specified; I will use %s' % outdir
+        logger.info(msg)
+    else:
+        outdir = options.output
+        
+    basename = os.path.basename(bag)    
+    basename = basename[:-len(input_suffix)]
+    
+    output_size = tuple(eval(options.size))
+    
+    
+    out_name = basename
+    
+    output = os.path.join(outdir, out_name + '.processed.bag')
+
+    logger.info('Reading from: %s' % bag)
+    logger.info('Writing to:   %s' % output)
+    
+    preprocess_general(bag, output, output_size)
 
 def preprocessor_main():
     exceptions_no_traceback = (UserError, ConfToolsException)

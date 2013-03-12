@@ -10,6 +10,7 @@ from PIL import Image #@UnresolvedImport
 from diffeoplan.library.logs.rosbag.ros_conversions import pil_to_imgmsg
 import std_msgs.msg
 import pdb
+import yaml
 
 
 def preprocess(infile, outfile, output_size,
@@ -29,7 +30,7 @@ def preprocess(infile, outfile, output_size,
                     max_zoom=max_zoom,
                     zoom_factor=zoom_factor,
                     output_size=output_size)
-
+    
     data_stream = read_processed_data(infile, zoomer)
     tuples_stream = read_Y0UY1_tuples(data_stream,
                                       image_distance=distance,
@@ -44,7 +45,39 @@ def preprocess(infile, outfile, output_size,
 #            break
     out_bag.close()
 
-      
+def preprocess_general(infile, outfile, output_size):
+    logger.info('Preprocessing file %r' % infile)
+    
+    distance = image_distance_L1
+    
+    diff_threshold = find_dt_threshold(infile,
+                                       topic_image_raw, distance=distance,
+                                       ignore_first=100, max_images=200)
+    
+    
+    zoomer = Zoomer(use_zoom=False, output_size=output_size,
+                    min_zoom=100, max_zoom=101, zoom_factor=0)
+
+    bag = rosbag.Bag(infile)
+    info = yaml.load(bag._get_yaml_info())
+    for topic_dict in info['topics']:
+        if 'FloatArray' in topic_dict['type']:
+            command_topic = topic_dict['topic']
+    
+    logger.info('Using command topick: %s' % command_topic)
+
+    data_stream = read_processed_data(infile, zoomer, command_topic)
+    tuples_stream = read_Y0UY1_tuples(data_stream,
+                                      image_distance=distance,
+                                      threshold=diff_threshold)
+    
+    out_bag = rosbag.Bag(outfile, 'w')
+
+    for Y0, U, Y1 in tuples_stream:
+        write_tuple_to_bag(out_bag, Y0, U, Y1, x=None)
+
+    out_bag.close()
+    
 def write_tuple_to_bag(bag, Y0, U, Y1, x=0):
     # write to the bag
     y0msg = pil_to_imgmsg(Image.fromarray(Y0[1]))
