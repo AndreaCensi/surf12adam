@@ -16,6 +16,6 @@ from .ddsgeo import *
 from .streams import *
 from .covariance import *
 from .uncertainty import *
-
+from .dds_filters import *
 
 from .main import *

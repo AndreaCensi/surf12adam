@@ -105,18 +105,18 @@ def idealize_uncert(config, parser):
     # Relative  
     id_uur_discdds = 'uur-' + id_discdds
     dds_copyr = copy.copy(dds)
-    uur_dds = comp(_update_uncert, dds_copyr, length_score_ratio, angle_score_cos,
-                   job_id='update_uncert_ratio')
+    uur_dds = comp(_update_uncert, dds_copyr, length_score_norm_relative,
+                   job_id='update_uncert_relative')
     comp(save_results, id_uur_discdds, outdir, uur_dds,
-                         job_id='update_uncert_ratio_save')
+                         job_id='update_uncert_relative_save')
     diffeo_report = comp(report_dds, 'uur-dds-%s' % id_discdds, uur_dds,
-                         job_id='update_uncert_ratio_report')
+                         job_id='update_uncert_relative_report')
     rm.add(diffeo_report, 'uur-dds', id_learner='updated-uncertainty-uur')
     
     # Absolute
     dds_copya = copy.copy(dds)
     id_uua_discdds = 'uua-' + id_discdds
-    uua_dds = comp(_update_uncert, dds_copya, length_score_absolute, angle_score_cos,
+    uua_dds = comp(_update_uncert, dds_copya, length_score_norm,
                    job_id='update_uncert_absolute')
     comp(save_results, id_uua_discdds, outdir, uua_dds,
                          job_id='update_uncert_absolute_save')
@@ -124,16 +124,16 @@ def idealize_uncert(config, parser):
                          job_id='update_uncert_absolute_report')
     rm.add(diffeo_report, 'uua-dds', id_learner='updated-uncertainty-uua')
     
-    # Norm
-    dds_copyn = copy.copy(dds)
-    id_uun_discdds = 'uun-' + id_discdds
-    uun_dds = comp(_update_uncert, dds_copyn, length_score_norm, angle_score_norm,
-                   job_id='update_uncert_norm')
-    comp(save_results, id_uun_discdds, outdir, uun_dds,
-         job_id='update_uncert_norm_save')
-    diffeo_report = comp(report_dds, 'uun-dds-%s' % id_discdds, uun_dds,
-                         job_id='update_uncert_norm_report')
-    rm.add(diffeo_report, 'uun-dds', id_learner='updated-uncertainty-uun')
+#    # Norm
+#    dds_copyn = copy.copy(dds)
+#    id_uun_discdds = 'uun-' + id_discdds
+#    uun_dds = comp(_update_uncert, dds_copyn, length_score_norm, angle_score_norm,
+#                   job_id='update_uncert_norm')
+#    comp(save_results, id_uun_discdds, outdir, uun_dds,
+#         job_id='update_uncert_norm_save')
+#    diffeo_report = comp(report_dds, 'uun-dds-%s' % id_discdds, uun_dds,
+#                         job_id='update_uncert_norm_report')
+#    rm.add(diffeo_report, 'uun-dds', id_learner='updated-uncertainty-uun')
     
     
     rm.create_index_job()
@@ -145,13 +145,13 @@ def idealize_uncert(config, parser):
         compmake_console()
         return 0
     
-def testfunction(config, storage):
-    print('Breakpoint in testfunction')
-    job_ids = CompmakeGlobalState.jobs_defined_in_this_session
-    for job_id in job_ids:
-        
-        jc = get_job_cache(job_id)
-        pdb.set_trace()
+#def testfunction(config, storage):
+#    print('Breakpoint in testfunction')
+#    job_ids = CompmakeGlobalState.jobs_defined_in_this_session
+#    for job_id in job_ids:
+#        
+#        jc = get_job_cache(job_id)
+#        pdb.set_trace()
     
 def _idealize_uncert(dds):
     for action in dds.actions:
@@ -198,57 +198,65 @@ def _idealize_uncert(dds):
 #    id_discdds = options.dds
 #    dds = config.discdds.instance(id_discdds)
 #    
-def _update_uncert(dds, length_score, angle_score):
+def _update_uncert(dds, length_score):
     for action in dds.actions:
-        action.update_uncertainty(length_score, angle_score)
+        action.update_uncertainty(length_score)
     return dds
     
-def length_score_ratio(v, v_inv):
-    l = la.norm(v)
-    l_inv = la.norm(v_inv)
-    if l == 0 and l_inv == 0:
-        return 1
-    else:
-        return min(l, l_inv) / max(l, l_inv)
-
-def length_score_absolute(v, v_inv):
-    l = la.norm(v)
-    l_inv = la.norm(v_inv)
-    if l + l_inv == 0:
-        return 1
-    else:
-        assert 1 - abs(l - l_inv) / max(l, l_inv) >= 0
-        return 1 - abs(l - l_inv) / max(l, l_inv)
+#def length_score_ratio(v, v_inv):
+#    l = la.norm(v)
+#    l_inv = la.norm(v_inv)
+#    if l == 0 and l_inv == 0:
+#        return 1
+#    else:
+#        return np.clip(min(l, l_inv) / max(l, l_inv), 0, 1)
+#
+#def length_score_absolute(v, v_inv):
+#    l = la.norm(v)
+#    l_inv = la.norm(v_inv)
+#    if l + l_inv == 0:
+#        return 1
+#    else:
+#        assert 1 - abs(l - l_inv) / max(l, l_inv) >= 0
+#        return np.clip(1 - abs(l - l_inv) / max(l, l_inv), 0, 1)
     
-#@contract(returns=
+#@contract(returns='>=0')
 def length_score_norm(v, v_inv):
     '''
-    Use norm and how different the norm is relative the maximum length
+        
     '''
-    l = la.norm(v)
-    l_inv = la.norm(v_inv)
-    if l == 0 and l_inv == 0:
-        return 1
-    else:
-        if l == 0 or l_inv == 0:
-            return 0
-        else:
-            return 1 - np.clip(la.norm(np.array(v) + v_inv) / np.min((l, l_inv)), 0, 1)
+#    l = la.norm(v)
+#    l_inv = la.norm(v_inv)
 
-def angle_score_norm(v, v_inv):
-    '''
-    Not using angle score
-    '''
+    return la.norm(np.array(v) + v_inv) 
     
-    return 1
-    
-def angle_score_cos(v, v_inv):
+#@contract(returns='>=0')
+def length_score_norm_relative(v, v_inv):
+    '''
+        
+    '''
     l = la.norm(v)
     l_inv = la.norm(v_inv)
-    if l == 0 or l_inv == 0:
-        return 1
+    l_mean = 0.5 * (l + l_inv)
+    if l_mean == 0:
+        return 0
     else:
-        return (1 - (v[0] * v_inv[0] + v[1] * v_inv[1]) / (l * l_inv)) / 2
+        return la.norm(np.array(v) + v_inv) / l_mean
+#
+#def angle_score_norm(v, v_inv):
+#    '''
+#    Not using angle score
+#    '''
+#    
+#    return 1
+#    
+#def angle_score_cos(v, v_inv):
+#    l = la.norm(v)
+#    l_inv = la.norm(v_inv)
+#    if l == 0 or l_inv == 0:
+#        return 1
+#    else:
+#        return np.clip((1 - (v[0] * v_inv[0] + v[1] * v_inv[1]) / (l * l_inv)) / 2, 0, 1)
     
 def empty_report():
     return Report('empty')

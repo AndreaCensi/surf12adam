@@ -114,7 +114,7 @@ class DiffeoAction():
         original_cmds = a1.get_original_cmds() + a2.get_original_cmds()
         return DiffeoAction(label, diffeo, diffeo_inv, original_cmds)
         
-    def update_uncertainty(self, length_score=None, angle_score=None):
+    def update_uncertainty(self, length_score=None):
         '''
         Update the uncertainties for the action by the improved uncertainty 
         classification based on comparing the diffeomorphism with its inverse. 
@@ -141,10 +141,12 @@ class DiffeoAction():
             # Length score
             lsc = length_score(v, v_inv)
             # Angle score
-            asc = angle_score(v, v_inv)
+#            asc = angle_score(v, v_inv)
+            asc = 1
             
             score = lsc * asc
             if np.isnan(score):
+                print('Debugger break, something unexpected happened')
                 pdb.set_trace()
             E[tuple(c)] = score
             
@@ -153,7 +155,8 @@ class DiffeoAction():
             # Length score
             lsc = length_score(v, v_inv)
             # Angle score
-            asc = angle_score(v, v_inv)
+#            asc = angle_score(v, v_inv)
+            asc = 1
             
             score = lsc * asc
             if np.isnan(score):
@@ -161,5 +164,7 @@ class DiffeoAction():
             E_inv[tuple(c)] = score
             
 #        pdb.set_trace()
-        self.diffeo.variance = E
-        self.diffeo_inv.variance = E_inv
+        self.diffeo.variance = 1 - E / np.max(E)
+        self.diffeo.variance_max = np.max(E)
+        self.diffeo_inv.variance = 1 - E_inv / np.max(E_inv)
+        self.diffeo_inv.variance_max = np.max(E_inv)

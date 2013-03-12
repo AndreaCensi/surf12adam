@@ -17,6 +17,7 @@ from reprep import Report
 from reprep.report_utils import StoreResults, ReportManager
 import numpy as np
 import itertools
+import pdb
 
 @declare_command('precision', 'precision  ...') #TODO:
 def uncert(config, parser):
@@ -36,7 +37,7 @@ def uncert(config, parser):
     dds = config.discdds.expand_names(options.dds) 
     streams = config.streams.expand_names(options.streams)
     
-    id_comb = ",".join(dds) + "-" + ",".join(streams)
+    id_comb = ",".join(dds)
     
     outdir = os.path.join(options.output, id_comb) 
     storage = os.path.join(outdir, 'compmake')
@@ -95,6 +96,7 @@ def make_records(results):
     records = chain.from_iterable(starmap(make_array, results.items()))
     records = list(records)
     records = np.hstack(records)
+#    pdb.set_trace()
     return records
 
 dp_predstats_fig = dict(figsize=(6.6, 3))
@@ -112,8 +114,27 @@ def report_stats(records, id_ddss, id_streams, id_distances):
     
     streams_sets = generate_stream_sets(id_streams)
     for stream_set, id_distance in itertools.product(streams_sets, id_distances):
-        f = r.figure()
-        with f.plot('distance', caption='Streams: %s, Distance: %s' 
+        f = r.figure(cols=2)
+        with f.plot('distance_legend', caption='Streams: %s, Distance: %s' 
+                    % (stream_set['label'], id_distance),
+                    **dp_predstats_fig) as pylab:
+            ax = pylab.subplot(111)
+            for i, id_dds in enumerate(id_ddss):
+                which = (records['id_discdds'] == id_dds).astype('int')
+                for id_stream in stream_set['id_streams']:
+                    which += (records['id_stream'] == id_stream).astype('int')
+                which = (which / (len(stream_set['id_streams']) + 1)).astype('bool')
+                
+                delta = records[which]['delta']
+                
+                distance = records[which][id_distance]
+                
+                step = float(i) / max(len(id_ddss) - 1, 1)
+                xstep = W * 2 * (step - 0.5) 
+                fancy_error_display(ax, delta + xstep, distance,
+                                    colors[i], perc=perc, label='%s' % i)
+            
+        with f.plot('distance', caption='treams: %s, Distance: %s' 
                     % (stream_set['label'], id_distance),
                     **dp_predstats_fig) as pylab:
             ax = pylab.subplot(111)
@@ -133,6 +154,31 @@ def report_stats(records, id_ddss, id_streams, id_distances):
                                     colors[i], perc=perc, label='%s' % i)
             
             legend_put_below(ax)
+            
+        
+        with f.plot('difference', caption='Difference from learner_0, SStreams: %s, Distance: %s' 
+                    % (stream_set['label'], id_distance),
+                    **dp_predstats_fig) as pylab:
+            ax = pylab.subplot(111)
+            
+            which0 = (records['id_discdds'] == id_ddss[0])
+            delta0 = records[which0]['delta']
+            distance0 = records[which0][id_distance]
+            for i, id_dds in enumerate(id_ddss[1:]):
+                which = (records['id_discdds'] == id_dds).astype('int')
+                for id_stream in stream_set['id_streams']:
+                    which += (records['id_stream'] == id_stream).astype('int')
+                which = (which / (len(stream_set['id_streams']) + 1)).astype('bool')
+                
+                delta = records[which]['delta']
+                
+                distance = records[which][id_distance]
+                difference = distance0 - distance
+                
+                step = float(i) / max(len(id_ddss) - 1, 1)
+                xstep = W * 2 * (step - 0.5) 
+                fancy_error_display(ax, delta + xstep, difference,
+                                    colors[i + 1], perc=perc, label='%s' % i)
     return r
 
 def generate_stream_sets(id_streams):
