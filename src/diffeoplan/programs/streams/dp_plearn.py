@@ -9,7 +9,10 @@ import itertools
 import os
 import warnings
 import multiprocessing
-
+import numpy as np
+import pickle
+from compmake import CompmakeGlobalState
+from compmake.jobs import get_job_cache
 
 @declare_command('plearn', 'plearn  [<stream1> ...]')
 def plearn(config, parser): 
@@ -41,15 +44,55 @@ def plearn(config, parser):
     rm = ReportManager(os.path.join(outdir, 'reports'))
     
     jobs_plearn(config, rm, learners, streams, outdir, nthreads)
-    
+        
     rm.create_index_job()
+    
+    # Time and report the learning
+    learn_times = comp(learning_times_plearn, outdir, learners, streams, nthreads)
     
     if options.command:
         return batch_command(options.command)
     else:
         compmake_console()
         return 0
+def learning_times_plearn(outdir, learners, streams, nthreads):
+    job_ids = CompmakeGlobalState.jobs_defined_in_this_session
+    id_learner, id_stream = learners[0], streams[0]
+
+    cputime_index_level_learn = np.ones((nthreads, 1)) * np.NaN
+    walltime_index_level_learn = np.ones((nthreads, 1)) * np.NaN
+    for i in range(nthreads):
+        search_id = 'learn-%s-%s-%sof%s' % (id_stream, id_learner, i + 1, nthreads)
+        for job_id in job_ids:
+            if job_id == search_id:
+                job_cache = get_job_cache(job_id)
+                cputime_index_level_learn[i] = job_cache.cputime_used
+                walltime_index_level_learn[i] = job_cache.walltime_used
+                    
+    print cputime_index_level_learn
+    print walltime_index_level_learn
     
+    cputime_index_level_summarize = np.ones((nthreads, 1)) * np.NaN
+    walltime_index_level_summarize = np.ones((nthreads, 1)) * np.NaN
+    for i in range(nthreads):
+        search_id = 'learn-%s-%s-%sof%s-summarize' % (id_stream, id_learner, i + 1, nthreads)
+        print(search_id)
+        for job_id in job_ids:
+            if job_id == search_id:                    
+                job_cache = get_job_cache(job_id)
+                cputime_index_level_summarize[i] = job_cache.cputime_used
+                walltime_index_level_summarize[i] = job_cache.walltime_used
+                    
+    print cputime_index_level_summarize
+    print walltime_index_level_summarize
+    
+    times = {'cputime_index_level_learn': cputime_index_level_learn,
+             'walltime_index_level_learn': walltime_index_level_learn,
+             'cputime_index_level_summarize': cputime_index_level_summarize,
+             'walltime_index_level_summarize': walltime_index_level_summarize }
+    
+#    pdb.set_trace()
+    pickle.dump(times, open(os.path.join(outdir, 'times.pickle'), 'wb'))
 
 def jobs_plearn(config, rm, learners, streams, outdir, nthreads):
     for id_learner, id_stream in itertools.product(learners, streams):
@@ -165,7 +208,8 @@ def plearn_partial(config, id_learner, id_stream, i, n):
     # filtered = filter_every(logitems, i, n)
     filtered = filter_commands(logitems, i, n)
     nrecords = 0
-    for y0, u, y1, x0 in filtered:
+    # Switched order of images to get the correct output
+    for y1, u, y0, x0 in filtered:
 #    for y0, u, y1, x0 in logitems:  # use all items in log
         logger.info('x0 = ' + str(x0))
         

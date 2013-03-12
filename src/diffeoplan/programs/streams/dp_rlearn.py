@@ -16,6 +16,9 @@ import os
 import sys
 import time
 import pdb
+from compmake import CompmakeGlobalState
+from compmake.jobs import get_job_cache
+import pickle
 
 @declare_command('rlearn',
                  'rlearn  [<stream1> ...]')
@@ -64,6 +67,10 @@ def rlearn(config, parser): #@UnusedVariable
     
     diffeo_system = jobs_rlearn(config, rm, learners, streams, outdir, nthreads, nrefine, options.sensels)
     
+    # Time and report the learning
+    learn_times = comp(learning_times_rlearn, outdir, learners, streams, nthreads, nrefine)
+    
+    
     rm.create_index_job()
     
     if options.command:
@@ -72,6 +79,50 @@ def rlearn(config, parser): #@UnusedVariable
         compmake_console()
         return 0
     logger.info("Done after time: " + str(time.time() - t0) + ' seconds')
+    
+def learning_times_rlearn(outdir, learners, streams, nthreads, nrefines):
+    
+    job_ids = CompmakeGlobalState.jobs_defined_in_this_session
+    id_learner, id_stream = learners[0], streams[0]
+
+    cputime_index_level_learn = np.ones((nthreads, nrefines)) * np.NaN
+    walltime_index_level_learn = np.ones((nthreads, nrefines)) * np.NaN
+    for i in range(nthreads):
+        for ref in range(nrefines):
+            search_id = 'learn-%s-%s-%sof%s-refined%s' % (id_stream, id_learner, i + 1, nthreads, ref)
+            for job_id in job_ids:
+                if job_id == search_id:
+                    job_cache = get_job_cache(job_id)
+                    cputime_index_level_learn[i, ref] = job_cache.cputime_used
+                    walltime_index_level_learn[i, ref] = job_cache.walltime_used
+                    
+    print cputime_index_level_learn
+    print walltime_index_level_learn
+    
+    cputime_index_level_summarize = np.ones((nthreads, nrefines)) * np.NaN
+    walltime_index_level_summarize = np.ones((nthreads, nrefines)) * np.NaN
+    for i in range(nthreads):
+        for ref in range(nrefines):
+            search_id = 'learn-%s-%s-%s-refined%s-summarize' % (id_stream, id_learner, i , ref) # bug in computation naming, should be i+1
+            print(search_id)
+            for job_id in job_ids:
+                if job_id == search_id:                    
+                    job_cache = get_job_cache(job_id)
+                    cputime_index_level_summarize[i, ref] = job_cache.cputime_used
+                    walltime_index_level_summarize[i, ref] = job_cache.walltime_used
+                    
+    print cputime_index_level_summarize
+    print walltime_index_level_summarize
+    
+    times = {'cputime_index_level_learn': cputime_index_level_learn,
+             'walltime_index_level_learn': walltime_index_level_learn,
+             'cputime_index_level_summarize': cputime_index_level_summarize,
+             'walltime_index_level_summarize': walltime_index_level_summarize }
+    
+#    pdb.set_trace()
+    pickle.dump(times, open(os.path.join(outdir, 'times.pickle'), 'wb'))
+    
+    
     
 def jobs_rlearn(config, rm, learners, streams, outdir, nthreads, nrefine, sensels=None):
     # Loop over different commands/threads
@@ -117,7 +168,6 @@ def jobs_rlearn(config, rm, learners, streams, outdir, nthreads, nrefine, sensel
 #            pdb.set_trace()
             learner_ir = store[key]['learner']
             level_learners.append(learner_ir)
-            
         level_learner = comp(merge_learners, level_learners)
         level_system = comp(summarize, level_learner,
                             job_id='learn-summarize-refined%s' % ref)
