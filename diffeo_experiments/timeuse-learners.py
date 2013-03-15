@@ -40,34 +40,40 @@ for res in resolutions:
             pass
         
 def set_xlim(pylab):
-    pylab.xlim(39, 330)
+    pylab.xlim(35, 350)
     pylab.gca().set_xscale('log')
     pylab.xticks(stoplevels.keys())
     pylab.gca().set_xticklabels(stoplevels.keys())
     
 print plotdata
+level_data = np.array(stoplevels.values())
 pylab.subplot2grid((3, 1), (0, 0), rowspan=2)
 pylab.hold(True)
-style = {'marker': 'o', 'ms': 9, 'ls': '-', 'mew': 0, 'lw': 4, 'alpha': 1}
-for key in types:
-    
-    pylab.plot(index.keys(), plotdata[key], **style)
+style = {'ms': 14, 'ls': '-', 'mew': 1, 'mec':'w', 'lw': 2, 'alpha': 1}
+markers = ['o', 's', 'v', '^']
+colors = ['r', 'g', 'b', 'k']
+#for i, key in enumerate(types):
+#for i in range(len(level_data[0, :]) - 1, -1, -1):
+for i in [1, 2, 0]:
+    key = types[i]
+    pylab.plot(index.keys(), plotdata[key], color=colors[i], marker=markers[i], **style)
 set_xlim(pylab)
-pylab.legend(types, loc=2)
-pylab.ylabel('Time used (s)')
-#pylab.gca().set_yscale('log')
+#pylab.legend(types, loc=2)
+#pylab.ylabel('Time used (s)')
+pylab.gca().set_yscale('log')
 #pylab.gca().set_xscale('log')
 
 
 pylab.subplot(3, 1, 3)
 pylab.hold(True)
-level_data = np.array(stoplevels.values())
-for i in range(len(level_data[0, :])):
-    pylab.plot(stoplevels.keys(), level_data[:, i], **style)
+#for i in range(len(level_data[0, :]) - 1, -1, -1):
+for i in [1, 2, 0]:
+    pylab.plot(stoplevels.keys(), level_data[:, i], color=colors[i], marker=markers[i], **style)
 set_xlim(pylab)
 pylab.ylim(0, 5)
-pylab.ylabel('Cycles')
-pylab.xlabel('Image Width Resolution')
-pylab.show()
+#pylab.ylabel('Cycles')
+#pylab.xlabel('Image Width Resolution')
+#pylab.show()
+pylab.savefig('timeuse.png')
 
 #pdb.set_trace()
