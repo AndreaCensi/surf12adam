@@ -3,7 +3,6 @@ from .. import UncertainImage
 from boot_agents.diffeo import Diffeomorphism2D
 from reprep import Report
 import numpy as np
-import numpy.linalg as la
 import itertools
 import pdb
     
@@ -102,7 +101,24 @@ class DiffeoAction():
              
         with report.subsection('backward') as s2:
             self.diffeo_inv.display(s2)
+            
+        if image is not None:
+            with report.subsection('predictions') as pred:
+                self.display_prediction(pred, image.resize(self.diffeo.d.shape[:2]))    
         
+    def display_prediction(self, report, image):
+        num_pred = 6
+        
+        f = report.figure(cols=num_pred + 1)
+        
+        y_pred = image
+        
+        f.data_rgb('start_rgb', y_pred.get_rgba(), caption='Start Image')
+        
+        for i in xrange(1, num_pred):
+            y_pred = self.predict(y_pred, 'self.diffeo.apply')
+            f.data_rgb('pred%s_rgb' % i, y_pred.get_rgba(), caption='Prediction %s' % i)
+    
     @staticmethod
     def compose(a1, a2):
         label = '%s%s' % (a1.label, a2.label)
@@ -119,6 +135,7 @@ class DiffeoAction():
         Update the uncertainties for the action by the improved uncertainty 
         classification based on comparing the diffeomorphism with its inverse. 
         '''
+        print('Using length schore function %s' % length_score)
         field = self.diffeo.d
         field_inv = self.diffeo_inv.d
         
