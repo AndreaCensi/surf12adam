@@ -1,0 +1,63 @@
+<html>
+<head>
+<title>Diffeomorphism refining visualizing</title>
+<script type="text/javascript">
+image_ids = ['diffeo_norm'];
+function get_folder() {
+  base = document.getElementById('base').value;
+  learner = document.getElementById('learner').value;
+  dds = document.getElementById('dds').value;
+  refined = document.getElementById('refined').value;
+  part1 = folder_path(base) + folder_path(learner) + "reports/dds-" + dds + "-refined" + refined + "/";
+  part2 = name_path(learner) + ".html_resources/dds-" + learner + "-" + dds + "-refined" + refined + "-action0-forward-figure" + "2-norm-rgb.png";
+  //orbit-pt256-40_fast35s-5.html_resources/dds-orbit-pt256-40-fast35s-5-0-refined4-action0-forward-figure2-norm-rgb.png
+  return part1 + part2;
+}
+function folder_path(path) {
+  if (path[path.length-1] != "/") {
+    return path + "/";
+  }
+  else{
+    return path;
+  }
+}
+function name_path(path) {
+  if (path[path.length-1] != "/") {
+    return path;
+  }
+  else{
+    return path.substr(0,path.length-1);
+  }
+}
+function update_all() {
+  index = 0;
+  img_norm = document.getElementById('diffeo_norm');
+  img_norm.src = get_folder();
+}
+function update_height() {
+  height = parseInt(document.getElementById('height').value);
+  for (var i=0;i<image_ids.length;i++){
+    img = document.getElementById(image_ids[i]);
+    img.height = height;
+  }
+}
+function default_values(){
+  document.getElementById('base').value = "http://lambda.cds.caltech.edu/~adam/data/data-minimal/out/dp-rlearn/";
+  document.getElementById('learner').value = "orbit-pt256-40-fast35s-5";
+  update_all()
+}
+</script>
+</head>
+<body onload="default_values()">
+<input id="base" onchange="update_all()" alt="Basepath to output folder"/>
+<input id="learner" onchange="update_all()"/>
+<input id="dds" type="number" onchange="update_all()" value=0/>
+<input id="refined" type="number"  onchange="update_all()" value=0/>
+<input id="height" onchange="update_height()" value = 100/>
+<table>
+    <tr>
+        <td><img scr="" id="diffeo_norm" height=100/></td>
+    </tr>
+</table>
+</body>
+</html>
