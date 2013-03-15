@@ -10,12 +10,11 @@ from diffeoplan.library.discdds.writing import ds_dump
 from diffeoplan.programs.streams.dp_plearn import filter_commands, report_dds, report_learner, summarize
 from diffeoplan.programs.utils import declare_command
 from reprep import Report
-from reprep.report_utils import ReportManager, StoreResults
+from reprep.report_utils import ReportManager
 import numpy as np
 import os
 import sys
 import time
-import pdb
 from compmake import CompmakeGlobalState
 from compmake.jobs import get_job_cache
 import pickle
@@ -65,10 +64,10 @@ def rlearn(config, parser): #@UnusedVariable
     
     rm = ReportManager(os.path.join(outdir, 'reports'))
     
-    diffeo_system = jobs_rlearn(config, rm, learners, streams, outdir, nthreads, nrefine, options.sensels)
+    jobs_rlearn(config, rm, learners, streams, outdir, nthreads, nrefine, options.sensels)
     
     # Time and report the learning
-    learn_times = comp(learning_times_rlearn, outdir, learners, streams, nthreads, nrefine)
+    comp(learning_times_rlearn, outdir, learners, streams, nthreads, nrefine)
     
     
     rm.create_index_job()
@@ -129,7 +128,6 @@ def jobs_rlearn(config, rm, learners, streams, outdir, nthreads, nrefine, sensel
     # This agent will be limited to learn <nthreads> different commands, 
     # additional commands will be ignored.
     diffeo_learners = []
-    sub_learners = {}
     
 #    store = StoreResults()
     store = dict()
@@ -142,15 +140,9 @@ def jobs_rlearn(config, rm, learners, streams, outdir, nthreads, nrefine, sensel
             learner_i, areas = jobs_rlearn_refine_level(config, rm, learners,
                                                         streams, outdir,
                                                         nthreads, i, ref, areas, learner_i)
-#            key = dict(thread=i, ref=ref)
+            
             key = (i, ref)
             store[key] = dict(learner=learner_i, areas=areas) 
-#            this_result = comp(comp_append, this_result, (learner_i, areas))
-##            this_result.append((learner_i, areas))
-#            
-#        if sensels is not None:
-#            comp(report_area_propagation, this_result, sensels,
-#                 'areas-learner-%s-%s-%s-of-%s' % (learners[0], streams[0], i, nthreads))
         
         # Finally append the last learner_i
         diffeo_learners.append(learner_i)
@@ -163,9 +155,7 @@ def jobs_rlearn(config, rm, learners, streams, outdir, nthreads, nrefine, sensel
     for ref in range(nrefine):
         level_learners = []
         for i in range(nthreads):
-#            key = dict(thread=i, ref=ref)
             key = (i, ref)
-#            pdb.set_trace()
             learner_ir = store[key]['learner']
             level_learners.append(learner_ir)
         level_learner = comp(merge_learners, level_learners)
@@ -196,12 +186,7 @@ def jobs_rlearn(config, rm, learners, streams, outdir, nthreads, nrefine, sensel
     rm.add(diffeo_report, 'dds', id_learner='final', id_stream='all')
     
         
-#def comp_append(original, new):
-#    return original.append(new)
-        
 def jobs_rlearn_refine_level(config, rm, learners, streams, outdir, nthreads, i, ref, areas, parent):
-#    learners_i = []
-#    pdb.set_trace()
     id_learner, id_stream = learners[0], streams[0]
 #    for id_learner, id_stream in itertools.product(learners, streams):
     # try instancing them
@@ -315,7 +300,7 @@ def report_area_propagation(data_sequence, sensels, id_report):
         with f.plot('esim', caption='esim') as pylab:
             pylab.hold(True)
             for data in data_sequence:
-                learner, next_area = data
+                learner, _ = data
                 grid_shape = learner.grid_shape
                 esim = learner.neig_esim_score[index, :].reshape(grid_shape)
                 xl, yl = learner.area_positions_coarse[index]

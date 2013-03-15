@@ -15,7 +15,7 @@ def main():
                       help="Diffeo System pickle file")
 
     
-    (options, args) = parser.parse_args()
+    (options, _) = parser.parse_args()
     dds = pickle.load(urllib.urlopen(options.dds))
     
     dds_info(dds)

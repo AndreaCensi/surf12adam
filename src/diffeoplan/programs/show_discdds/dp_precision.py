@@ -4,10 +4,8 @@ Created on Feb 27, 2013
 @author: adam
 '''
 import os
-from . import logger
 from compmake import (batch_command, compmake_console, comp, read_rc_files,
     use_filesystem)
-from diffeoplan.library.images import UncertainImage
 from diffeoplan.programs.distances.dp_dist_stats import fancy_error_display, \
     legend_put_below
 from diffeoplan.programs.distances.dp_pred_stats import compute_predstats
@@ -17,7 +15,6 @@ from reprep import Report
 from reprep.report_utils import StoreResults, ReportManager
 import numpy as np
 import itertools
-import pdb
 
 @declare_command('precision', 'precision  ...') #TODO:
 def uncert(config, parser):
@@ -99,14 +96,14 @@ def make_records(results):
 #    pdb.set_trace()
     return records
 
-dp_predstats_fig = dict(figsize=(6.6, 3))
+dp_predstats_fig = dict(figsize=(6.6, 5))
 def report_stats(records, id_ddss, id_streams, id_distances):
     r = Report('precision-stats')
     r.data('records', records)
     
     colors = list(islice(cycle(['r', 'g', 'b', 'k', 'y', 'm']), 50))
     perc = 10
-    W = 0.2
+    W = 0.35
     
     for i, id_dds in enumerate(id_ddss):
         r.text('dds%s' % i, id_dds)
@@ -162,7 +159,7 @@ def report_stats(records, id_ddss, id_streams, id_distances):
             ax = pylab.subplot(111)
             
             which0 = (records['id_discdds'] == id_ddss[0])
-            delta0 = records[which0]['delta']
+            _ = records[which0]['delta'] # delta0
             distance0 = records[which0][id_distance]
             for i, id_dds in enumerate(id_ddss[1:]):
                 which = (records['id_discdds'] == id_dds).astype('int')

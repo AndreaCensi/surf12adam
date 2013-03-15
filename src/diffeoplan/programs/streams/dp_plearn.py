@@ -48,13 +48,14 @@ def plearn(config, parser):
     rm.create_index_job()
     
     # Time and report the learning
-    learn_times = comp(learning_times_plearn, outdir, learners, streams, nthreads)
+    comp(learning_times_plearn, outdir, learners, streams, nthreads)
     
     if options.command:
         return batch_command(options.command)
     else:
         compmake_console()
         return 0
+    
 def learning_times_plearn(outdir, learners, streams, nthreads):
     job_ids = CompmakeGlobalState.jobs_defined_in_this_session
     id_learner, id_stream = learners[0], streams[0]

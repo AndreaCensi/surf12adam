@@ -5,13 +5,12 @@ from boot_agents.diffeo import (DiffeomorphismEstimator)
 from boot_agents.diffeo.learning import DiffeomorphismEstimatorFaster
 # from boot_agents.diffeo.learning import DiffeomorphismEstimatorFFT 
 #from boot_agents.diffeo.learning import DiffeomorphismEstimatorAnimation
-from boot_agents.diffeo.learning import DiffeomorphismEstimatorRefine 
-from boot_agents.diffeo.learning import DiffeomorphismEstimatorRefineFast
+from boot_agents.diffeo.learning import DiffeomorphismEstimatorRefine #@UnresolvedImport
+from boot_agents.diffeo.learning import DiffeomorphismEstimatorRefineFast #@UnresolvedImport
 #from boot_agents.diffeo.learning import DiffeomorphismEstimatorPixelized
 from diffeoplan.library import DiffeoAction, DiffeoSystem
 from diffeoplan.library.discdds.writing import ds_dump
 import warnings
-import pdb
 
 
 class DiffeoLearner:
@@ -207,9 +206,9 @@ class DiffeoLearner:
         ds_dump(self.system, path, name, "Learned")
  
             
-class DiffeoLearnerStatistics(DiffeoLearner):
-    def new_estimator(self):
-        return DiffeomorphismEstimatorFasterStatistics(**self.diffeo_estimator_params)
+#class DiffeoLearnerStatistics(DiffeoLearner):
+#    def new_estimator(self):
+#        return DiffeomorphismEstimatorFasterStatistics(**self.diffeo_estimator_params)
 
 class DiffeoLearnerRefine(DiffeoLearner):
     def new_estimator(self):
@@ -263,52 +262,60 @@ class DiffeoLearnerRefineFast(DiffeoLearner):
 #        for i in range(len(self.estimators_inv)):
 #            self.estimators_inv[i].refine_init()
             
-class DiffeoLearnerPixelized(DiffeoLearner):
-        
-    def new_estimator(self):
-        return DiffeomorphismEstimatorPixelized(sensels=self.sensels,
-                                                **self.diffeo_estimator_params)
-    
-    def estimator_index(self, command, state=None):
-        if len(self.estimators) == 0:
-            self.estimators.append(self.new_estimator())
-            self.estimators_inv.append(self.new_estimator())
-        return 0
-    
-    def summarize(self):
-        action_list = []
-        
-        self.merge()
-        for i, cmd_state in enumerate(self.estimators[0].output_cmd_state):
-            command = cmd_state[:3]
-            state = cmd_state[3]
-            prefix = 'pix'
-            
-            name = prefix + str(list(command)).replace(' ', '')
-            diffeo = self.estimators[0].summarize(command, state)
+#class DiffeoLearnerPixelized(DiffeoLearner):
+#    '''
+#    This learner considers only specified pixels and has a completely different 
+#    structure than all other learners. Not used in any paper by (March 2013)
+#    '''
+#        
+#    def new_estimator(self):
+#        return DiffeomorphismEstimatorPixelized(sensels=self.sensels,
+#                                                **self.diffeo_estimator_params)
+#    
+#    def estimator_index(self, command, state=None):
+#        if len(self.estimators) == 0:
+#            self.estimators.append(self.new_estimator())
+#            self.estimators_inv.append(self.new_estimator())
+#        return 0
+#    
+#    def summarize(self):
+#        action_list = []
+#        
+#        self.merge()
+#        for i, cmd_state in enumerate(self.estimators[0].output_cmd_state):
+#            command = cmd_state[:3]
+#            state = cmd_state[3]
+#            prefix = 'pix'
+#            
+#            name = prefix + str(list(command)).replace(' ', '')
+#            diffeo = self.estimators[0].summarize(command, state)
+#
+#            diffeo_inv = self.estimators_inv[0].summarize(command, state)
+#            name = 'Uninterpreted Diffeomorphism' + str(i)
+#            action = DiffeoAction(name, diffeo, diffeo_inv, command, state)
+#            action_list.append(action)
+#        name = 'Pixelized Diffeomorphism System'
+#        self.system = DiffeoSystem(name, action_list)
+#        return self.system
+#    
+#    def merge(self):
+#        for other in self.estimators[1:]:
+#            self.estimators[0].merge(other)
+#        for other in self.estimators_inv[1:]:
+#            self.estimators_inv[0].merge(other)
 
-            diffeo_inv = self.estimators_inv[0].summarize(command, state)
-            name = 'Uninterpreted Diffeomorphism' + str(i)
-            action = DiffeoAction(name, diffeo, diffeo_inv, command, state)
-            action_list.append(action)
-        name = 'Pixelized Diffeomorphism System'
-        self.system = DiffeoSystem(name, action_list)
-        return self.system
-    
-    def merge(self):
-        for other in self.estimators[1:]:
-            self.estimators[0].merge(other)
-        for other in self.estimators_inv[1:]:
-            self.estimators_inv[0].merge(other)
-
-class DiffeoLearnerAnimation(DiffeoLearner):
-    def new_estimator(self):    
-        if not hasattr(self, 'last_index'):
-            index = 0
-            logger.info('adding first estimator')
-        else:
-            index = self.last_index + 1
-            logger.info('adding new estimator')
-            
-        self.last_index = index
-        return DiffeomorphismEstimatorAnimation(index=index, **self.diffeo_estimator_params)
+#class DiffeoLearnerAnimation(DiffeoLearner):
+#    '''
+#    This learner was used to generate images for visualisation. The output may 
+#    not be a working diffeomorphism.
+#    '''
+#    def new_estimator(self):    
+#        if not hasattr(self, 'last_index'):
+#            index = 0
+#            logger.info('adding first estimator')
+#        else:
+#            index = self.last_index + 1
+#            logger.info('adding new estimator')
+#            
+#        self.last_index = index
+#        return DiffeomorphismEstimatorAnimation(index=index, **self.diffeo_estimator_params)
