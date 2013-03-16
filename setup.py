@@ -43,6 +43,7 @@ setup(name='surf12adam',
            'dp-online = diffeoplan.programs.online:main',
            'dp-ros = diffeoplan.programs.online:ros_main',
            'dp-compose = diffeoplan.library.discdds.compose_graph:main',
+           'timeuse = diffeoplan.programs.timeuse_learners:main',
            'dds-explorer = diffeoplan.programs.dds_explorer.dds_explorer:main'
         ]
     }

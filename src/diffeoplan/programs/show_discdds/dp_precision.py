@@ -96,14 +96,14 @@ def make_records(results):
 #    pdb.set_trace()
     return records
 
-dp_predstats_fig = dict(figsize=(6.6, 5))
+dp_predstats_fig = dict(figsize=(6.6, 3))
 def report_stats(records, id_ddss, id_streams, id_distances):
     r = Report('precision-stats')
     r.data('records', records)
     
     colors = list(islice(cycle(['r', 'g', 'b', 'k', 'y', 'm']), 50))
     perc = 10
-    W = 0.35
+    W = 0.2
     
     for i, id_dds in enumerate(id_ddss):
         r.text('dds%s' % i, id_dds)
