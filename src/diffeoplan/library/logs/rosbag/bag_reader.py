@@ -27,16 +27,16 @@ def read_bag(bagfile):
     r = 0
     for topic, msg, t in bag.read_messages(topics=['Y0', 'Y1', 'U0']):
                 
-        #logger.info('Reading cmd')
+        # logger.info('Reading cmd')
         if topic == 'Y0':
-            #print 'Y0 read @', t
+            # print 'Y0 read @', t
             Y0_ros = msg
             if r == 0:
                 r = 1
                 t0 = t
                 
         if topic == 'U0':
-            #print 'U0 read @', t
+            # print 'U0 read @', t
             U0_ros = msg
             if r != 0:
                 if t0 == t:
@@ -47,7 +47,7 @@ def read_bag(bagfile):
                     r = 0
                 
         if topic == 'Y1':
-            #print 'Y1 read @', t
+            # print 'Y1 read @', t
             Y1_ros = msg
             if r != 0:
                 if t0 == t:
@@ -57,10 +57,10 @@ def read_bag(bagfile):
                                  ' ignoring message.')
                     r = 0
      
-        if r == 3: # then a complete image pair and command is read
+        if r == 3:  # then a complete image pair and command is read
             
             # When done with the loop, yeild the last tuple
-            #logger.info('Updating estimators %d' % i)
+            # logger.info('Updating estimators %d' % i)
             i += 1
             Y0 = get_image_array(Y0_ros)
             Y1 = get_image_array(Y1_ros)
@@ -87,16 +87,16 @@ def read_bag_state(bagfile):
     i = 0
     r = 0
     for topic, msg, t in bag.read_messages(topics=['Y0', 'Y1', 'U0', 'X0']):
-        #logger.info('Reading cmd')
+        # logger.info('Reading cmd')
         if topic == 'Y0':
-            #print 'Y0 read @', t
+            # print 'Y0 read @', t
             Y0_ros = msg
             if r == 0:
                 r = 1
                 t0 = t
                 
         if topic == 'U0':
-            #print 'U0 read @', t
+            # print 'U0 read @', t
             U0_ros = msg
             if r != 0:
                 if t0 == t:
@@ -107,7 +107,7 @@ def read_bag_state(bagfile):
                     r = 0
                 
         if topic == 'Y1':
-            #print 'Y1 read @', t
+            # print 'Y1 read @', t
             Y1_ros = msg
             if r != 0:
                 if t0 == t:
@@ -128,8 +128,8 @@ def read_bag_state(bagfile):
                                  ' ignoring message.')
                     r = 0
              
-        if r == 4 or (not has_X0 and r == 3): # then a complete image pair and command is read
-            #logger.info('Updating estimators %d' % i)
+        if r == 4 or (not has_X0 and r == 3):  # then a complete image pair and command is read
+            # logger.info('Updating estimators %d' % i)
             i += 1
             Y0 = get_image_array(Y0_ros)
             Y1 = get_image_array(Y1_ros)
