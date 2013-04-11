@@ -1,0 +1,80 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<script language="javascript">
+//document["pkimage"].src = "pk10.png";
+document.current_image = 10
+function next_image() {
+  document.getElementById('number').value = parseInt(document.getElementById('number').value) + 1;
+  update_all();
+}
+function previouse_image() {
+  document.getElementById('number').value = parseInt(document.getElementById('number').value) - 1;
+  update_all();
+}
+function steps_back(){
+  document.getElementById('number').value = parseInt(document.getElementById('number').value) - parseInt(document.getElementById('bstep').value);
+  update_all();
+}
+function steps_forward(){
+  document.getElementById('number').value = parseInt(document.getElementById('number').value) + parseInt(document.getElementById('fstep').value);
+  update_all();
+}
+function update_all() {
+  update_image("2")
+  update_image("")
+}
+function update_image(index) {
+  if(document.getElementById('width').value != ''){
+    document.getElementById('panels').document["pkimage" + index].width = parseInt(document.getElementById('width').value)
+  }
+
+  url = document.getElementById('baseurl' + index).value;
+  name = document.getElementById('basename' + index).value;
+  document.current_image = parseInt(document.getElementById('number').value);
+  document.getElementById('panels').document["pkimage" + index].src = url + name + document.current_image + ".png";
+}
+function create_panel() {
+  document.write("<div><table><tr><td = colspan=3>");
+  document.write("Folder Url: <input type='input' id='baseurl' value='http://lambda.cds.caltech.edu/~adam/data/out/peaks/'/>");
+  document.write("</td><td = colspan=2>File Name: <input type='input' id='basename' width=800 height=640 value='pk'/>");
+  document.write("</td></tr></table>");
+  document.write("  <img src='start.png' name='pkimage'/>");
+  document.write("</div>");
+
+}
+</script>
+</head>
+<body onload="update_all()">
+<div>
+<table>
+  <tr>
+    <td>
+      <input type="number" id="bstep" value="160" size=1 />
+      <button type="button" onclick="steps_back()" text="Step Back:">Step Back</button>
+    </td>
+    <td>
+      <button type="button" onclick="previouse_image()" text="Back">Back</button>
+    </td>
+    <td>
+        <input type="number" id="number" onchange="update_all()" value=0 />
+    <td align="left">
+      <button align="left" type="button" onclick="next_image()">Next</button>
+    </td>
+    <td>
+      <input type="number" id="fstep" value="160" size=1 />
+      <button type="button" onclick="steps_forward()">Step Forward:</button>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Image Width: <input type="number" id="width" onchange="update_all()" value=600 size=1 />
+    </td>
+  </tr>
+</table>
+</div>
+
+<iframe src="browser_panels.html" width="100%" id="panels">
+</iframe>
+</body>
+</html>

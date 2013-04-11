@@ -1,0 +1,78 @@
+- id: youbot-b3-05-160
+  desc: "Streams for youbot, base and axis3 rotations, 0.05rad/s*0.5s increments, 160x120 resolution."
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files:
+    - ~/diffeo-data/processed-data/youbot160/youbot-b3-05-lab-sv160x120.processed.bag
+    
+- id: youbot-b3w-10-160
+  desc: "Streams for youbot, base, axis3 and wrist rotations, 0.10rad/s*0.5s increments, 160x120 resolution."
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files:
+    - ~/diffeo-data/processed-data/youbot160/youbot-b3w-05-lab-sv160x120.processed.bag
+    
+- id: youbot-b3w-05-160
+  desc: "Streams for youbot, base, axis3 and wrist rotations, 0.05rad/s*0.5s increments, 160x120 resolution."
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files:
+    - ~/diffeo-data/processed-data/youbot160/youbot-b3w-05-lab-sv160x120.processed.bag
+    
+- id: youbot-b3-05-80
+  desc: "Streams for youbot, base and axis3 rotations, 0.05rad/s*0.5s increments, 80x60 resolution."
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files:
+    - ~/diffeo-data/processed-data/youbot160/youbot-b3-05-lab-sv80x60.processed.bag
+    
+- id: youbot-b3w-10-80
+  desc: "Streams for youbot, base, axis3 and wrist rotations, 0.10rad/s*0.5s increments, 80x60 resolution."
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files:
+    - ~/diffeo-data/processed-data/youbot160/youbot-b3w-05-lab-sv80x60.processed.bag
+    
+- id: youbot-b3w-05-80
+  desc: "Streams for youbot, base, axis3 and wrist rotations, 0.05rad/s*0.5s increments, 80x60 resolution."
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files:
+    - ~/diffeo-data/processed-data/youbot160/youbot-b3w-05-lab-sv80x60.processed.bag
+
+        
+- id: youbot-b4w-0525-40
+  desc: "Streams for youbot, base, axis4 and large wrist rotations, 0.05rad/s*0.5s increments, 40x30 resolution."
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files:
+    - ~/diffeo-data/processed-data/youbot160/youbot-b4w-0525-lab-sv40x30.processed.bag
+        
+- id: youbot-b4w-0525-80
+  desc: "Streams for youbot, base, axis4 and large wrist rotations, 0.05rad/s*0.5s increments, 80x60 resolution."
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files:
+    - ~/diffeo-data/processed-data/youbot160/youbot-b4w-0525-lab-sv80x60.processed.bag
+        
+- id: youbot-b4w-0525-320
+  desc: "Streams for youbot, base, axis4 and large wrist rotations, 0.05rad/s*0.5s increments, 80x60 resolution."
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files:
+    - ~/diffeo-data/processed-data/youbot160/youbot-b4w-0525-lab-sv320x240.processed.bag
+    
+- id: youbot-b4w-0525-160
+  desc: "Streams for youbot, base, axis4 and large wrist rotations, 0.05rad/s*0.5s increments, 80x60 resolution."
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files:
+    - ~/diffeo-data/processed-data/youbot160/youbot-b4w-0525-lab-sv160x120.processed.bag
+        
+- id: youbot-b4w-0525-640
+  desc: "Streams for youbot, base, axis4 and large wrist rotations, 0.05rad/s*0.5s increments, 640x480 resolution."
+  code: 
+  - diffeoplan.library.logs.BagStream
+  - files:
+    - ~/diffeo-data/processed-data/youbot160/youbot-b4w-0525-lab-sv640x480.processed.bag
+    

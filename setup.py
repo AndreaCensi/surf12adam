@@ -38,10 +38,12 @@ setup(name='surf12adam',
            'diffeo-learner = learner:diffeo_learner_main',
 #           'diffeo-tests = learner:diffeo_learner_main',
            'preprocess = learner:preprocessor_main',
+           'youbot-preprocess = learner:youbot_preprocessor',
            'oneclick = learner:one_click_main',
            'dp-online = diffeoplan.programs.online:main',
            'dp-ros = diffeoplan.programs.online:ros_main',
            'dp-compose = diffeoplan.library.discdds.compose_graph:main',
+           'timeuse = diffeoplan.programs.timeuse_learners:main',
            'dds-explorer = diffeoplan.programs.dds_explorer.dds_explorer:main'
         ]
     }

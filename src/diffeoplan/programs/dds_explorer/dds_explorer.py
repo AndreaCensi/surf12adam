@@ -1,19 +1,13 @@
-'''
-Created on Jan 9, 2013
-
-@author: adam
-'''
-from bzrlib.option import OptionParser
-from diffeoplan.library.images.uncertain_image import UncertainImage
+from optparse import OptionParser
 import numpy as np
 import numpy.linalg as la
 import pdb
 import pickle
 import urllib
-import pylab
-from PIL import Image #@UnresolvedImport
+from PIL import Image  # @UnresolvedImport
 import itertools
 from scipy.signal import convolve2d
+
 def main():
     parser = OptionParser()
     parser.add_option("-d", "--dds",
@@ -21,7 +15,7 @@ def main():
                       help="Diffeo System pickle file")
 
     
-    (options, args) = parser.parse_args()
+    (options, _) = parser.parse_args()
     dds = pickle.load(urllib.urlopen(options.dds))
     
     dds_info(dds)

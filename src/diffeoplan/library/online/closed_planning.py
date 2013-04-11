@@ -5,7 +5,6 @@ Created on Oct 22, 2012
 '''
 from . import logger
 from .online_planning import OnlinePlanning
-import pdb
 from diffeoplan.library.online.online_stats import OnlineStats
 
 class ClosedPlanning(OnlinePlanning):

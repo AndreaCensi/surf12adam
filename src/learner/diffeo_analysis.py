@@ -1,6 +1,6 @@
 '''
 Created on Aug 27, 2012
-Generates statistics images of diffeo estimator
+Generates some statistics images of diffeo estimator
 
 @author: Adam Nilsson
 '''

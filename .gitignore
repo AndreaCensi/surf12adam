@@ -16,7 +16,6 @@
 src/diffeoplan/testfiles/
 
 /ros/camera_actuator/msg_gen
-
 # Packages
 *.egg
 *.egg-info

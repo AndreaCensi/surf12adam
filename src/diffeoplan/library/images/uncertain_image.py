@@ -1,6 +1,8 @@
 from . import contract, np
 from boot_agents.diffeo import scalaruncertainty2rgb
 from diffeoplan.utils import resample_signal
+from diffeoplan.utils import resample_signal_2d
+#from numpy.core.numeric import dtype
 
 class UncertainImage(object):
     
@@ -56,7 +58,7 @@ class UncertainImage(object):
     @contract(size='seq[2](int)')
     def resize(self, size):
         values2 = resample_signal(self.get_values(), tuple(size))
-        unc2 = resample_signal(self.get_scalar_uncertainty(), tuple(size))
+        unc2 = resample_signal_2d(self.get_scalar_uncertainty(), tuple(size), mode='F')
         return UncertainImage(values2, unc2)
 
     def crop(self, top, right, bottom, left):
@@ -88,7 +90,28 @@ class UncertainImage(object):
         rgb[:, :, 1][w] = 125
         rgb[:, :, 2][w] = 125
         
-        return rgb 
+        return rgb
+    
+    
+    @contract(returns='array[HxWx4](uint8)')
+    def get_rgba(self):
+        """ Returns an RGBalpha representation of the image, where uncertain is transparent. """
+        # TODO: make it work with "float" data
+        v = self.get_values()
+        if v.ndim == 2:
+            raise NotImplementedError
+        rgb = (v * 255).astype('uint8')        
+        rgba = np.zeros((v.shape[0], v.shape[1], 4), dtype=np.uint8)
+        rgba[:, :, :3] = rgb
+        
+        
+        w = self.get_scalar_uncertainty()
+        rgba[:, :, 3] = (w * 255).astype('uint8')
+#        rgb[:, :, 0][w] = 125
+#        rgb[:, :, 1][w] = 125
+#        rgb[:, :, 2][w] = 125
+        
+        return rgba
 
     @contract(returns='array[HxWx3](uint8)')
     def get_rgb_uncertain(self):

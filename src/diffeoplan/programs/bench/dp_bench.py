@@ -7,6 +7,7 @@ import os
 @declare_command('bench',
                  'bench -a <algorithms> -t <testcases>')
 def dp_bench_main(config, parser): #@UnusedVariable
+    """ Runs a set of planning experiments. """
     parser.add_option("-a", "--algorithms", default='*',
                       help="Comma-separated list of algorithms. Can use *.")
     

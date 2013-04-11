@@ -1,0 +1,427 @@
+
+<html>
+<head>  
+    <script type="text/javascript" 
+        src="env1d.html_resources/static/jquery/jquery.js"></script>
+    
+    <!-- Use imagezoom plugin --> 
+    <script type="text/javascript" 
+        src="env1d.html_resources/static/jquery/jquery.imageZoom.js"></script>
+    <link rel="stylesheet" 
+          href="env1d.html_resources/static/jquery/jquery.imageZoom.css"/>
+    <script type="text/javascript"> 
+        $(document).ready( function () {
+            $('.zoomable').imageZoom();
+        });       
+    </script>
+    
+    <!-- Use tablesorter plugin -->
+    <script type="text/javascript" 
+            src="env1d.html_resources/static/jquery/tablesorter/jquery.tablesorter.js"></script> 
+    <link rel="stylesheet" 
+          href="env1d.html_resources/static/jquery/tablesorter/themes/blue/style.css"/>
+    <script type="text/javascript">
+    $(document).ready(function() { 
+        $(".tablesorter").tablesorter(); 
+    } 
+    ); 
+    </script>
+    
+    
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        TeX: { 
+            equationNumbers: { autoNumber: "AMS" },
+            extensions: ["AMSmath.js", "AMSsymbols.js"] 
+        },
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/SVG"], //" "output/HTML-CSS"],
+        tex2jax: {
+          inlineMath: [ ['$','$']],
+          displayMath: [ ['$$','$$'] ], 
+          processEscapes: true
+        },
+        "HTML-CSS": { availableFonts: ["TeX"] }
+      });
+      //MathJax.Ajax.loadComplete("/media/tex/symbols.js");
+    </script>
+    
+    <script type='text/javascript' 
+            src='http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+
+
+
+    
+    <style type="text/css">
+    /* Extra CSS passed by user. */
+        
+    </style>
+
+    <link rel="stylesheet" 
+          href="env1d.html_resources/static/reprep/default_style.css"/>
+
+    <title> id </title>
+<body>
+
+<p id="reprep-head"> 
+    Report created on 2013-01-24-12:45:00
+    by <a href="http://purl.org/censi/2010/RepRep">RepRep</a>.
+    Show:
+    <input type="submit" name="datanode_toggle" 
+           value="data nodes" id="datanode_toggle" /> 
+</p>
+
+
+<script type="text/javascript">
+ $(document).ready(function() {
+   $('.datanode').hide();
+   $('#datanode_toggle').click(function(){
+     $('.datanode').toggle();
+   });
+ });
+</script>
+
+
+
+    <div class='report-node' id="id">
+    <h><a href="#id">id</a></h><section> 
+<div class="report-nongui-nodes">
+<div style="clear:left" class='report-figure None' id='id-figure1'>
+    <div class="report-subfigure ncols-1 first-col last-col"> 
+                <a href="env1d.html_resources/id-figure1-environment.png" class="zoomable">
+                    <img src="env1d.html_resources/id-figure1-environment.png"/>
+                </a>    
+            <p class="report-subfigure-caption">Plot of environment</p></div> 
+
+<p class="report-figure-caption"></p><div class="report-nongui-nodes">
+<p class="datanode">environment: application/pdf</p>
+<div class="datanode-children">
+<div class="report-nongui-nodes">
+<p class="datanode">png: image/png</p>
+</div>
+</div>
+</div>
+</div>
+<div class="textnode report-text-node"> 
+
+    <span class="textid report-text-node-id"> info0 </span> 
+   
+   <div class="report-text-node-content">
+     <pre class="report-text report-text-plain">Learning size: 		20 
+Actuator noise: 	0 
+Sensor noise: 		0</pre>
+   </div>
+     
+</div>  
+
+<div class="textnode report-text-node"> 
+
+    <span class="textid report-text-node-id"> commands </span> 
+   
+   <div class="report-text-node-content">
+     <pre class="report-text report-text-plain">[-2.5, 2.0]</pre>
+   </div>
+     
+</div>  
+<div style="clear:left" class='report-figure None' id='id-figure2'>
+    <div class="report-subfigure ncols-2 first-col"> 
+                <a href="env1d.html_resources/id-figure2-p30-c0.png" class="zoomable">
+                    <img src="env1d.html_resources/id-figure2-p30-c0.png"/>
+                </a>    
+            <p class="report-subfigure-caption">Pixel: 30  Command: 0  Samples: 7</p></div> <div class="report-subfigure ncols-2 last-col"> 
+                <a href="env1d.html_resources/id-figure2-p30-c1.png" class="zoomable">
+                    <img src="env1d.html_resources/id-figure2-p30-c1.png"/>
+                </a>    
+            <p class="report-subfigure-caption">Pixel: 30  Command: 1  Samples: 13</p></div> 
+
+<p class="report-figure-caption"></p><div class="report-nongui-nodes">
+<p class="datanode">p30_c0: application/pdf</p>
+<div class="datanode-children">
+<div class="report-nongui-nodes">
+<p class="datanode">png: image/png</p>
+</div>
+</div>
+<p class="datanode">p30_c1: application/pdf</p>
+<div class="datanode-children">
+<div class="report-nongui-nodes">
+<p class="datanode">png: image/png</p>
+</div>
+</div>
+</div>
+</div>
+<div class="textnode report-text-node"> 
+
+    <span class="textid report-text-node-id"> test0_cmd_p30_c0 </span> 
+   
+   <div class="report-text-node-content">
+     <pre class="report-text report-text-plain">-2.22222222222</pre>
+   </div>
+     
+</div>  
+
+<div class="textnode report-text-node"> 
+
+    <span class="textid report-text-node-id"> test0_cmd_p30_c1 </span> 
+   
+   <div class="report-text-node-content">
+     <pre class="report-text report-text-plain">1.9797979798</pre>
+   </div>
+     
+</div>  
+<div style="clear:left" class='report-figure None' id='id-figure3'>
+    <div class="report-subfigure ncols-2 first-col"> 
+                <a href="env1d.html_resources/id-figure3-p31-c0.png" class="zoomable">
+                    <img src="env1d.html_resources/id-figure3-p31-c0.png"/>
+                </a>    
+            <p class="report-subfigure-caption">Pixel: 31  Command: 0  Samples: 7</p></div> <div class="report-subfigure ncols-2 last-col"> 
+                <a href="env1d.html_resources/id-figure3-p31-c1.png" class="zoomable">
+                    <img src="env1d.html_resources/id-figure3-p31-c1.png"/>
+                </a>    
+            <p class="report-subfigure-caption">Pixel: 31  Command: 1  Samples: 13</p></div> 
+
+<p class="report-figure-caption"></p><div class="report-nongui-nodes">
+<p class="datanode">p31_c0: application/pdf</p>
+<div class="datanode-children">
+<div class="report-nongui-nodes">
+<p class="datanode">png: image/png</p>
+</div>
+</div>
+<p class="datanode">p31_c1: application/pdf</p>
+<div class="datanode-children">
+<div class="report-nongui-nodes">
+<p class="datanode">png: image/png</p>
+</div>
+</div>
+</div>
+</div>
+<div class="textnode report-text-node"> 
+
+    <span class="textid report-text-node-id"> test0_cmd_p31_c0 </span> 
+   
+   <div class="report-text-node-content">
+     <pre class="report-text report-text-plain">-2.22222222222</pre>
+   </div>
+     
+</div>  
+
+<div class="textnode report-text-node"> 
+
+    <span class="textid report-text-node-id"> test0_cmd_p31_c1 </span> 
+   
+   <div class="report-text-node-content">
+     <pre class="report-text report-text-plain">1.9797979798</pre>
+   </div>
+     
+</div>  
+
+<div class="textnode report-text-node"> 
+
+    <span class="textid report-text-node-id"> info1 </span> 
+   
+   <div class="report-text-node-content">
+     <pre class="report-text report-text-plain">Learning size: 		100 
+Actuator noise: 	2 
+Sensor noise: 		0</pre>
+   </div>
+     
+</div>  
+<div style="clear:left" class='report-figure None' id='id-figure4'>
+    <div class="report-subfigure ncols-2 first-col"> 
+                <a href="env1d.html_resources/id-figure4-p30-c0.png" class="zoomable">
+                    <img src="env1d.html_resources/id-figure4-p30-c0.png"/>
+                </a>    
+            <p class="report-subfigure-caption">Pixel: 30  Command: 0  Samples: 56</p></div> <div class="report-subfigure ncols-2 last-col"> 
+                <a href="env1d.html_resources/id-figure4-p30-c1.png" class="zoomable">
+                    <img src="env1d.html_resources/id-figure4-p30-c1.png"/>
+                </a>    
+            <p class="report-subfigure-caption">Pixel: 30  Command: 1  Samples: 44</p></div> 
+
+<p class="report-figure-caption"></p><div class="report-nongui-nodes">
+<p class="datanode">p30_c0: application/pdf</p>
+<div class="datanode-children">
+<div class="report-nongui-nodes">
+<p class="datanode">png: image/png</p>
+</div>
+</div>
+<p class="datanode">p30_c1: application/pdf</p>
+<div class="datanode-children">
+<div class="report-nongui-nodes">
+<p class="datanode">png: image/png</p>
+</div>
+</div>
+</div>
+</div>
+<div class="textnode report-text-node"> 
+
+    <span class="textid report-text-node-id"> test1_cmd_p30_c0 </span> 
+   
+   <div class="report-text-node-content">
+     <pre class="report-text report-text-plain">-2.46464646465</pre>
+   </div>
+     
+</div>  
+
+<div class="textnode report-text-node"> 
+
+    <span class="textid report-text-node-id"> test1_cmd_p30_c1 </span> 
+   
+   <div class="report-text-node-content">
+     <pre class="report-text report-text-plain">1.89898989899</pre>
+   </div>
+     
+</div>  
+<div style="clear:left" class='report-figure None' id='id-figure5'>
+    <div class="report-subfigure ncols-2 first-col"> 
+                <a href="env1d.html_resources/id-figure5-p31-c0.png" class="zoomable">
+                    <img src="env1d.html_resources/id-figure5-p31-c0.png"/>
+                </a>    
+            <p class="report-subfigure-caption">Pixel: 31  Command: 0  Samples: 56</p></div> <div class="report-subfigure ncols-2 last-col"> 
+                <a href="env1d.html_resources/id-figure5-p31-c1.png" class="zoomable">
+                    <img src="env1d.html_resources/id-figure5-p31-c1.png"/>
+                </a>    
+            <p class="report-subfigure-caption">Pixel: 31  Command: 1  Samples: 44</p></div> 
+
+<p class="report-figure-caption"></p><div class="report-nongui-nodes">
+<p class="datanode">p31_c0: application/pdf</p>
+<div class="datanode-children">
+<div class="report-nongui-nodes">
+<p class="datanode">png: image/png</p>
+</div>
+</div>
+<p class="datanode">p31_c1: application/pdf</p>
+<div class="datanode-children">
+<div class="report-nongui-nodes">
+<p class="datanode">png: image/png</p>
+</div>
+</div>
+</div>
+</div>
+<div class="textnode report-text-node"> 
+
+    <span class="textid report-text-node-id"> test1_cmd_p31_c0 </span> 
+   
+   <div class="report-text-node-content">
+     <pre class="report-text report-text-plain">-2.46464646465</pre>
+   </div>
+     
+</div>  
+
+<div class="textnode report-text-node"> 
+
+    <span class="textid report-text-node-id"> test1_cmd_p31_c1 </span> 
+   
+   <div class="report-text-node-content">
+     <pre class="report-text report-text-plain">1.89898989899</pre>
+   </div>
+     
+</div>  
+
+<div class="textnode report-text-node"> 
+
+    <span class="textid report-text-node-id"> info2 </span> 
+   
+   <div class="report-text-node-content">
+     <pre class="report-text report-text-plain">Learning size: 		100 
+Actuator noise: 	0 
+Sensor noise: 		2</pre>
+   </div>
+     
+</div>  
+<div style="clear:left" class='report-figure None' id='id-figure6'>
+    <div class="report-subfigure ncols-2 first-col"> 
+                <a href="env1d.html_resources/id-figure6-p30-c0.png" class="zoomable">
+                    <img src="env1d.html_resources/id-figure6-p30-c0.png"/>
+                </a>    
+            <p class="report-subfigure-caption">Pixel: 30  Command: 0  Samples: 49</p></div> <div class="report-subfigure ncols-2 last-col"> 
+                <a href="env1d.html_resources/id-figure6-p30-c1.png" class="zoomable">
+                    <img src="env1d.html_resources/id-figure6-p30-c1.png"/>
+                </a>    
+            <p class="report-subfigure-caption">Pixel: 30  Command: 1  Samples: 51</p></div> 
+
+<p class="report-figure-caption"></p><div class="report-nongui-nodes">
+<p class="datanode">p30_c0: application/pdf</p>
+<div class="datanode-children">
+<div class="report-nongui-nodes">
+<p class="datanode">png: image/png</p>
+</div>
+</div>
+<p class="datanode">p30_c1: application/pdf</p>
+<div class="datanode-children">
+<div class="report-nongui-nodes">
+<p class="datanode">png: image/png</p>
+</div>
+</div>
+</div>
+</div>
+<div class="textnode report-text-node"> 
+
+    <span class="textid report-text-node-id"> test2_cmd_p30_c0 </span> 
+   
+   <div class="report-text-node-content">
+     <pre class="report-text report-text-plain">-2.46464646465</pre>
+   </div>
+     
+</div>  
+
+<div class="textnode report-text-node"> 
+
+    <span class="textid report-text-node-id"> test2_cmd_p30_c1 </span> 
+   
+   <div class="report-text-node-content">
+     <pre class="report-text report-text-plain">2.06060606061</pre>
+   </div>
+     
+</div>  
+<div style="clear:left" class='report-figure None' id='id-figure7'>
+    <div class="report-subfigure ncols-2 first-col"> 
+                <a href="env1d.html_resources/id-figure7-p31-c0.png" class="zoomable">
+                    <img src="env1d.html_resources/id-figure7-p31-c0.png"/>
+                </a>    
+            <p class="report-subfigure-caption">Pixel: 31  Command: 0  Samples: 49</p></div> <div class="report-subfigure ncols-2 last-col"> 
+                <a href="env1d.html_resources/id-figure7-p31-c1.png" class="zoomable">
+                    <img src="env1d.html_resources/id-figure7-p31-c1.png"/>
+                </a>    
+            <p class="report-subfigure-caption">Pixel: 31  Command: 1  Samples: 51</p></div> 
+
+<p class="report-figure-caption"></p><div class="report-nongui-nodes">
+<p class="datanode">p31_c0: application/pdf</p>
+<div class="datanode-children">
+<div class="report-nongui-nodes">
+<p class="datanode">png: image/png</p>
+</div>
+</div>
+<p class="datanode">p31_c1: application/pdf</p>
+<div class="datanode-children">
+<div class="report-nongui-nodes">
+<p class="datanode">png: image/png</p>
+</div>
+</div>
+</div>
+</div>
+<div class="textnode report-text-node"> 
+
+    <span class="textid report-text-node-id"> test2_cmd_p31_c0 </span> 
+   
+   <div class="report-text-node-content">
+     <pre class="report-text report-text-plain">-2.46464646465</pre>
+   </div>
+     
+</div>  
+
+<div class="textnode report-text-node"> 
+
+    <span class="textid report-text-node-id"> test2_cmd_p31_c1 </span> 
+   
+   <div class="report-text-node-content">
+     <pre class="report-text report-text-plain">2.06060606061</pre>
+   </div>
+     
+</div>  
+</div>
+</section> 
+</div> 
+
+ 
+
+</body>
+</html>

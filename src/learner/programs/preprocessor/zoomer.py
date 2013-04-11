@@ -37,7 +37,8 @@ class Zoomer:
     def received_command(self, t, msg):
         
         command = msg.data
-        _, _, zoom = command
+#        _, _, zoom = command
+        zoom = command[2]
 
         if self.use_zoom or zoom == 0:
             
@@ -59,8 +60,6 @@ class Zoomer:
         old = self.queue_command 
         self.queue_command = []
         return old
-
-                
 
 @contract(image='array[HxWx3]', output_size='tuple(M,N)', zoom='>=100',
           returns='array[NxMx3]')

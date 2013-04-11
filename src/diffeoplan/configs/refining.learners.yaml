@@ -1,0 +1,156 @@
+- id: fast35s-15
+  desc: Hierarchical learning with smart resampling, 35% search area, 15x15 search grid, refine factor 5
+  code: 
+  - learner.DiffeoLearnerRefineFast
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: fast-bilinear
+      resolution: [15, 15]
+      refine_factor: 5
+      update_uncertainty: False
+      info: {'plot_ranges': {'uncertainty_max':25}}
+      
+- id: fast35s-9
+  desc: Hierarchical learning with smart resampling, 35% search area, 9x9 search grid, refine factor 3
+  code: 
+  - learner.DiffeoLearnerRefineFast
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: fast-bilinear
+      resolution: [9, 9]
+      refine_factor: 3
+      update_uncertainty: False
+      info: {'plot_ranges': {'uncertainty_max':25}}
+
+- id: fast10s-15
+  desc: Hierarchical learning with smart resampling, 10% search area, 15x15 search grid, refine factor 5
+  code: 
+  - learner.DiffeoLearnerRefineFast
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.1, 0.1]
+      refine_method: fast-bilinear
+      resolution: [15, 15]
+      refine_factor: 5
+      update_uncertainty: False
+      info: {'plot_ranges': {'uncertainty_max':25}}
+      
+- id: fast10s-9
+  desc: Hierarchical learning with smart resampling, 10% search area, 9x9 search grid, refine factor 3
+  code: 
+  - learner.DiffeoLearnerRefineFast
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.1, 0.1]
+      refine_method: fast-bilinear
+      resolution: [9, 9]
+      refine_factor: 3
+      update_uncertainty: False
+      info: {'plot_ranges': {'uncertainty_max':25}}
+      
+- id: "fast${sa}s-${g}"
+  desc: Hierarchical learning with smart resampling, fast${sa}s-${g} ${sa}% search area, ${g}x${g} search grid, refine factor 2
+  code: 
+  - learner.DiffeoLearnerRefineFast
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: ["0.${sa}", "0.${sa}"]
+      refine_method: fast-bilinear
+      resolution: ["${g}", "${g}"]
+      refine_factor: 2.0
+      update_uncertainty: False
+      info: {'plot_ranges': {'uncertainty_max':25}}
+            
+      
+- id: fast35s-bc
+  desc: Fast refined learning by bicubic PIL image interpolation (35% displacement)
+  code: 
+  - learner.DiffeoLearnerRefineFast
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: fast-bicubic
+      resolution: [11,15]
+      refine_factor: 1.5
+    
+#- id: fasttest
+#  desc: Fast refined learning by PIL image interpolation (35% displacement)
+#  code: 
+#  - learner.DiffeoLearnerRefineFast
+#  - use_fast: True 
+#    diffeo_estimator_params:
+#      max_displ: [0.35, 0.35]
+#      refine_method: fast-bilinear
+#      resolution: [25, 25]
+#      refine_factor: 1.5
+
+- id: r35s-bl
+  desc: Deprecated, Refined learning by bi-linear PIL image interpolation (35% displacement)
+  code: 
+  - learner.DiffeoLearnerRefine
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: standard-bilinear
+      resolution: [11,11]
+      refine_factor: 1.5
+      
+- id: r35s-bc
+  desc: Deprecated, Refined learning by bi-cubic PIL image interpolation (35% displacement)
+  code: 
+  - learner.DiffeoLearnerRefine
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: standard-bicubic
+      resolution: [11,11]
+      refine_factor: 1.5
+      
+- id: Deprecated, r35sfine-bl
+  desc: Refined learning by PIL image interpolation (35% displacement)
+  code: 
+  - learner.DiffeoLearnerRefine
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: standard-bilinear
+      resolution: [21,21]
+      refine_factor: 1.5
+      
+- id: r35sfine-bc
+  desc: Deprecated, Refined learning by PIL image interpolation (35% displacement)
+  code: 
+  - learner.DiffeoLearnerRefine
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: standard-bilinear
+      resolution: [21,21]
+      refine_factor: 1.5
+
+      
+- id: ldr35-64-test
+  desc: Test learner for landroid rangefinder 64x64 images native resolution
+  code:
+  - learner.DiffeoLearnerRefineFast
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: fast-bilinear
+      resolution: [23,23]
+      refine_factor: 1.5
+      update_uncertainty: False
+            
+- id: ldr35-128-test
+  desc: Test learner for landroid rangefinder 128x128 images native resolution
+  code:
+  - learner.DiffeoLearnerRefineFast
+  - use_fast: True 
+    diffeo_estimator_params:
+      max_displ: [0.35, 0.35]
+      refine_method: fast-bilinear
+      resolution: [45,45]
+      refine_factor: 1.5
+      update_uncertainty: False

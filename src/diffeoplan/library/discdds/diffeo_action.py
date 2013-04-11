@@ -3,8 +3,8 @@ from .. import UncertainImage
 from boot_agents.diffeo import Diffeomorphism2D
 from reprep import Report
 import numpy as np
-import numpy.linalg as la
 import itertools
+import pdb
     
 class DiffeoAction():
     """ 
@@ -101,7 +101,24 @@ class DiffeoAction():
              
         with report.subsection('backward') as s2:
             self.diffeo_inv.display(s2)
+            
+        if image is not None:
+            with report.subsection('predictions') as pred:
+                self.display_prediction(pred, image.resize(self.diffeo.d.shape[:2]))    
         
+    def display_prediction(self, report, image):
+        num_pred = 6
+        
+        f = report.figure(cols=num_pred + 1)
+        
+        y_pred = image
+        
+        f.data_rgb('start_rgb', y_pred.get_rgba(), caption='Start Image')
+        
+        for i in xrange(1, num_pred):
+            y_pred = self.predict(y_pred, 'self.diffeo.apply')
+            f.data_rgb('pred%s_rgb' % i, y_pred.get_rgba(), caption='Prediction %s' % i)
+    
     @staticmethod
     def compose(a1, a2):
         label = '%s%s' % (a1.label, a2.label)
@@ -113,7 +130,12 @@ class DiffeoAction():
         original_cmds = a1.get_original_cmds() + a2.get_original_cmds()
         return DiffeoAction(label, diffeo, diffeo_inv, original_cmds)
         
-    def update_uncertainty(self):
+    def update_uncertainty(self, length_score=None):
+        '''
+        Update the uncertainties for the action by the improved uncertainty 
+        classification based on comparing the diffeomorphism with its inverse. 
+        '''
+        print('Using length schore function %s' % length_score)
         field = self.diffeo.d
         field_inv = self.diffeo_inv.d
         
@@ -131,27 +153,35 @@ class DiffeoAction():
         E_inv = np.zeros(X.shape)
         
         for c in itertools.product(range(X.shape[0]), range(X.shape[1])):
-            E[tuple(c)] = la.norm(D[c] + D_inv[tuple(D[c])]) / (1 + la.norm(D[c]))
-            E_inv[tuple(c)] = la.norm(D_inv[c] + D[tuple(D[c])]) / (1 + la.norm(D_inv[c]))
-        
-#        
-#        Eln = np.zeros(E.shape)
-#        Eln_inv = np.zeros(E_inv.shape)
-#        for c in itertools.product(range(X.shape[0]), range(X.shape[1])):
-#            x0 = np.clip(c[0] - 1, 0, X.shape[0] - 1)
-#            x1 = np.clip(c[0] + 1, 0, X.shape[0] - 1)
-#            y0 = np.clip(c[1] - 1, 0, X.shape[1] - 1)
-#            y1 = np.clip(c[1] + 1, 0, X.shape[1] - 1)
-#            
-#            Eln[tuple(c)] = np.std(E[x0:x1, y0:y1])
-#            Eln_inv[tuple(c)] = np.std(E_inv[x0:x1, y0:y1])
-#        
-#        E = np.clip(E, 0, np.percentile(E, 99))
-#        E_inv = np.clip(E_inv, 0, np.percentile(E_inv, 99))
-#        
-#        
-#        self.diffeo.variance = 1.0 - (Eln > np.std(Eln)).astype('int')
-#        self.diffeo_inv.variance = 1.0 - (Eln > np.std(Eln)).astype('int')
-        
+            v = D[c]
+            v_inv = D_inv[tuple(D[c])]
+            # Length score
+            lsc = length_score(v, v_inv)
+            # Angle score
+#            asc = angle_score(v, v_inv)
+            asc = 1
+            
+            score = lsc * asc
+            if np.isnan(score):
+                print('Debugger break, something unexpected happened')
+                pdb.set_trace()
+            E[tuple(c)] = score
+            
+            v = D_inv[c]
+            v_inv = D[tuple(D_inv[c])]
+            # Length score
+            lsc = length_score(v, v_inv)
+            # Angle score
+#            asc = angle_score(v, v_inv)
+            asc = 1
+            
+            score = lsc * asc
+            if np.isnan(score):
+                pdb.set_trace()
+            E_inv[tuple(c)] = score
+            
+#        pdb.set_trace()
         self.diffeo.variance = 1 - E / np.max(E)
+        self.diffeo.variance_max = np.max(E)
         self.diffeo_inv.variance = 1 - E_inv / np.max(E_inv)
+        self.diffeo_inv.variance_max = np.max(E_inv)

@@ -1,12 +1,15 @@
 import scipy
 from numpy.testing.utils import assert_allclose
 from contracts import contract
+import warnings
 
 
 @contract(x='array[HxW]', shape='tuple(A,B)', returns='array[AxB]')
-def resample_signal_2d(x, shape, interp='bilinear'):
-    """ Some checks around Scipy's implementation """    
-    result = scipy.misc.imresize(x, shape, interp=interp, mode=None)
+def resample_signal_2d(x, shape, interp='bilinear', mode=None):
+    """ Some checks around Scipy's implementation """
+    msg = 'You should probably add mode="F"'    
+    warnings.warn(msg)
+    result = scipy.misc.imresize(x, shape, interp=interp, mode=mode)
     assert_allclose(result.shape, shape)
     return result
 

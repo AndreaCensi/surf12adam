@@ -5,7 +5,7 @@ import os
 
 @declare_command('show-tc', 'show-tc [-o <dir>] [<tc1> <tc2> ...]')
 def dp_show_tc_main(config, parser): #@UnusedVariable
-    """ Displays the test cases. """ 
+    """ Creates a report for test cases. """ 
     parser.add_option("-o", "--output", help="Output directory",
                       default='out/dp-show-tc/')
     

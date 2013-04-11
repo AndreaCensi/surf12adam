@@ -3,8 +3,8 @@ from .. import declare_command
 
 @declare_command('show-stream',
                  'show-stream  [<stream1> ...]')
-def show_stream(config, parser): #@UnusedVariable
-    """ Displays the learned DDS """
+def show_stream(config, parser):  # @UnusedVariable
+    """ Reads a stream, counting the records. """
     parser.add_option("-o", "--output", help="Output directory",
                       default='out/dp-show-stream/')
     options, which = parser.parse()
@@ -27,7 +27,7 @@ def read_stream(id_stream, stream):
     logger.info('Reading all data in stream %r.' % id_stream)
     
     nrecords = 0
-    for log_item in stream.read_all(): #@UnusedVariable
+    for log_item in stream.read_all():  # @UnusedVariable
         nrecords += 1
     logger.info('Total of %d records' % nrecords)
 
