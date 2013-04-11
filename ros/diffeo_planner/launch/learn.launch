@@ -1,0 +1,5 @@
+<launch>
+	<node name="command_generator" pkg="diffeo_planner" type="learn_command_generator.py" args="-s youbot_arm_base_wrist"/>
+    <node pkg="rosbag" type="rosbag" name="rosbag_record_diag"
+       args="record -o ~/raw-capture/log.raw.bag /usb_cam/image_raw /youbot_arm/incremental_instruction"/>  
+</launch>

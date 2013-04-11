@@ -1,0 +1,14 @@
+name:                 'youbot_car1'
+num_actuators:        5 # unused
+min_actuator_values:  [-.1, -.1, -.1, -.1, -.1] # unused
+max_actuator_values:  [.1, .1, .1, .1, .1] # unused
+stop_command:         [0, 0, 0, 0, 0]
+ROS_msg_topic:        '/array2twist/cmd_array'
+command_list:         [[+0.15, 0, 0],
+                       [+0.15, 0, +0.075],
+                       [+0.15, 0, -0.075],
+                       [-0.15, 0, 0],
+                       [-0.15, 0, +0.075],
+                       [-0.15, 0, -0.075]]
+home_position:        null
+position_topic:       null
