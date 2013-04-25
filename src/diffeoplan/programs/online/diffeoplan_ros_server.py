@@ -3,13 +3,14 @@ Created on Oct 24, 2012
 
 @author: adam
 '''
-from PIL import Image #@UnresolvedImport
+from PIL import Image  # @UnresolvedImport
 from collections import namedtuple
 from diffeoplan.configuration import set_current_config
 from diffeoplan.configuration.master import DiffeoplanConfigMaster
 from diffeoplan.library.logs.rosbag.bag_reader import get_image_array
 from diffeoplan.library.online.online_planning import OnlinePlanning
 from std_msgs.msg import String
+
 import camera_actuator.srv
 import numpy as np
 import pdb
@@ -79,7 +80,7 @@ class DiffeoplanRosServer():
         '''
         distance = self.online_planner.algo.metric_goal.distance
         
-        res = camera_actuator.srv.floatServiceResponse() #@UndefinedVariable
+        res = camera_actuator.srv.floatServiceResponse()  # @UndefinedVariable
         res.res = distance(self.get_y_current(self.size),
                            self.get_y_goal(self.size))
         return res
@@ -88,7 +89,7 @@ class DiffeoplanRosServer():
         :param req:
         '''
         distance = self.online_planner.algo.metric_goal.distance
-        res = camera_actuator.srv.floatArrayServiceResponse() #@UndefinedVariable
+        res = camera_actuator.srv.floatArrayServiceResponse()  # @UndefinedVariable
         y_0 = self.get_y_current(self.size)
         res.array = []
         
@@ -108,7 +109,7 @@ class DiffeoplanRosServer():
         
         
         # Initiate response object
-        res = camera_actuator.srv.planServiceResponse() #@UndefinedVariable
+        res = camera_actuator.srv.planServiceResponse()  # @UndefinedVariable
         
         if self.state in [WAIT_GOAL, WAIT_CURRENT]:
             self.info('Module is in state: ' + self.state + 
@@ -124,7 +125,7 @@ class DiffeoplanRosServer():
             return res
         
         self.info('Passed state check, OK')
-        self.state = PLANNING   # indicate that the module is busy with planning
+        self.state = PLANNING  # indicate that the module is busy with planning
         
         # Plan
         instance = namedtuple('instance', ['y_stary', 'y_goal'])
@@ -171,7 +172,7 @@ class DiffeoplanRosServer():
         Callback function for reloading planner from a rosservice.
         :param req:
         '''
-        self.size = [160, 120] # For now
+        self.size = [160, 120]  # For now
         self.load_diffeoplan()
         res = camera_actuator.srv.voidServiceResponse()
         res.res = 0
@@ -195,28 +196,28 @@ class DiffeoplanRosServer():
         self.info_pub = rospy.Publisher(self.node_name + '/info', String)
         
         # Startup services
-        plan_service = rospy.Service(self.node_name + '/get_plan', #@UnusedVariable
-                                     camera_actuator.srv.planService, #@UndefinedVariable
+        plan_service = rospy.Service(self.node_name + '/get_plan',  # @UnusedVariable
+                                     camera_actuator.srv.planService,  # @UndefinedVariable
                                      self.get_plan)
         
-        reload_service = rospy.Service(self.node_name + '/reload_planner', #@UnusedVariable
-                                     camera_actuator.srv.voidService, #@UndefinedVariable
+        reload_service = rospy.Service(self.node_name + '/reload_planner',  # @UnusedVariable
+                                     camera_actuator.srv.voidService,  # @UndefinedVariable
                                      self.reload_planner)
         
-        goal_service = rospy.Service(self.node_name + '/get_goal', #@UnusedVariable
+        goal_service = rospy.Service(self.node_name + '/get_goal',  # @UnusedVariable
                                      camera_actuator.srv.imageService,
                                      self.get_goal_service)
         
-        current_service = rospy.Service(self.node_name + '/get_current', #@UnusedVariable
+        current_service = rospy.Service(self.node_name + '/get_current',  # @UnusedVariable
                                      camera_actuator.srv.imageService,
                                      self.get_current_service)
         
-        distance_service = rospy.Service(self.node_name + '/get_distance', #@UnusedVariable
-                                     camera_actuator.srv.floatService, #@UndefinedVariable
+        distance_service = rospy.Service(self.node_name + '/get_distance',  # @UnusedVariable
+                                     camera_actuator.srv.floatService,  # @UndefinedVariable
                                      self.get_distance)
         
-        p_d_service = rospy.Service(self.node_name + '/get_predicted_distance', #@UnusedVariable
-                                    camera_actuator.srv.floatArrayService, #@UndefinedVariable
+        p_d_service = rospy.Service(self.node_name + '/get_predicted_distance',  # @UnusedVariable
+                                    camera_actuator.srv.floatArrayService,  # @UndefinedVariable
                                     self.get_predicted_distance)
         
         

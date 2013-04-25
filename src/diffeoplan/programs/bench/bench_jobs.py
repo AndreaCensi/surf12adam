@@ -5,7 +5,8 @@ from compmake import comp, comp_stage_job_id
 from diffeoplan.configuration import set_current_config
 from diffeoplan.library import UncertainImage
 from reprep import Report
-from reprep.report_utils import ReportManager, StoreResults
+from reprep.report_utils import StoreResults
+from quickapp import ReportManager
 from compmake.ui.user_utils import comp_store
 
 

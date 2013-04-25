@@ -8,7 +8,7 @@ Extracts two sub images from the Y0 image and two sub images from the Y1 image
 import sys
 from optparse import OptionParser
 
-#class IdealizeLog():
+# class IdealizeLog():
 #    def __init__(self):
 #        pass
     
@@ -19,9 +19,9 @@ def main(args):
                       help="Input log files, separated by comma")
     options = parser.parse_options()
     inputs = options.inputs.split(',') 
-    for input in inputs:
-        outname = (input[:input.index('-')] + '-ideal' + 
-                   input[input.index('-'):])
+    for x in inputs:
+        outname = (input[:x.index('-')] + '-ideal' + 
+                   input[x.index('-'):])
         
         
     

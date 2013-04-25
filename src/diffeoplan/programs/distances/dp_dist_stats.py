@@ -9,7 +9,8 @@ from geometry.utils import assert_allclose
 from itertools import chain, starmap, islice, cycle, ifilterfalse
 from reprep import Report
 from reprep.plot_utils import ieee_spines
-from reprep.report_utils import StoreResults, ReportManager
+from reprep.report_utils import StoreResults
+from quickapp import ReportManager
 import numpy as np
 import os
 

@@ -3,24 +3,25 @@ Created on Feb 14, 2013
 
 @author: adam
 '''
-import os
 from . import logger
 from compmake import (batch_command, compmake_console, comp, read_rc_files,
     use_filesystem)
 from diffeoplan.library.images import UncertainImage
-from diffeoplan.programs.distances.dp_dist_stats import fancy_error_display, \
-    legend_put_below
+from diffeoplan.programs.distances.dp_dist_stats import (fancy_error_display,
+    legend_put_below)
 from diffeoplan.programs.distances.dp_pred_stats import compute_predstats
 from diffeoplan.programs.utils import declare_command
 from itertools import chain, starmap, islice, cycle
+from quickapp import ReportManager
 from reprep import Report
-from reprep.report_utils import StoreResults, ReportManager
+from reprep.report_utils import StoreResults
 import numpy as np
+import os
 import pdb
 import pylab
 
 @declare_command('uncert', 'uncert  dds <stream1> [...]')
-def uncert(config, parser): #@UnusedVariable
+def uncert(config, parser):  # @UnusedVariable
     parser.add_option("-s", "--streams", help="Which streams to use.",
                       default="*")
     parser.add_option("-S", "--dds", help="DDS sytem .")
@@ -129,12 +130,12 @@ def report_uncert_stats(records, id_ddss):
     
         legend_put_below(ax)
     return r
-#def uncert_stats(config, dds_id, streams, outdir):
+# def uncert_stats(config, dds_id, streams, outdir):
 #    
 #    for stream_id in streams:
 #        comp(calculate_uncert_stats, config, dds_id, stream_id, outdir)
 #
-#def calculate_uncert_stats(config, dds_id, stream_id, outdir):
+# def calculate_uncert_stats(config, dds_id, stream_id, outdir):
 #    dds = config.discdds.instance(dds_id)
 #    stream = config.streams.instance(stream_id)
 #    metric = config.distances.instance('L2')
@@ -142,7 +143,7 @@ def report_uncert_stats(records, id_ddss):
 #    logitems = stream.read_all_state()
 #    
 #    for i, (y0, u, y1, x0) in enumerate(logitems):
-##        pdb.set_trace()
+# #        pdb.set_trace()
 #        Y0 = UncertainImage(y0)
 #        Y1 = UncertainImage(y1)
 #        U0 = dds.command_to_index(u)
@@ -157,10 +158,10 @@ def report_uncert_stats(records, id_ddss):
 #        
 #        
 #        
-##        diff0 = metric.distance(Y0, uimg)
-##        diff1 = metric.distance(Y1, uimg)
-##        
-##        logger.info(diff0, diff1)
+# #        diff0 = metric.distance(Y0, uimg)
+# #        diff1 = metric.distance(Y1, uimg)
+# #        
+# #        logger.info(diff0, diff1)
 #        
 #        diff = uimg.get_values() - UncertainImage(y1).get_values()
 #        diff_0 = uimg.get_values() - UncertainImage(y0).get_values()

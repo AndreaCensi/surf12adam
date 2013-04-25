@@ -4,7 +4,7 @@ from compmake import (batch_command, compmake_console, comp, read_rc_files,
     use_filesystem)
 from diffeoplan.library.discdds.writing import ds_dump
 from reprep import Report
-from reprep.report_utils import ReportManager
+from quickapp import ReportManager
 import itertools
 import os
 import warnings

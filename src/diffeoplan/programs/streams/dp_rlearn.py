@@ -10,7 +10,7 @@ from diffeoplan.library.discdds.writing import ds_dump
 from diffeoplan.programs.streams.dp_plearn import filter_commands, report_dds, report_learner, summarize
 from diffeoplan.programs.utils import declare_command
 from reprep import Report
-from reprep.report_utils import ReportManager
+from quickapp import ReportManager
 import numpy as np
 import os
 import sys

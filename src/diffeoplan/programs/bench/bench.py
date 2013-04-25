@@ -1,6 +1,7 @@
+from . import StoreResults
+from quickapp import ReportManager
 from . import Stats, contract, get_visualization_distances, logger
 from diffeoplan.library import DiffeoSystem, TestCase
-from reprep.report_utils import StoreResults
 import itertools
 import time
 import warnings

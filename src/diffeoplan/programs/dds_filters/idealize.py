@@ -6,7 +6,7 @@ Created on Feb 28, 2013
 from diffeoplan.library.discdds.writing import ds_dump
 from diffeoplan.programs.utils import declare_command
 from reprep import Report
-from reprep.report_utils import ReportManager
+from quickapp import ReportManager
 import itertools
 import numpy as np
 import numpy.linalg as la

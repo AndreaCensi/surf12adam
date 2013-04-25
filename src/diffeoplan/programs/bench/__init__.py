@@ -1,6 +1,12 @@
+
 from .. import logger, np, contract
 from .statistics import *
 from .report import *
+
+from reprep.report_utils import StoreResults
+from quickapp import ReportManager
+
+
 
 from .bench import *
 from .tables import *

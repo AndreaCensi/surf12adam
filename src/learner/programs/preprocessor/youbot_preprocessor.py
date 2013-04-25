@@ -7,7 +7,7 @@ import yaml
 from learner.programs.preprocessor import topic_image_raw
 import sys
 from diffeoplan.library.logs.rosbag.bag_reader import get_image_array
-from PIL import Image #@UnresolvedImport
+from PIL import Image  # @UnresolvedImport
 from diffeoplan.library.logs.rosbag.ros_conversions import pil_to_imgmsg
 
 
@@ -91,7 +91,7 @@ def preprocess(bagfile, output, output_size):
                 Y1 = Y_last
                 if Y0 is not None and U0 is not None:
                     # yeild tuple
-                    yield (Y0, U0 , Y1, t0)
+                    yield (Y0, U0, Y1, t0)
                 
                 Y0 = Y_last
                 U0 = msg

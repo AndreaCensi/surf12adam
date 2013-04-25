@@ -4,7 +4,7 @@ import urllib
 from compmake import (batch_command, comp)
 
 from reprep import Report
-from reprep.report_utils import ReportManager
+from quickapp import ReportManager
 import os
 import numpy as np
 

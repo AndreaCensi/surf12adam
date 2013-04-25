@@ -4,7 +4,7 @@ Created on Oct 16, 2012
 @author: adam
 '''
 
-from PIL import Image #@UnresolvedImport
+from PIL import Image  # @UnresolvedImport
 from diffeoplan.library.images.uncertain_image import UncertainImage
 from diffeoplan.library.logs.rosbag.bag_reader import get_image_array
 import camera_actuator.srv

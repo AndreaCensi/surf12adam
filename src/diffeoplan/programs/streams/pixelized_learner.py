@@ -6,7 +6,7 @@ from diffeoplan.library.discdds.diffeo_action import DiffeoAction
 from diffeoplan.library.discdds.diffeo_system import DiffeoSystem
 from diffeoplan.programs.utils import declare_command
 from reprep import Report
-from reprep.report_utils import ReportManager
+from quickapp import ReportManager
 import itertools
 import numpy as np
 import os

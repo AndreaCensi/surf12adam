@@ -12,7 +12,8 @@ from diffeoplan.programs.distances.dp_pred_stats import compute_predstats
 from diffeoplan.programs.utils import declare_command
 from itertools import chain, starmap, islice, cycle
 from reprep import Report
-from reprep.report_utils import StoreResults, ReportManager
+from reprep.report_utils import StoreResults
+from quickapp import ReportManager
 import numpy as np
 import itertools
 

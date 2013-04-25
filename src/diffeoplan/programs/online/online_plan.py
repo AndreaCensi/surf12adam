@@ -9,7 +9,7 @@ from compmake import (comp, compmake_console)
 from diffeoplan.configuration import DiffeoplanConfigMaster, set_current_config
 from diffeoplan.library.online import report_tools
 from optparse import OptionParser
-from reprep.report_utils import ReportManager
+from quickapp import ReportManager
 import pickle
 import yaml
 

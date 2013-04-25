@@ -1,8 +1,9 @@
 from . import Stats, contract, logger
 from compmake import comp, comp_store
 from itertools import product
-from reprep.report_utils import ReportManager, StoreResults, table_by_rows
+from reprep.report_utils import table_by_rows
 
+from . import StoreResults, ReportManager
 
 def results2stats_dict(results):
     """ Applies all possible statistics to the results (output of run_planning_stats). """
@@ -58,8 +59,8 @@ def jobs_tables_by_sample_groups(samples_groups, rm, tables):
         r = comp(table_by_rows,
                  "bysamplegroups-%s-%s" % (sanitize(id_sample_group), id_statstable),
                  samples=samples,
-                 rows_field='id_algo', # group by algorithm
-                 cols_fields=stats, # which statistics for each col
+                 rows_field='id_algo',  # group by algorithm
+                 cols_fields=stats,  # which statistics for each col
                  source_descs=source_descs)
 
         report_attrs = dict(id_sample_group=id_sample_group,
@@ -85,12 +86,12 @@ def jobs_tables_by_sample_rows_algo(allstats, rm, tables):
             r = comp(table_by_rows,
                      "bysample-%s-%s" % (id_tc, id_statstable),
                      samples=tcruns,
-                     rows_field='id_algo', # group by algorithm
-                     cols_fields=stats, # which statistics for each col
+                     rows_field='id_algo',  # group by algorithm
+                     cols_fields=stats,  # which statistics for each col
                      source_descs=source_descs,
                      job_id=job_id)
             
-            report_attrs = dict(id_statstable=id_statstable) # id_tc=id_tc, 
+            report_attrs = dict(id_statstable=id_statstable)  # id_tc=id_tc, 
             report_attrs.update(tcruns.fields_with_unique_values())
 
             rm.add(r, 'bysample', **report_attrs)
@@ -108,8 +109,8 @@ def jobs_tables_by_algo_rows_samples(allstats, rm, tables):
             r = comp(table_by_rows,
                      "byalgo-rows-sample-%s-%s" % (id_algo, id_statstable),
                      samples=samples,
-                     rows_field='id_tc', # rows = tc
-                     cols_fields=stats, # which statistics for each col
+                     rows_field='id_tc',  # rows = tc
+                     cols_fields=stats,  # which statistics for each col
                      source_descs=source_descs,
                      job_id=job_id)
 
@@ -139,8 +140,8 @@ def jobs_tables_by_algo_rows_sample_groups(samples_groups, rm, tables):
             r = comp(table_by_rows,
                      "byalgo-rows-sample-groups-%s-%s" % (id_algo, id_statstable),
                      samples=samples,
-                     rows_field='id_group', # rows = tc
-                     cols_fields=stats, # which statistics for each col
+                     rows_field='id_group',  # rows = tc
+                     cols_fields=stats,  # which statistics for each col
                      source_descs=source_descs,
                      job_id=job_id) 
             
