@@ -1,17 +1,12 @@
-'''
-Created on Dec 6, 2012
-
-@author: adam
-'''
 from . import logger
 from diffeoplan.configuration import get_current_config
-from diffeoplan.library.analysis.structure.diffeo_structure import DiffeoStructure
-import itertools
-import numpy as np
+from diffeoplan.library.analysis.structure.diffeo_structure import (
+    DiffeoStructure)
 from diffeoplan.library.discdds.diffeo_system import DiffeoSystem
 from diffeoplan.library.distances.distance_norm import DistanceNorm
-import pdb
-
+import itertools
+import numpy as np
+ 
 class ComposeGraph():
     def __init__(self, id_discdds, plan_length):
         '''

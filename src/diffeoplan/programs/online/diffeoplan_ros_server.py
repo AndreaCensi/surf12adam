@@ -84,6 +84,7 @@ class DiffeoplanRosServer():
         res.res = distance(self.get_y_current(self.size),
                            self.get_y_goal(self.size))
         return res
+    
     def get_predicted_distance(self, req):
         '''
         :param req:

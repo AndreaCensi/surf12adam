@@ -45,3 +45,4 @@ pip-log.txt
 out
 .compmake_history.txt
 .settings
+*pgc

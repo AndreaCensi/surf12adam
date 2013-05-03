@@ -5,6 +5,7 @@ from reprep import Report
 import numpy as np
 import itertools
 import pdb
+import warnings
     
 class DiffeoAction():
     """ 
@@ -38,8 +39,8 @@ class DiffeoAction():
         # let's just use the same label
         label = self.label
         
-        diffeo = self.diffeo_inv # <-- note swapped
-        diffeo_inv = self.diffeo # <-- note swapped
+        diffeo = self.diffeo_inv  # <-- note swapped
+        diffeo_inv = self.diffeo  # <-- note swapped
         cmd = [-x for x in self.get_original_cmds()]
         return DiffeoAction(label, diffeo, diffeo_inv, cmd)
     
@@ -79,13 +80,14 @@ class DiffeoAction():
             Returns the prediction of applying this action to the 
             given input y0. 
         """
-        apply_function = eval(apply_function)
+        warnings.warn('remove this hack!')
+        apply_function = eval(apply_function) 
         y1, var1 = apply_function(y0.get_values(),
                                      y0.scalar_uncertainty)
         return UncertainImage(y1, var1) 
         
     @contract(report=Report)
-    def display(self, report, image=None): #@UnusedVariable
+    def display(self, report, image=None):  # @UnusedVariable
         if not hasattr(self, 'state'):
             state_str = 'None'
         else:
@@ -125,8 +127,8 @@ class DiffeoAction():
         # This is the correct order
         diffeo = Diffeomorphism2D.compose(a2.diffeo, a1.diffeo)
         diffeo_inv = Diffeomorphism2D.compose(a1.diffeo_inv, a2.diffeo_inv)
-        #diffeo = Diffeomorphism2D.compose(a1.diffeo, a2.diffeo)
-        #diffeo_inv = Diffeomorphism2D.compose(a2.diffeo_inv, a1.diffeo_inv)
+        # diffeo = Diffeomorphism2D.compose(a1.diffeo, a2.diffeo)
+        # diffeo_inv = Diffeomorphism2D.compose(a2.diffeo_inv, a1.diffeo_inv)
         original_cmds = a1.get_original_cmds() + a2.get_original_cmds()
         return DiffeoAction(label, diffeo, diffeo_inv, original_cmds)
         

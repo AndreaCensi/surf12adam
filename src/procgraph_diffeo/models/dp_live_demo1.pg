@@ -1,0 +1,42 @@
+--- model dp_live_demo
+config id_discdds = 'iu-youbot-b3-05-80-fast10s-15-r'
+config config_dir = '${YC2013WS}/diffeo-from-lambda'
+
+import procgraph_cv
+
+|cv_capture| -> rgb
+
+# a = 
+#rgb -> |dp_discdds_predict config_dir=$config_dir id_discdds=$id_discdds plan=[0]| -> rgb1a
+rgb -> |dp_discdds_predict config_dir=$config_dir id_discdds=$id_discdds plan=[0,0,0,0,0,0]| -> rgb6a
+rgb -> |dp_discdds_predict config_dir=$config_dir id_discdds=$id_discdds plan=[0,0,0,0,0,0,0,0,0,0,0,0]| -> rgb12a
+
+# b= down
+#rgb -> |dp_discdds_predict config_dir=$config_dir id_discdds=$id_discdds plan=[1]| -> rgb1b
+rgb -> |dp_discdds_predict config_dir=$config_dir id_discdds=$id_discdds plan=[1,1,1,1,1,1]| -> rgb6b
+rgb -> |dp_discdds_predict config_dir=$config_dir id_discdds=$id_discdds plan=[1,1,1,1,1,1,1,1,1,1,1,1]| -> rgb12b
+
+# c = ?
+#rgb -> |dp_discdds_predict config_dir=$config_dir id_discdds=$id_discdds plan=[2]| -> rgb1c
+rgb -> |dp_discdds_predict config_dir=$config_dir id_discdds=$id_discdds plan=[2,2,2,2,2,2]| -> rgb6c
+rgb -> |dp_discdds_predict config_dir=$config_dir id_discdds=$id_discdds plan=[2,2,2,2,2,2,2,2,2,2,2,2]| -> rgb12c
+
+# d = ?
+#rgb -> |dp_discdds_predict config_dir=$config_dir id_discdds=$id_discdds plan=[3]| -> rgb1d
+rgb -> |dp_discdds_predict config_dir=$config_dir id_discdds=$id_discdds plan=[3,3,3,3,3,3]| -> rgb6d
+rgb -> |dp_discdds_predict config_dir=$config_dir id_discdds=$id_discdds plan=[3,3,3,3,3,3,3,3,3,3,3,3]| -> rgb12d
+
+rgb -> |dp_discdds_predict config_dir=$config_dir id_discdds=$id_discdds plan=[0,0,0,0,0,0,1,1,1,1,1,1]| -> rgb6a6b
+rgb -> |dp_discdds_predict config_dir=$config_dir id_discdds=$id_discdds plan=[0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1]| -> rgb6a12b
+rgb -> |dp_discdds_predict config_dir=$config_dir id_discdds=$id_discdds plan=[0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1]| -> rgb12a6b
+rgb -> |dp_discdds_predict config_dir=$config_dir id_discdds=$id_discdds plan=[0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1]| -> rgb12a12b
+
+rgb12a12b, rgb6a12b , rgb12b, rgb   , rgb   , \
+rgb12a6b, rgb6a6b, rgb6b , rgb   , rgb   , \
+rgb12a, rgb6a , rgb   , rgb6c , rgb12c, \
+rgb   , rgb   , rgb6d , rgb   , rgb   , \
+rgb   , rgb   , rgb12d, rgb   , rgb   -> |sync| -> |grid cols =5| -> out
+
+
+out -> |cv_display|
+

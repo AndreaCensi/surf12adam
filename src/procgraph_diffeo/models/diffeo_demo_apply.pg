@@ -1,0 +1,11 @@
+--- model diffeo_demo_apply
+config id_symdiffeo = 'twirl'
+config config_dir = '${YC2013WS}/diffeo-from-lambda'
+
+import procgraph_cv
+
+|cv_capture| -> rgb 
+
+rgb -> |apply_diffeo_action id_symdiffeo=$id_symdiffeo| -> rgb2
+
+rgb2 -> |cv_display|

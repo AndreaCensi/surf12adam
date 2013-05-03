@@ -10,3 +10,4 @@ from .analysis import *
 from .algo import *
 from .logs import *
 
+from .diffeo_action import *

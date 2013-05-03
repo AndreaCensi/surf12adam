@@ -6,12 +6,16 @@ from diffeoplan.library.discdds import (diffeoaction_comm_distance_L2_infow,
     diffeoaction_distance_L2, plan_friendly)
 from diffeoplan.utils import construct_matrix
 from reprep import Report
+import warnings
 
 
 class DiffeoSystem():
     """
         A DiffeoSystem is a set of discretized diffeomorphisms.
         
+        It has a set of DiffeoAction.
+        
+        Each DiffeoAction keeps track of forward and backward diffeos.
     """
     @contract(label='str', actions='list[>=1]')
     def __init__(self, label, actions):
@@ -33,6 +37,10 @@ class DiffeoSystem():
         actions = map(DiffeoAction.inverse, self.actions)
         return DiffeoSystem(label, actions)
 
+    @contract(returns='int,>=1')
+    def get_num_commands(self):
+        return len(self.actions)
+    
     @contract(returns='tuple(int,int)')
     def get_shape(self):
         """ Returns the resolution of these diffeomorphisms. """
@@ -64,14 +72,25 @@ class DiffeoSystem():
             y1 = action.predict(y1)
         return y1
     
-    @contract(plan='seq[>=1](int)', returns=DiffeoAction)
+    @contract(returns=DiffeoAction)
+    def get_identity_action(self):
+        """ Returns the identity action for this system """
+        shape = self.get_shape()
+        warnings.warn('This is not entirely correct')
+        identity_cmd = 0 * self.actions[0].get_original_cmds()[0]
+        return DiffeoAction.identity('id', shape, identity_cmd)
+        
+    @contract(plan='seq[>=0](int)', returns=DiffeoAction)
     def plan2action(self, plan):
         """ Creates the DiffeoAction for the given composition. """
+        if len(plan) == 0:
+            return self.get_identity_action()
+        
         self.check_valid_plan(plan)
         a = self.actions[plan[0]]
-        for i in plan[1:]: # big bug was found here 
+        for i in plan[1:]:  # big bug was found here 
             a_i = self.actions[i]
-            a = DiffeoAction.compose(a, a_i) # XXX: check
+            a = DiffeoAction.compose(a, a_i)  # XXX: check
         return a
     
     def check_valid_plan(self, plan):
@@ -122,7 +141,7 @@ class DiffeoSystem():
             cmd.extend(x_cmds)
         return cmd
   
-    @contract(report=Report)#, image=UncertainImage)
+    @contract(report=Report)  # , image=UncertainImage)
     def display(self, report, image=None):
         '''
             Displays this diffeo system in a report.
@@ -210,7 +229,7 @@ class DiffeoSystem():
             instead of the composite ones. """
         # first convert to commands
         commands = self.indices_to_commands(plan)
-        #print('commands: %s' % str(commands))
+        # print('commands: %s' % str(commands))
         # then assume each simple command has an action
         return tuple(self.commands_to_indices(commands)) 
             

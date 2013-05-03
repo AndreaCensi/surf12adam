@@ -13,9 +13,9 @@ class PlanReducer(object):
     def __init__(self):
         # all actions
         self._all_actions = set()
-        self._null = set() # a
-        self._commutes = set() # (a1,a2)
-        self._inverse = set() # (a1,a2)
+        self._null = set()  # a
+        self._commutes = set()  # (a1,a2)
+        self._inverse = set()  # (a1,a2)
         self._inverse_for = defaultdict(set)
         self._same = defaultdict(set) 
         
@@ -118,7 +118,7 @@ class PlanReducer(object):
     @contract(plan='tuple', returns='tuple')
     def get_canonical(self, plan):
         def log(s):
-            #print(s)
+            # print(s)
             pass
    
         current = list()
@@ -168,8 +168,4 @@ class PlanReducer(object):
                 
         return tuple(current)
         
-
-
-#def make_set():
-#    # cannot use lambda because not pickable
-#    return set()
+ 

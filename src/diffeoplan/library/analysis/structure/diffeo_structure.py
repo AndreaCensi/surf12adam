@@ -3,10 +3,11 @@ from boot_agents.diffeo import (diffeo_to_rgb_angle, diffeo_to_rgb_norm,
     scalaruncertainty2rgb)
 from boot_agents.misc_utils import iterate_indices
 from diffeoplan.library.discdds import DiffeoAction, plans_of_max_length
-import reprep
-from reprep.plot_utils.axes import x_axis_extra_space
+from reprep.plot_utils import x_axis_extra_space
+
 
 __all__ = ['DiffeoStructure']
+
 
 class DiffeoStructure():
     """ 
@@ -89,7 +90,7 @@ class DiffeoStructure():
     
     def get_canonical(self, plan):
         cplan = self.plan_reducer.get_canonical(plan)
-        #print('get_canonical(%s) -> %s' % (plan, cplan))
+        # print('get_canonical(%s) -> %s' % (plan, cplan))
         return cplan
      
     @contract(returns='tuple(list[M], list[M], list[M])')
@@ -102,7 +103,7 @@ class DiffeoStructure():
             nsteps.append(n)
             plans = plans_of_max_length(ncmd=K, maxsteps=n)
             cplans, _ = self.get_minimal_equiv_set(plans)
-            #print('%3d steps: from %5d to %5d' % 
+            # print('%3d steps: from %5d to %5d' % 
             #      (n, len(plans), len(cplans)))
             nplans.append(len(plans))
             ncplans.append(len(cplans))
@@ -252,7 +253,7 @@ class DiffeoStructure():
             x_axis_extra_space(pylab)
     
     def show_compositions(self, report):
-        #f_ba = report.figure()
+        # f_ba = report.figure()
         n = len(self.dds.actions)
         f_ab_norm = report.figure(cols=n, caption='Norm of AB')
         f_ab_phase = report.figure(cols=n, caption='Phase of AB')
@@ -280,7 +281,7 @@ class DiffeoStructure():
          
         s = "\n".join('%s -> %s  (sum cmd: %s)' % 
                       (self.plan2desc(a), self.plan2desc(b),
-                       self.plan2point(a)) #, self.plan2point(b))  
+                       self.plan2point(a))  # , self.plan2point(b))  
                       for a, b in plan2cplans.items())
         report.text('plans', s)
         s = "\n".join('%s    (sum: %s)' % (self.plan2desc(x), self.plan2point(x))
@@ -318,7 +319,7 @@ class DiffeoStructure():
     
     def plan2point(self, plan):
         """ Assuming that we can add the original_cmd... (for debug only) """
-        if not plan: # empty
+        if not plan:  # empty
             n = self.dds.actions[0].original_cmd.size
             return np.zeros(n)
         return np.sum(self.dds.actions[i].original_cmd for i in plan)

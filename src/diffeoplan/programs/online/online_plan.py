@@ -1,9 +1,3 @@
-'''
-Created on Oct 4, 2012
-
-@author: adam
-'''
-
 from . import logger
 from compmake import (comp, compmake_console)
 from diffeoplan.configuration import DiffeoplanConfigMaster, set_current_config

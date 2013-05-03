@@ -1,9 +1,3 @@
-'''
-Created on Oct 17, 2012
-
-@author: adam
-'''
-
 from reprep import Report
 import numpy as np
 from matplotlib.colors import ColorConverter

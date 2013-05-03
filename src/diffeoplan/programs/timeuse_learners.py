@@ -5,7 +5,7 @@ from compmake import (batch_command, comp)
 
 from reprep import Report
 from quickapp import ReportManager
-import os
+
 import numpy as np
 
 
@@ -26,9 +26,9 @@ def timeuse_report():
     
     resolutions = [40, 80, 160, 320]
 #    stoplevels = {40: [1, 2, 1, 5], 80: [1, 2, 1, 6], 160: [1, 3, 1, 7], 320: [1, 4, 1, 8]} # g=5x5
-    stoplevels = {40: [1, 2, 1], 80: [1, 3, 2], 160: [1, 3, 2], 320: [1, 4, 3]} # g=9x9
-    #stoplevels = {40: [1, 3], 80: [1, 3], 160: [1, 3], 320: [1, 3]}
-    index = {40:0, 80:1, 160:2, 320: 3}
+    stoplevels = {40: [1, 2, 1], 80: [1, 3, 2], 160: [1, 3, 2], 320: [1, 4, 3]}  # g=9x9
+    # stoplevels = {40: [1, 3], 80: [1, 3], 160: [1, 3], 320: [1, 3]}
+    index = {40: 0, 80: 1, 160: 2, 320: 3}
     plotdata = {}
     for res in resolutions:
         learnurl = 'http://lambda.cds.caltech.edu/~adam/data/data-1303/out/%s/learn/' % res
@@ -42,7 +42,7 @@ def timeuse_report():
         for i, key in enumerate(types):
     #        key = learner.split('-')[3]
             learner = '%s-%s' % (stream, key)
-            if not plotdata.has_key(key):
+            if not key in plotdata:
                 plotdata[key] = np.zeros(len(resolutions)) * np.NaN
             
             try:

@@ -1,9 +1,3 @@
-'''
-Created on Dec 6, 2012
-
-@author: adam
-'''
-from . import contract, logger
 from diffeoplan.library.algo.planning_algo import DiffeoPlanningAlgo
 from diffeoplan.library.discdds.compose_graph import ComposeGraph
 from diffeoplan.library.discdds.diffeo_system import DiffeoSystem
@@ -12,7 +6,8 @@ from diffeoplan.library.algo.planning_result import PlanningResult
 import time
 import numpy as np
 from diffeoplan.configuration import get_current_config
-#import pdb
+from contracts import contract
+from . import logger
 
 class SamplePlanner(DiffeoPlanningAlgo):
     """ A sample based planner. """

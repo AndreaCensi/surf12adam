@@ -1,0 +1,15 @@
+--- model dp_live_demo2
+config id_discdds = 'iu-youbot-b3-05-80-fast10s-15-r'
+config config_dir = '${YC2013WS}/diffeo-from-lambda'
+
+import procgraph_cv
+
+|cv_capture width=160 height=120| -> |sieve n=2| -> rgb
+
+rgb -> |pred:dp_discdds_predict_matrix config_dir=$config_dir id_discdds=$id_discdds| -> out
+
+pred.nsteps = 2
+pred.mult = 2
+
+out -> |cv_display|
+

@@ -1,9 +1,8 @@
 from . import contract, np
 from boot_agents.diffeo import scalaruncertainty2rgb
-from diffeoplan.utils import resample_signal
-from diffeoplan.utils import resample_signal_2d
-#from numpy.core.numeric import dtype
-
+from diffeoplan.utils import resample_signal, resample_signal_2d
+ 
+ 
 class UncertainImage(object):
     
     @contract(values='array[HxWx3](uint8)|array[HxWx...]((float32|float64),>=0,<=1)',
@@ -18,7 +17,7 @@ class UncertainImage(object):
             
         """  
         if values.dtype == 'uint8':
-            values = values.astype('float32') / 255
+            values = values.astype('float32') * (1.0 / 255)
             
         vmin = np.min(values)
         vmax = np.max(values)
@@ -92,7 +91,6 @@ class UncertainImage(object):
         
         return rgb
     
-    
     @contract(returns='array[HxWx4](uint8)')
     def get_rgba(self):
         """ Returns an RGBalpha representation of the image, where uncertain is transparent. """
@@ -104,15 +102,20 @@ class UncertainImage(object):
         rgba = np.zeros((v.shape[0], v.shape[1], 4), dtype=np.uint8)
         rgba[:, :, :3] = rgb
         
-        
         w = self.get_scalar_uncertainty()
         rgba[:, :, 3] = (w * 255).astype('uint8')
-#        rgb[:, :, 0][w] = 125
-#        rgb[:, :, 1][w] = 125
-#        rgb[:, :, 2][w] = 125
-        
         return rgba
-
+    
+    @contract(returns='array[HxWx4](uint8)')
+    def get_rgba_fill(self, col=[0, 1, 0]):
+        """ Like get_rgba, but we set the uncertain areas to the given color. """
+        col = (np.array(col) * 255).astype('uint8')
+        rgba = self.get_rgba()
+        zero = rgba[:, :, 3] == 0
+        for i in range(3):
+            rgba[zero, i] = col[i]
+        return rgba
+    
     @contract(returns='array[HxWx3](uint8)')
     def get_rgb_uncertain(self):
         """ Returns an RGB representation of the uncertainty of the image. """

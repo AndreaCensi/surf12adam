@@ -9,7 +9,7 @@ import contracts
 
 MAIN_CMD_NAME = 'dp'
 commands_list = "\n".join(['    %-20s   %s' % 
-                           #(f.short_usage, f.__doc__)
+                           # (f.short_usage, f.__doc__)
                            (cmd, str(Storage.commands[cmd].__doc__).strip())
                            for cmd in sorted(Storage.commands)])
 
@@ -65,7 +65,9 @@ def dp(arguments):
 
     confdir = options.directory
     config = DiffeoplanConfigMaster()
-    config.load(confdir)
+    config.load()
+    if confdir is not None:
+        config.load(confdir)
     
     set_current_config(config)
 

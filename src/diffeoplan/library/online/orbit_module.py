@@ -1,9 +1,3 @@
-'''
-Created on Oct 16, 2012
-
-@author: adam
-'''
-
 from PIL import Image  # @UnresolvedImport
 from diffeoplan.library.images.uncertain_image import UncertainImage
 from diffeoplan.library.logs.rosbag.bag_reader import get_image_array
@@ -77,7 +71,6 @@ class OrbitModule():
         for c in plan:
             cmd = cmdlist[c]
             for i in range(len(cmdlist)):
-#                pdb.set_trace()
                 if all(cmd == -np.array(cmdlist[i])):
                     plan_inverse += (i,)
                     
