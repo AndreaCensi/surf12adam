@@ -1,0 +1,19 @@
+--- model dp_predict_video
+config id_discdds = 'iu-youbot-b3-05-80-fast10s-15-r'
+config config_dir = '${YC2013WS}/diffeo-from-lambda'
+config nsteps=2
+config mult=2
+config file
+config out
+
+import procgraph_cv
+
+|mplayer file=$file| -> rgb
+
+rgb -> |resize width=160 height=120| -> |pred:dp_discdds_predict_matrix config_dir=$config_dir id_discdds=$id_discdds| -> out
+
+pred.nsteps = $nsteps
+pred.mult = $mult
+
+out -> |mencoder file=$out|
+

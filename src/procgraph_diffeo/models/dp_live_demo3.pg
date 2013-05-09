@@ -2,14 +2,14 @@
 config id_discdds = 'iu-youbot-b3-05-80-fast10s-15-r'
 config config_dir = '${YC2013WS}/diffeo-from-lambda'
 
-import procgraph_cv
+# import procgraph_cv
 
-|cv_capture width=160 height=120| -> |sieve n=2| -> rgb
+# |cv_capture width=160 height=120| -> |sieve n=2| -> rgb
 
-rgb, rgb -> |pred:dp_discdds_servo config_dir=$config_dir id_discdds=$id_discdds| -> out
+# rgb, rgb -> |pred:dp_discdds_servo config_dir=$config_dir id_discdds=$id_discdds| -> out
 
-pred.nsteps = 2
-pred.mult = 2
+# pred.nsteps = 2
+# pred.mult = 2
 
-out -> |cv_display|
+# out -> |cv_display|
 
