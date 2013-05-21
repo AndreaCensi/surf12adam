@@ -1,9 +1,6 @@
 from . import logger
-from boot_agents.diffeo.learning import DiffeomorphismEstimatorPixelized
 from compmake import (comp, batch_command, compmake_console, read_rc_files,
     use_filesystem)
-from diffeoplan.library.discdds.diffeo_action import DiffeoAction
-from diffeoplan.library.discdds.diffeo_system import DiffeoSystem
 from diffeoplan.programs.utils import declare_command
 from reprep import Report
 from quickapp import ReportManager

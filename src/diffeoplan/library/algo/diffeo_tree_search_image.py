@@ -1,5 +1,5 @@
 from . import DiffeoTreeSearch, contract, dp_memoize_instance
-from diffeoplan.library.images import UncertainImage
+from diffeo2dds.model.uncertain_image import UncertainImage
 
 
 __all__ = ['DiffeoTreeSearchImage']

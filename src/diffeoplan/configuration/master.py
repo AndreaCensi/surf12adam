@@ -9,7 +9,7 @@ from diffeoplan.configuration.checks import check_valid_set
 class DiffeoplanConfigMaster(ConfigMaster):
     def __init__(self):
         ConfigMaster.__init__(self, 'dp')
-
+ 
         self.images = self.add_class('images', '*.images.yaml',
                                      check_valid_image_config,
                                      GenericCall(check_valid_image))
@@ -17,11 +17,11 @@ class DiffeoplanConfigMaster(ConfigMaster):
         self.symdiffeos = self.add_class('symdiffeos', '*.symdiffeos.yaml',
                                      check_valid_symdiffeo_config,
                                      GenericCall(check_valid_symdiffeo))
-
+ 
         self.symdds = self.add_class('symdds', '*.symdds.yaml',
                                      check_valid_symdds_config,
                                      GenericCall(check_valid_dds))
-
+ 
         self.discdds = self.add_class('discdds', '*.discdds.yaml',
                                      check_valid_discdds_config,
                                      GenericCall(check_valid_dds))

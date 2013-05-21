@@ -1,9 +1,9 @@
 from . import contract, GenericGraphPlanner
 from diffeoplan.library.analysis import DiffeoStructure
-from diffeoplan.library.discdds import DiffeoSystem
 from reprep import Report
 import itertools
 from diffeoplan.library.analysis.structure.plan_reducer import PlanReducer
+from diffeo2dds.model.diffeo_system import DiffeoSystem
 
 __all__ = ['InformedPlanner']
 

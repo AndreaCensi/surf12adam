@@ -1,8 +1,3 @@
-'''
-Created on Jan 24, 2013
-
-@author: adam
-'''
 from . import logger
 from diffeoplan.programs.utils import declare_command
 import pdb
@@ -10,7 +5,7 @@ import numpy as np
 import numpy.linalg as la
 import itertools
 import pylab
-from PIL import Image #@UnresolvedImport
+from PIL import Image  # @UnresolvedImport
 
 @declare_command('covariance', 'covariance  [-s <stream>]')
 def covariance(config, parser):

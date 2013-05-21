@@ -1,15 +1,15 @@
 from . import PlanReducer, np, contract
-from boot_agents.diffeo import (diffeo_to_rgb_angle, diffeo_to_rgb_norm,
-    scalaruncertainty2rgb)
 from boot_agents.misc_utils import iterate_indices
-from diffeoplan.library.discdds import DiffeoAction, plans_of_max_length
+from diffeo2d.visualization import (diffeo_to_rgb_norm, diffeo_to_rgb_angle,
+    scalaruncertainty2rgb)
+from diffeo2dds.model import DiffeoAction, plans_of_max_length
 from reprep.plot_utils import x_axis_extra_space
 
 
 __all__ = ['DiffeoStructure']
 
 
-class DiffeoStructure():
+class DiffeoStructure(object):
     """ 
         Estimates the intrinsic structure of a given DiffeoSystem
         and is able to tell you if a plan has a shorter equivalent.    

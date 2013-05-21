@@ -1,12 +1,5 @@
-'''
-Created on Nov 7, 2012
-
-@author: adam
-'''
 from . import logger
-from boot_agents.diffeo import diffeomorphism2d_continuous
 from compmake import (batch_command, compmake_console, comp, read_rc_files, use_filesystem)
-from diffeoplan.library.discdds.writing import ds_dump
 from diffeoplan.programs.streams.dp_plearn import filter_commands, report_dds, report_learner, summarize
 from diffeoplan.programs.utils import declare_command
 from reprep import Report
@@ -21,7 +14,7 @@ import pickle
 
 @declare_command('rlearn',
                  'rlearn  [<stream1> ...]')
-def rlearn(config, parser): #@UnusedVariable
+def rlearn(config, parser):  # @UnusedVariable
     t0 = time.time()
     """ Displays the learned DDS """
     parser.add_option("-n", "--nthreads", help="Number of threads",
@@ -102,7 +95,7 @@ def learning_times_rlearn(outdir, learners, streams, nthreads, nrefines):
     walltime_index_level_summarize = np.ones((nthreads, nrefines)) * np.NaN
     for i in range(nthreads):
         for ref in range(nrefines):
-            search_id = 'learn-%s-%s-%s-refined%s-summarize' % (id_stream, id_learner, i , ref) # bug in computation naming, should be i+1
+            search_id = 'learn-%s-%s-%s-refined%s-summarize' % (id_stream, id_learner, i , ref)  # bug in computation naming, should be i+1
             print(search_id)
             for job_id in job_ids:
                 if job_id == search_id:                    
@@ -229,14 +222,14 @@ def merge_learners(learners):
         
     return learner_0
 
-#def summarize(learner, variance_limit=None):
+# def summarize(learner, variance_limit=None):
 #    dds = learner.summarize()
 #    return dds
 
 def calculate_areas(learner, dds, nrefine):
     return learner.calculate_areas(dds, nrefine)
     
-#def jobs_rlearn_comb(config, rm, outdir, id_learner, id_stream, nthreads, nrefine,
+# def jobs_rlearn_comb(config, rm, outdir, id_learner, id_stream, nthreads, nrefine,
 #                     intermediate_reports=True):
 #    partial = []
 #    

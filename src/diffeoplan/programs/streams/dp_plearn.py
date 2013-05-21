@@ -92,7 +92,6 @@ def learning_times_plearn(outdir, learners, streams, nthreads):
              'cputime_index_level_summarize': cputime_index_level_summarize,
              'walltime_index_level_summarize': walltime_index_level_summarize }
     
-#    pdb.set_trace()
     pickle.dump(times, open(os.path.join(outdir, 'times.pickle'), 'wb'))
 
 def jobs_plearn(config, rm, learners, streams, outdir, nthreads):

@@ -1,5 +1,5 @@
 from . import np, contract
-from boot_agents.diffeo import Flattening, cmap, coords_iterate
+from diffeo2d import Flattening, cmap, coords_iterate
 
 
 class DistanceNeighbor():
@@ -55,5 +55,5 @@ class DistanceNeighbor():
                 b = y2_flat[neighbor_indices_flat[k]]
                 diff = np.abs(a - b) 
                 best[k, c] = np.min(diff) 
-        return np.mean(best)#/self.maxval_distance_neighborhood_bestmatch
+        return np.mean(best)  # /self.maxval_distance_neighborhood_bestmatch
     

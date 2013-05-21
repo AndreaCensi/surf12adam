@@ -1,7 +1,7 @@
 from . import DistanceNeighborDist, np, DistanceNorm
 from .. import UncertainImage
-from boot_agents.diffeo.plumbing import FlatStructure # TODO
 from diffeoplan.utils import assert_allclose
+from diffeo2d import FlatStructure
 
 def test_distance_neighbor_dist1():
     gs = FlatStructure((100, 100), (1, 1))
@@ -82,6 +82,6 @@ def test_distance_neighbor_dist2_repeated():
         y1 = UncertainImage(A[i])
         vl2 = L2.distance(y0, y1)
         ds = [x.distance(y0, y1) for x in Ds]
-        assert_allclose(ds, 0) # < this must be zero
+        assert_allclose(ds, 0)  # < this must be zero
         s = ";".join("%1.5f" % x for x in ds)
         print('- step %d L2: %1.5f %s' % (i, vl2, s))

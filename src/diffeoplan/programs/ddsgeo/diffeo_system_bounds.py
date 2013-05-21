@@ -1,11 +1,10 @@
 from diffeoplan.library.algo import DiffeoCoverExp, DiffeoActionL2iwNormalized
 from diffeoplan.library.algo.memoize_strategy import dp_memoize_instance
 from diffeoplan.library.analysis import DiffeoCover, DiffeoStructure
-from diffeoplan.library.discdds import DiffeoAction
-from diffeoplan.library.discdds.diffeo_action_distances import (
-    diffeoaction_distance_L2_infow)
 import itertools
 import numpy as np
+from diffeo2dds.model.diffeo_action import DiffeoAction
+from diffeo2dds.model.diffeo_action_distances import diffeoaction_distance_L2_infow
 
 
 class DiffeoSystemBounds:
@@ -23,7 +22,7 @@ class DiffeoSystemBounds:
                                  max_it=max_it)
         self.cover.go()
              
-    def display(self, report): #@UnusedVariable
+    def display(self, report):  # @UnusedVariable
         with report.subsection('draw_graph') as r:
             self.cover.draw_graph(r)
 
@@ -52,7 +51,7 @@ class DiffeoSystemBounds2:
                                     dds=self.dds,
                                     plan_reducer=self.ds.get_plan_reducer(),
                                     collapse_metric=collapse_metric,
-                                    #collapse_threshold=collapse_threshold,
+                                    # collapse_threshold=collapse_threshold,
                                     collapse_threshold=0.001,
                                     max_depth=3,
                                     debug_iterations=debug_it,
@@ -60,7 +59,7 @@ class DiffeoSystemBounds2:
         self.cover.set_min_visibility(min_visibility)
         self.cover.go()
 #       
-        #self.make_bases(self.dds, self.ds)     
+        # self.make_bases(self.dds, self.ds)     
         
     def make_bases(self, dds, ds):
         n = len(dds.actions)
@@ -70,7 +69,7 @@ class DiffeoSystemBounds2:
 #        print('Created %d ' % len(bplans)) 
 #        minimal, mmap = ds.get_minimal_equiv_set(bplans)
 #        print('Minimal %d ' % len(minimal))
-##        print minimal 
+# #        print minimal 
 
 #        self.find_non_red_plans(nactions=n, length=3, threshold=0.05)
         self.make_closure(nactions=n, length=3, threshold=0.05)
@@ -106,11 +105,11 @@ class DiffeoSystemBounds2:
             if prev1 == prev2:
                 continue
             com = self.make_commutator(prev1, prev2)
-            #print('[%s, %s] -> %s ' % (prev1, prev2, com))
+            # print('[%s, %s] -> %s ' % (prev1, prev2, com))
             _, md = self.minimum_dist_to_set(com, prev + generated)
-            #print('%s md %s to %s' % (com, md, closest))
+            # print('%s md %s to %s' % (com, md, closest))
             if md < threshold:
-                #print('%s matches %s' % (com, closest))
+                # print('%s matches %s' % (com, closest))
                 continue
             else:
                 generated.append(com)
@@ -150,7 +149,7 @@ class DiffeoSystemBounds2:
         
         
         
-    def display(self, report): #@UnusedVariable
+    def display(self, report):  # @UnusedVariable
         with report.subsection('draw_graph') as r:
             self.cover.draw_graph(r)
 

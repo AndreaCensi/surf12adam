@@ -1,5 +1,5 @@
 from . import contract, logger, np
-from boot_agents.diffeo.plumbing import FlatStructure
+from diffeo2d import FlatStructure
 from diffeoplan.utils import assert_allclose
 
 
@@ -63,7 +63,7 @@ class DistanceNeighborRatio():
                     b = y2_flat[neighbor_indices_flat[k]]
                     diff = np.abs(a - b) 
                     best[k, c] = np.min(diff) 
-            res = np.mean(best)#/self.maxval_distance_neighborhood_bestmatch
+            res = np.mean(best)  # /self.maxval_distance_neighborhood_bestmatch
             assert_allclose(res, myres)
     
         return myres

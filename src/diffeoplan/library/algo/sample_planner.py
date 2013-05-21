@@ -1,13 +1,12 @@
 from diffeoplan.library.algo.planning_algo import DiffeoPlanningAlgo
-from diffeoplan.library.discdds.compose_graph import ComposeGraph
-from diffeoplan.library.discdds.diffeo_system import DiffeoSystem
-from diffeoplan.library.images.uncertain_image import UncertainImage
 from diffeoplan.library.algo.planning_result import PlanningResult
 import time
 import numpy as np
 from diffeoplan.configuration import get_current_config
 from contracts import contract
 from . import logger
+from diffeo2dds.model.diffeo_system import DiffeoSystem
+from diffeo2dds.model.uncertain_image import UncertainImage
 
 class SamplePlanner(DiffeoPlanningAlgo):
     """ A sample based planner. """

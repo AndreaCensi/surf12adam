@@ -1,12 +1,12 @@
 from . import logger, contract
 from diffeoplan.configuration import get_current_config
-from diffeoplan.library import (DistanceNormWeighted, DistanceNorm, plan_friendly,
-    plan_friendly_tex)
+from diffeoplan.library import (DistanceNormWeighted, DistanceNorm, plan_friendly)
 from itertools import chain
 from reprep.report_utils import (FunctionWithDescription, WithDescription,
     symbol_desc_from_docstring, symbol_desc_from_string)
 from reprep.utils import frozendict2
 import itertools
+from diffeo2dds.model.plan_utils import plan_friendly_tex
 
 class Statistic(FunctionWithDescription):
     pass
@@ -45,7 +45,7 @@ class Stats:
                 if desc is None:
                     logger.warning('No description entry %r.' % k)
                 s[k] = WithDescription(name=k, desc=desc, symbol=symbol)
-                #print k, s[k]
+                # print k, s[k]
                 
         s.update(Stats.misc_descriptions)            
         return s
@@ -162,8 +162,8 @@ def plan_length(stats):
         return None
     
 # TODO: add same plan
-#@add_statistics
-#def plan_same(stats):
+# @add_statistics
+# def plan_same(stats):
 #    """ |p| := Plan length """
 #    if plan_found(stats):
 #        return len(stats['result'].plan)
@@ -282,7 +282,7 @@ Stats.tables_for_single_sample = {
     'graph': [
         'plan_found',
         'plan_string_tex',
-        #'d_L2_py0_y1//f3',
+        # 'd_L2_py0_y1//f3',
         'd_L2w_py0_y1//f3',
         'plan_time//f2',
         'num_states_evaluated//d',
@@ -296,7 +296,7 @@ Stats.tables_for_single_sample = {
         'plan_found',
         'plan_string_tex',
         'true_plan_string_tex',
-        #'d_L2_py0_y1//f3',
+        # 'd_L2_py0_y1//f3',
         'd_L2w_py0_y1//f3',
         'goal_threshold//f3',
         'plan_time//f2',

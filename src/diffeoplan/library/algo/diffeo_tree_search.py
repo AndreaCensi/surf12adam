@@ -1,11 +1,12 @@
 from . import Memoized, np, contract
 from diffeoplan.library.analysis import PlanReducer
-from diffeoplan.library.discdds import (DiffeoAction, guess_state_space,
-    DiffeoSystem)
 from diffeoplan.utils import WithInternalLog
 from ggs import GenericGraphSearch
 import collections
 import networkx as nx
+from diffeo2dds.model.diffeo_system import DiffeoSystem
+from diffeo2dds.model.diffeo_action import DiffeoAction
+from diffeo2dds.visualization.guess import guess_state_space
  
 __all__ = ['DiffeoTreeSearch']
 
@@ -80,7 +81,7 @@ class DiffeoTreeSearch(GenericGraphSearch, WithInternalLog, Memoized):
         if len(plan) == 0:
             shape = self.dds.actions[0].diffeo.get_shape()
             identity_cmd = np.array([0, 0])
-            return DiffeoAction.identity('id', shape, identity_cmd) # XXX
+            return DiffeoAction.identity('id', shape, identity_cmd)  # XXX
         
         last = self.dds.actions[plan[-1]]
         if len(plan) == 1:
@@ -90,7 +91,7 @@ class DiffeoTreeSearch(GenericGraphSearch, WithInternalLog, Memoized):
             return DiffeoAction.compose(last, rest)
           
     # TODO: move away visualization
-    def plot_graph_using_guessed_statespace(self, pylab, #@UnusedVariable
+    def plot_graph_using_guessed_statespace(self, pylab,  # @UnusedVariable
             plan2color=None, plan2label=None, cmap=None, origin=None, show_plan=None):
         ss = guess_state_space(self.id_dds, self.dds) 
         
@@ -109,9 +110,9 @@ class DiffeoTreeSearch(GenericGraphSearch, WithInternalLog, Memoized):
             pylab.plot(points[0], points[1], 'r-')
        
         if plan2color is None:
-            plan2color = lambda plan: [0, 0, 0] #@UnusedVariable
+            plan2color = lambda plan: [0, 0, 0]  # @UnusedVariable
         if plan2label is None:
-            plan2label = lambda plan: '' #@UnusedVariable
+            plan2label = lambda plan: ''  # @UnusedVariable
         
         nodes = list(self.G.nodes())
          
@@ -143,11 +144,11 @@ class DiffeoTreeSearch(GenericGraphSearch, WithInternalLog, Memoized):
     def log_actionless_node(self, node):
         self.info('No actions available for %s' % self.node_friendly(node))
 
-    def log_child_discarded(self, node, action, child, matches): #@UnusedVariable
+    def log_child_discarded(self, node, action, child, matches):  # @UnusedVariable
         self.info('%s->%s but discarded' % (self.node_friendly(node),
                                               self.node_friendly(child)))
         
-    def log_child_equivalent_found(self, node, action, child, match): #@UnusedVariable
+    def log_child_equivalent_found(self, node, action, child, match):  # @UnusedVariable
         self.info('%s->%s but equivalent found (%s)' % 
                   (self.node_friendly(node),
                    self.node_friendly(child),
@@ -157,7 +158,7 @@ class DiffeoTreeSearch(GenericGraphSearch, WithInternalLog, Memoized):
         self.info('Node %s is too deep. (%s)' % (self.node_friendly(node),
                                                  self.max_depth))
 
-    def log_too_many_iterations(self, node): #@UnusedVariable
+    def log_too_many_iterations(self, node):  # @UnusedVariable
         self.info('Cutting because iterations = %s' % self.iterations)
 
     def log_too_small_visibility(self, node):

@@ -2,11 +2,12 @@ from . import (DiffeoPlanningAlgo, PlanningResult, contract, Connector,
     DiffeoTreeSearchImage)
 from diffeoplan import get_current_config
 from diffeoplan.library import (DiffeoSystem, guess_state_space, plan_friendly,
-    DiffeoAction, PlanReducer, UncertainImage, plan_steps)
+    DiffeoAction, PlanReducer, UncertainImage)
 from matplotlib.cm import get_cmap
 from reprep import Report
 from reprep.plot_utils import turn_all_axes_off
 import time
+from diffeo2dds.model.plan_utils import plan_steps
 
 __all__ = ['GenericGraphPlanner']
  
@@ -146,7 +147,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         self.log_final_result(result)
         return result
         
-    def log_plan(self, y0, y1, precision, min_visibility): #@UnusedVariable
+    def log_plan(self, y0, y1, precision, min_visibility):  # @UnusedVariable
         self.info('Planning query; precision: %s  min_visibility: %s' 
                   % (precision, min_visibility))
         
@@ -178,7 +179,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
     def log_planning_failed(self):
         self.info('Planning failed')
         
-    def log_plan_found(self, d, p1, p2, plan_red, plan): #@UnusedVariable
+    def log_plan_found(self, d, p1, p2, plan_red, plan):  # @UnusedVariable
         self.info('Connection between %s and %s of distance %s' % 
                   (self.start_tree.node_friendly(p1),
                    self.goal_tree.node_friendly(p2), d))
@@ -218,14 +219,14 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         """
         Goal tree, by default no open nodes, may be override by subclass.
         """
-        dds = self.get_dds().inverse() # <-- note inverse()
+        dds = self.get_dds().inverse()  # <-- note inverse()
         id_dds = self.id_dds
         if self.bidirectional:
             max_depth = self.max_depth
             max_iterations = self.max_iterations
         else:
-            max_depth = 0 # do not expand anything
-            max_iterations = 0 # do not expand anything
+            max_depth = 0  # do not expand anything
+            max_iterations = 0  # do not expand anything
         plan_reducer = self.get_plan_reducer()
         dts = DiffeoTreeSearchImage(image=y1, id_dds=id_dds,
                         dds=dds, plan_reducer=plan_reducer,
@@ -256,7 +257,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         
         if result.success:
             # Plot the distance as a function of step
-            steps = plan_steps(result.plan) # (), (0,) (0, 1), etc.
+            steps = plan_steps(result.plan)  # (), (0,) (0, 1), etc.
             distance_to_y0 = map(start_dist_y0, steps) 
             distance_to_y1 = map(start_dist_y1, steps)
             with f.plot('distances_along_path') as pylab:
@@ -343,7 +344,7 @@ class GenericGraphPlanner(DiffeoPlanningAlgo):
         self.info('Stopping because time expired: %s > %s' % 
                   (passed, self.max_time))
     
-    def log_final_result(self, result): #@UnusedVariable
+    def log_final_result(self, result):  # @UnusedVariable
         """ Called last, before returning """
         self.info('Summary of memory for start_tree:\n %s' 
                   % self.start_tree.memoize_cache.summary())

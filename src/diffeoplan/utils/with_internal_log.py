@@ -15,11 +15,11 @@ class LogRecord(object):
 class WithInternalLog(object):
     
     def __init__(self, name=None):
-        self.log_lines = [] # log records
+        self.log_lines = []  # log records
         self.set_log_output(True)
         self.children = {}
         if name is None:
-            name = self.__class__.__name__ # don't call str() yet
+            name = self.__class__.__name__  # don't call str() yet
         self.name = name
         
     def set_name_for_log(self, name):
@@ -31,8 +31,10 @@ class WithInternalLog(object):
         child.set_name_for_log(id_child)
     
     def set_log_output(self, enable):
-        """ Enable or disable instantaneous on-screen logging.
-            If disabled, things are still memorized. """
+        """ 
+            Enable or disable instantaneous on-screen logging.
+            If disabled, things are still memorized.     
+        """
         self.log_output_enabled = enable
     
     def info(self, s):

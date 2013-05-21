@@ -1,7 +1,7 @@
 from . import np, contract
-from geometry.utils.numpy_backport import assert_allclose
+from geometry.utils import assert_allclose
 
-from boot_agents.diffeo.plumbing.flat_structure import FlatStructure
+from diffeo2d  import FlatStructure
 
 class DistanceNeighborEff():
     """ A more efficient version. """
@@ -41,7 +41,7 @@ class DistanceNeighborEff():
                     b = y2_flat[neighbor_indices_flat[k]]
                     diff = np.abs(a - b) 
                     best[k, c] = np.min(diff) 
-            res = np.mean(best)#/self.maxval_distance_neighborhood_bestmatch
+            res = np.mean(best)  # /self.maxval_distance_neighborhood_bestmatch
             assert_allclose(res, myres)
     
         return myres
